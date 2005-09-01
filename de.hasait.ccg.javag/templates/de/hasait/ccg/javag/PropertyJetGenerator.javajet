@@ -1,0 +1,287 @@
+<%@ jet
+	package="de.hasait.ccg.javag"
+	class="PropertyJetGenerator"
+	imports="de.hasait.ccg.util.StringUtil de.hasait.ccg.util.XmlUtil"
+	skeleton="CcgJetGenerator.skeleton"
+%>
+<%
+String type = XmlUtil.getAttributeString(e, "type");
+String name = XmlUtil.getAttributeString(e, "name");
+String capName = StringUtil.capitalize(name);
+String oldName = "old" + capName;
+boolean many = XmlUtil.getAttributeBoolean(e, "many", false);
+boolean bound = XmlUtil.getAttributeBoolean(e, "bound", false);
+boolean afterSet = XmlUtil.getAttributeBoolean(e, "afterset", false);
+boolean beforeSet = XmlUtil.getAttributeBoolean(e, "beforeset", false);
+boolean hooked = XmlUtil.getAttributeBoolean(e, "hooked", false);
+boolean threadsafe = XmlUtil.getAttributeBoolean(e, "threadsafe", false);
+boolean readonly = XmlUtil.getAttributeBoolean(e, "readonly", false);
+String otherend = XmlUtil.getAttributeString(e, "otherend", null);
+boolean otherendmany = XmlUtil.getAttributeBoolean(e, "otherendmany", false);
+
+String setterVisibility = null;
+if (readonly) {
+	setterVisibility = "protected";
+} else {
+	setterVisibility = "public";
+}
+String capOtherend = null;;
+if (otherend != null) {
+	capOtherend = StringUtil.capitalize(otherend);
+}
+String mName = "_" + name;
+String pName = name;
+if (many) {
+	mName = mName + "s";
+}
+String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
+	|| type.equals("java.lang.Boolean")) ? "is" : "get";
+%>
+
+	/**
+	 *  Property <%= name %>
+	 */
+<% String nameConstant = "PROPERTYNAME_" + name.toUpperCase(); %>
+	public static final String <%= nameConstant %> = <%= "\"" + name + (many?"s":"") + "\"" %>;
+<% if (!many) { %>
+	/** The single property field <%= name %>. */
+	private <%= type %> <%= mName %>;
+	
+	/**
+	 * Returns the <%= name %>.
+	 */
+	public final <%= type %> <%= getterPrefix %><%= capName %>() {
+<% if (threadsafe) {	%>
+		synchronized (this) {<% } %>
+			return <%= mName %>;
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+	
+	/**
+	 * Sets the <%= name %>.
+	 */
+	<%= setterVisibility %> final void set<%= capName %>(final <%= type %> <%= pName %>) {
+<% if (bound || hooked || (otherend != null)) { %>
+		<%= type %> <%= oldName %>;
+<% } %>
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+<% if (beforeSet) { %>
+			if (beforeSet<%= capName %>(<%= pName %>)) {
+				return;
+			}
+<% } %>
+<% if (bound || hooked || (otherend != null)) { %>
+			if (<%= mName %> == <%= pName %>) {
+				return;
+			}
+			<%= oldName %> = <%= mName %>;
+<% } %>
+<% if (hooked || (otherend != null)) { %>
+			if (<%= mName %> != null) {
+				<%= mName %> = null;
+<% if (otherend != null) { %>
+<% if (otherendmany) { %>
+				<%= oldName %>.remove<%= capOtherend %>(this);
+<% } else { %>
+				<%= oldName %>.set<%= capOtherend %>(null);
+<% } %>
+<% } %>
+<% if (hooked) { %>
+				old<%= capName %>(<%= oldName %>);
+<% } %>
+			}
+<% } %>
+			<%= mName %> = <%= pName %>;
+<% if (hooked || (otherend != null)) { %>
+			if (<%= mName %> != null) {
+<% if (otherend != null) { %>
+<% if (otherendmany) { %>
+				<%= pName %>.add<%= capOtherend %>(this);
+<% } else { %>
+				<%= pName %>.set<%= capOtherend %>(this);
+<% } %>
+<% } %>
+<% if (hooked) { %>
+				new<%= capName %>(<%= pName %>);
+<% } %>
+			}
+<% } %>
+<% if (threadsafe) { %>
+		}
+<% } %>
+<% if (bound) { %>
+		firePropertyChange(<%= nameConstant %>, <%= oldName %>, <%= pName %>);
+<% } %>
+<% if (afterSet) { %>
+		afterSet<%= capName %>(<%= pName %>);
+<% } %>
+	}
+<% } else { %>
+	/** The many property field <%= name %>. */
+	private final java.util.List <%= mName %> = new java.util.ArrayList();
+
+	/**
+	 * Returns the array of all <%= name %>s.
+	 */
+	public final <%= type %>[] get<%= capName %>s() {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return (<%= type %>[])<%= mName %>.toArray(new <%= type %>[<%= mName %>.size()]);
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Returns the <%= name %> at the specified index.
+	 */
+	public final <%= type %> get<%= capName %>(final int index) {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return (<%= type %>)<%= mName %>.get(index);
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Returns if the specified <%= name %> is contained.
+	 */
+	public final boolean contains<%= capName %>(final <%= type %> <%= pName %>) {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return <%= mName %>.contains(<%= pName %>);
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Returns how many <%= name %>s are contained.
+	 */
+	public final int <%= name %>Size() {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return <%= mName %>.size();
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Returns if <%= name %> is empty.
+	 */
+	public final boolean is<%= capName %>Empty() {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return <%= mName %>.isEmpty();
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Returns an {@link Iterator} for all <%= name %>s.
+	 */
+	public final java.util.Iterator <%= name %>Iterator() {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			return <%= mName %>.iterator();
+<% if (threadsafe) { %>
+		}
+<% } %>
+	}
+
+	/**
+	 * Adds the specified <%= name %>.
+	 */
+	<%= setterVisibility %> final void add<%= capName %>(final <%= type %> <%= pName %>) {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			if (<%= mName %>.contains(<%= pName %>)) {
+				return;
+			}
+<% if (otherend != null) { %>
+<% if (otherendmany) { %>
+			<%= pName %>.remove<%= capOtherend %>(this);
+<% } else { %>
+			<%= pName %>.set<%= capOtherend %>(null);
+<% } %>
+<% } %>
+			<%= mName %>.add(<%= pName %>);
+<% if (otherend != null) { %>
+<% if (otherendmany) { %>
+			<%= pName %>.add<%= capOtherend %>(this);
+<% } else { %>
+			<%= pName %>.set<%= capOtherend %>(this);
+<% } %>
+<% } %>
+<% if (hooked) { %>
+			new<%= capName %>(<%= pName %>);
+<% } %>
+<% if (threadsafe) { %>
+		}
+<% } %>
+<% if (bound) { %>
+		firePropertyChange(<%= nameConstant %>, null, <%= pName %>);
+<% } %>
+	}
+		
+	/**
+	 * Removes the specified <%= name %>.
+	 */
+	<%= setterVisibility %> final void remove<%= capName %>(final <%= type %> <%= pName %>) {
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			if (!<%= mName %>.contains(<%= pName %>)) {
+				return;
+			}
+			<%= mName %>.remove(<%= pName %>);
+<% if (otherend != null) { %>
+<% if (otherendmany) { %>
+			<%= pName %>.remove<%= capOtherend %>(this);
+<% } else { %>
+			<%= pName %>.set<%= capOtherend %>(null);
+<% } %>
+<% } %>
+<% if (hooked) { %>
+			old<%= capName %>(<%= pName %>);
+<% } %>
+<% if (threadsafe) { %>
+		}
+<% } %>
+<% if (bound) { %>
+		firePropertyChange(<%= nameConstant %>, <%= pName %>, null);
+<% } %>
+	}
+
+	/**
+	 * Remove all <%= name %>s.
+	 */
+	<%= setterVisibility %> final void removeAll<%= capName %>s() {
+		<%= type %>[] <%= name %>s;
+<% if (threadsafe) { %>
+		synchronized (this) {
+<% } %>
+			<%= name %>s = get<%= capName %>s();
+<% if (threadsafe) { %>
+		}
+<% } %>
+		for (int i=0; i<<%= name %>s.length; i++) {
+			remove<%= capName %>(<%= name %>s[i]);
+		}
+	}
+<% } %>
+	
