@@ -1,5 +1,5 @@
 /*
- * $Id: EventSupportGenerator.java,v 1.1.1.1 2005-09-01 23:06:38 a-pi Exp $
+ * $Id: EventSupportGenerator.java,v 1.2 2005-09-02 14:20:45 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -18,11 +18,10 @@
 package de.hasait.ccg.javag.pattern;
 
 import de.hasait.ccg.generator.CcgJetGeneratorAdapter;
-import de.hasait.ccg.javag.EventSupportJetGenerator;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EventSupportGenerator extends CcgJetGeneratorAdapter {
     public EventSupportGenerator() {
