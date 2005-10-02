@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.1.1.1 2005-09-01 23:06:36 a-pi Exp $
+ * $Id: CcgBuilder.java,v 1.2 2005-10-02 00:27:39 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -51,7 +51,7 @@ import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "de.hasait.ccg.ccgBuilder";
@@ -166,42 +166,41 @@ public class CcgBuilder extends IncrementalProjectBuilder {
         return ccgRoot.getSource();
     }
 
-    private boolean applyTransformators(final ICcgRoot ccgRoot,
-            final IFile file) {
+    private boolean applyTransformators(final ICcgRoot ccgRoot, final IFile file) {
         _context.clear();
         int index = 0;
         ICcgTreeChild child;
-        ICcgComment comment;
+        ICcgComment ccgComment;
         String command;
         Element element;
-        ICcgGenerator generator;
-        String generatorResult;
+        ICcgGenerator ccgGenerator;
+        String ccgGeneratorResult;
         String blockId;
-        ICcgNonComment nonComment;
+        ICcgNonComment ccgNonComment;
         ICcgComment blockEnd;
         while (index < ccgRoot.childNodesSize()) {
             child = ccgRoot.getChildNode(index);
             if (child instanceof ICcgComment) {
-                comment = (ICcgComment) child;
-                command = comment.getCommand();
+                ccgComment = (ICcgComment) child;
+                command = ccgComment.getCommand();
                 if (command != null) {
                     try {
                         element = XmlUtil.buildW3cElementFromString(command);
-                        generator = _ccgGeneratorLookup
+                        ccgGenerator = _ccgGeneratorLookup
                                 .findTransformator(element.getTagName());
-                        if (generator == null) {
+                        if (ccgGenerator == null) {
                             throw new IllegalArgumentException(
                                     "unknown generator tag: "
                                             + element.getTagName());
                         }
-                        generatorResult = generator.generate(element,
-                                _ccgGeneratorLookup, _context, file);
+                        ccgGeneratorResult = ccgGenerator.generate(element,
+                                _ccgGeneratorLookup, _context, ccgComment, file);
                     } catch (Exception e) {
                         addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
                         return false;
                     }
-                    blockId = comment.getBlockStart();
-                    nonComment = null;
+                    blockId = ccgComment.getBlockStart();
+                    ccgNonComment = null;
                     blockEnd = null;
                     if (blockId != null) {
                         int a = 1;
@@ -220,16 +219,16 @@ public class CcgBuilder extends IncrementalProjectBuilder {
                     if (blockId == null) {
                         blockId = OidGenerator.getInstance().getOid();
                     }
-                    if (nonComment == null) {
-                        nonComment = ccgRoot.createNonComment();
-                        ccgRoot.insertChildNode(index + 1, nonComment);
+                    if (ccgNonComment == null) {
+                        ccgNonComment = ccgRoot.createNonComment();
+                        ccgRoot.insertChildNode(index + 1, ccgNonComment);
                     }
                     if (blockEnd == null) {
                         blockEnd = ccgRoot.createComment();
                         ccgRoot.insertChildNode(index + 2, blockEnd);
                     }
-                    comment.setBlockStart(blockId);
-                    nonComment.setSource(generatorResult);
+                    ccgComment.setBlockStart(blockId);
+                    ccgNonComment.setSource(ccgGeneratorResult);
                     blockEnd.setBlockEnd(blockId);
                 }
             }
