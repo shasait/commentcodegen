@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.1.1.1 2005-09-01 23:06:36 a-pi Exp $
+ * $Id: IncludeFileGenerator.java,v 1.2 2005-10-02 00:32:23 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,13 +31,14 @@ import org.w3c.dom.NodeList;
 
 import de.hasait.ccg.generator.ICcgGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
+import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.util.IOUtil;
 import de.hasait.ccg.util.StringUtil;
 import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IncludeFileGenerator implements ICcgGenerator {
     private final String[] KEYWORDS = new String[] { "includeFile" };
@@ -52,7 +53,7 @@ public class IncludeFileGenerator implements ICcgGenerator {
 
     public String generate(final Element element,
             final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final IFile file) throws Exception {
+            final ICcgComment ccgComment, final IFile file) throws Exception {
         String path = XmlUtil.getAttributeString(element, "path");
         NodeList replaceElements = element.getElementsByTagName("replace");
         Map replacements = new HashMap();

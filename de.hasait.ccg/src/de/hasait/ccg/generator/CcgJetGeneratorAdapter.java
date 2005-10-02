@@ -1,5 +1,5 @@
 /*
- * $Id: CcgJetGeneratorAdapter.java,v 1.1.1.1 2005-09-01 23:06:35 a-pi Exp $
+ * $Id: CcgJetGeneratorAdapter.java,v 1.2 2005-10-02 00:32:23 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,9 +22,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.w3c.dom.Element;
 
+import de.hasait.ccg.parser.ICcgComment;
+
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CcgJetGeneratorAdapter implements ICcgGenerator {
     private final String _description;
@@ -51,8 +53,8 @@ public class CcgJetGeneratorAdapter implements ICcgGenerator {
 
     public final String generate(final Element element,
             final ICcgGeneratorLookup transformatorLookup, final Map context,
-            final IFile file) throws Exception {
+            final ICcgComment ccgComment, final IFile file) throws Exception {
         return _domGenerator.generate(element, transformatorLookup, context,
-                file);
+                ccgComment, file);
     }
 }

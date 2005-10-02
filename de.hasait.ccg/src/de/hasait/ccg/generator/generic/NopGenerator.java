@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.1.1.1 2005-09-01 23:06:36 a-pi Exp $
+ * $Id: NopGenerator.java,v 1.2 2005-10-02 00:32:23 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,10 +24,11 @@ import org.w3c.dom.Element;
 
 import de.hasait.ccg.generator.ICcgGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
+import de.hasait.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public class NopGenerator implements ICcgGenerator {
     private final String[] TAGNAMES = new String[] { "nop" };
@@ -42,7 +43,7 @@ public class NopGenerator implements ICcgGenerator {
 
     public String generate(final Element element,
             final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final IFile file) throws Exception {
+            final ICcgComment ccgComment, final IFile file) throws Exception {
         return element.toString();
     }
 }
