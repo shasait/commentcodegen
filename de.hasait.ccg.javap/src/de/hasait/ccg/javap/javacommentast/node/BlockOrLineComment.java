@@ -1,5 +1,5 @@
 /*
- * $Id: BlockOrLineComment.java,v 1.1.1.1 2005-09-01 23:06:42 a-pi Exp $
+ * $Id: BlockOrLineComment.java,v 1.2 2005-10-02 00:33:52 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,7 +23,7 @@ import de.hasait.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class BlockOrLineComment extends SourceNode implements
         ICcgComment {
@@ -86,5 +86,25 @@ public abstract class BlockOrLineComment extends SourceNode implements
     public String toString() {
         return super.toString() + " c=" + getCommand() + " bs="
                 + getBlockStart() + " be=" + getBlockEnd();
+    }
+
+    public int getBeginColumn() {
+        ICcgComment comment = getComment();
+        return comment == null ? -1 : comment.getBeginColumn();
+    }
+
+    public int getBeginLine() {
+        ICcgComment comment = getComment();
+        return comment == null ? -1 : comment.getBeginLine();
+    }
+
+    public int getEndColumn() {
+        ICcgComment comment = getComment();
+        return comment == null ? -1 : comment.getEndColumn();
+    }
+
+    public int getEndLine() {
+        ICcgComment comment = getComment();
+        return comment == null ? -1 : comment.getEndLine();
     }
 }

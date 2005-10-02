@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgComment.java,v 1.1.1.1 2005-09-01 23:06:36 a-pi Exp $
+ * $Id: ICcgComment.java,v 1.2 2005-10-02 00:33:55 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,9 +19,9 @@ package de.hasait.ccg.parser;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
-public interface ICcgComment extends ICcgTreeChild {
+public interface ICcgComment extends ICcgPositionRead, ICcgTreeChild {
     String getCommand();
 
     void setCommand(String command);

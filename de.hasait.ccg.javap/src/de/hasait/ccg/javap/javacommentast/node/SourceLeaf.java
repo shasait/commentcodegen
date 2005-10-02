@@ -1,5 +1,5 @@
 /*
- * $Id: SourceLeaf.java,v 1.1.1.1 2005-09-01 23:06:42 a-pi Exp $
+ * $Id: SourceLeaf.java,v 1.2 2005-10-02 00:33:52 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -18,14 +18,25 @@
 package de.hasait.ccg.javap.javacommentast.node;
 
 import de.hasait.ccg.javap.javacommentast.gen.JavaCommentParser;
+import de.hasait.ccg.javap.javacommentast.gen.Token;
+import de.hasait.ccg.parser.ICcgPositionRead;
 import de.hasait.ccg.parser.ICcgSourceReadWrite;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
-public abstract class SourceLeaf extends SourceNode implements ICcgSourceReadWrite {
+public abstract class SourceLeaf extends SourceNode implements
+        ICcgPositionRead, ICcgSourceReadWrite {
     private final StringBuffer _source = new StringBuffer();
+
+    private int _beginColumn = -1;
+
+    private int _beginLine = -1;
+
+    private int _endColumn = -1;
+
+    private int _endLine = -1;
 
     public SourceLeaf(int id) {
         super(id);
@@ -37,7 +48,12 @@ public abstract class SourceLeaf extends SourceNode implements ICcgSourceReadWri
 
     public void jjtClose() {
         super.jjtClose();
-        addSource(_parser.getToken(0).image);
+        Token token = _parser.getToken(0);
+        addSource(token.image);
+        _beginColumn = token.beginColumn;
+        _beginLine = token.beginLine;
+        _endColumn = token.endColumn;
+        _endLine = token.endLine;
     }
 
     public void jjtOpen() {
@@ -54,5 +70,21 @@ public abstract class SourceLeaf extends SourceNode implements ICcgSourceReadWri
 
     public String getSource() {
         return _source.toString();
+    }
+
+    public int getEndColumn() {
+        return _endColumn;
+    }
+
+    public int getEndLine() {
+        return _endLine;
+    }
+
+    public int getBeginColumn() {
+        return _beginColumn;
+    }
+
+    public int getBeginLine() {
+        return _beginLine;
     }
 }

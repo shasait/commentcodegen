@@ -1,5 +1,5 @@
 /*
- * $Id: SourceNode.java,v 1.1.1.1 2005-09-01 23:06:42 a-pi Exp $
+ * $Id: SourceNode.java,v 1.2 2005-10-02 00:33:52 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,7 +23,7 @@ import de.hasait.ccg.parser.ICcgSourceRead;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class SourceNode extends SimpleNode implements ICcgSourceRead {
     public SourceNode(int id) {
