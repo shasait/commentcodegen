@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.2 2005-10-02 00:32:23 a-pi Exp $
+ * $Id: NopGenerator.java,v 1.3 2005-10-02 01:20:33 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -28,10 +28,10 @@ import de.hasait.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class NopGenerator implements ICcgGenerator {
-    private final String[] TAGNAMES = new String[] { "nop" };
+    private final String[] TAGNAMES = new String[] { "NOP" };
 
     public String getDescription() {
         return "NOP (no operation) generator - pipe through paramter";
