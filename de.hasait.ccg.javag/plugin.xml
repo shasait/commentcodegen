@@ -18,10 +18,13 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="de.hasait.ccg"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.core"/>
    </requires>
    <extension
          point="de.hasait.ccg.ccgGenerators">
       <ccgGenerator class="de.hasait.ccg.javag.pattern.PropertyGenerator"/>
+      <ccgGenerator class="de.hasait.ccg.javag.pattern.MemberDelegateGenerator"/>
       <ccgGenerator class="de.hasait.ccg.javag.pattern.EventSupportGenerator"/>
    </extension>
 
