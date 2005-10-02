@@ -6,16 +6,20 @@
 <title>Introduction</title>
 <style type="text/css">
 	<!--
-	DIV.h1 { display:block; font-size:x-large;}
-	DIV.p { display:block; font-size:medium; margin:10px 0px 0px 0px;}
-	DIV.name { display:inline; border:1px solid black; background-color:#D0D0F0;}
-	PRE.code { display:block; font-size:small; border:1px solid black; background-color:#F0F0C0; padding:5px;}
-	-->
+	DIV.h1 { display:block; font-size:x-large; margin:10px 0px 0px 10px;}
+	DIV.h2 { display:block; font-size:large; margin:10px 0px 0px 10px;}
+	DIV.h3 {display:block; font-size:medium; font-weight:bold; margin:10px 0px 0px 10px;}
+   	DIV.p { display:block; font-size:medium; font-weight:normal; margin:10px 0px 0px 10px;}
+	DIV.name { display:inline; border:1px solid #808080; background-color:#D0D0F0;}
+	PRE.code { display:block; font-size:small; border:1px solid #808080; background-color:#F0F0C0; padding:5px;}
+	DIV.code { display:inline; border:1px solid #808080; background-color:#F0F0C0;}
+
+   	-->
 	</style>
 </head>
 
 <body>
-<div class="h1">Introduction - CommentCodeGen (CCG)</div>
+<div class="h1">Introduction - CommentCodeGen (CCG)
 <hr />
 <div class="p">This is a <a href="www.eclipse.org">eclipse</a> plugin to
 generate code. Its special in the way you specifiy what code to
@@ -28,14 +32,14 @@ a code block after that comment.</div>
 public class Folder {
    /*
     * My comments about the following property...
-    * [c]&lt;property name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
+    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
     */
 }
 </pre> will be modified by the builder to:<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
-    * [c]&lt;property name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
+    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
     * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]
     */
    /**
@@ -65,18 +69,18 @@ public class Folder {
 <div class="p">All the time you modify the above comment the generated
 code will be updated! So changing the name of the property or any other
 attribute will be reflected next time you save.</div>
-<div class="p">Modifying the above example (adding <div class="name">many=&quot;true&quot;</div>):<pre class="code">
+<div class="p">Modifying the above example (adding <div class="code">many=&quot;true&quot;</div>):<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
-    * [c]&lt;property name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
+    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
     */
 }
 </pre> will be modified by the builder to:<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
-    * [c]&lt;property name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
+    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
     * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]
     */
    /**
@@ -162,61 +166,68 @@ public class Folder {
    // [be]da0cefbcc0a8000a01652e619a0c7d76[/be]
 }
 </pre></div>
-<div class="p">There are two extension-points:
-<ul>
-   <li>
-   <div class="name">ccgGenerators</div>
-   is for adding more generator-tags (like
-   <div class="name">property</div>
-   )</li>
-   <li>
-   <div class="name">ccgParsers</div>
-   is for parsing other comment syntaxes different from Java and C++</li>
-</ul>
-</div>
-<div class="p">Available generators are:
-<ul>
-   <li>
-   <div class="name">includeFile</div><br />
-   Attributes are: path (string: workspace path)<br />
-   Nested elements: r<br />
-   Attributes of r are:
-   search (string: text to find),
-   replace (string: replace found text with this)
-   </li>
-   <li>
-   <div class="name">property</div><br />
-   Attributes are:
-   name (string: property name),
-   type (string: property type, e.g. String),
-   many (boolean: single or multi value),
-   threadsafe (boolean: adds correct synchronization),
-   hooked (boolean: calls user-provided hook-methods on change),
-   bound (boolean: fire change-events),
-   otherend (string: property of set value referecing to this),
-   otherendmany (boolean: otherend is single or multi value)
-   </li>
-   <li>
-   <div class="name">eventSupport</div>
-   </li>
-   <li>
-   <div class="name">nop</div>
-   </li>
-</ul>
-</div>
-<div class="p">Planned generators are:
-<ul>
-   <li>
-   <div class="name">delegate</div><br />
-   Generating method delegation for an instance.
-   The code would not be a one time generated thing,
-   but updated everytime the type of the instance changes to reflect correct up-to-date code.
-   </li>
-</ul>
-</div>
-<div class="p">Have fun... questions to hasait at web.de</div>
 <hr />
-<pre>$Id: Introduction.html,v 1.1 2005-09-02 14:08:43 a-pi Exp $</pre>
+<div class="h2">Available Extension-points are:
+   <div class="h3">Extension-point <div class="name">ccgGenerators</div>
+   <div class="p">is for adding more generator-tags
+   (like <div class="name">JavaProperty</div>)</div></div>
+   <div class="h3">Extension-point <div class="name">ccgParsers</div>
+   <div class="p">is for parsing other comment syntaxes
+   different from Java and C++</div></div>
+</div>
+<hr />
+<div class="h2">Available Generators are:
+   <div class="h3">Generator <div class="name">IncludeFile</div>
+   <div class="p">Attributes:<ul>
+      <li><div class="name">path</div> (string: workspace path)</li>
+   </ul>
+   Nested elements:<ul>
+      <li><div class="name">r</div><br />
+      Attributes:<ul>
+         <li><div class="name">search</div> (string: text to find)</li>
+         <li><div class="name">replace</div> (string: replace found text with this)</li>
+      </ul>
+      </li>
+   </ul>
+   </div></div>
+   <div class="h3">Generator <div class="name">JavaProperty</div>
+   <div class="p">Generates a member variable with various accessor methods.</div>
+   <div class="p">Attributes:<ul>
+      <li><div class="name">name</div> (string: property name)</li>
+      <li><div class="name">type</div> (string: property type, e.g. String)</li>
+      <li><div class="name">many</div> (boolean: single or multi value)</li>
+      <li><div class="name">threadsafe</div> (boolean: adds correct synchronization)</li>
+      <li><div class="name">hooked</div> (boolean: calls user-provided hook-methods on change)</li>
+      <li><div class="name">bound</div> (boolean: fire change-events)</li>
+      <li><div class="name">otherend</div> (string: property of set value referencing to this, for bidi-managed-relation)</li>
+      <li><div class="name">otherendmany</div> (boolean: otherend is single or multi value)</li>
+   </ul>
+   </div></div>
+   <div class="h3">Generator <div class="name">JavaMemberDelegate</div>
+   <div class="p">Generates method delegation for a member variable.
+   The code is not a one time generated thing,
+   but updated everytime the type of the variable changes (e.g. new methods are added)
+   to reflect correct up-to-date delegation.</div>
+   <div class="p">Attributes:<ul>
+   <li><div class="name">name</div> (string: member name)</li>
+   </ul>
+   </div></div>
+   <div class="h3">Generator <div class="name">JavaEventSupport</div>
+   <div class="p"></div>
+   </div>
+   <div class="h3">Generator <div class="name">NOP</div>
+   <div class="p">No OPeration - for testing only.</div>
+   </div>
+</div>
+<hr />
+<div class="h2">Planned generators are:
+<div class="p">Ideas are welcome</div>
+</div>
+<hr />
+<div class="p">Have fun... questions to hasait at web.de</div>
+</div>
+<hr />
+<pre>$Id: Introduction.html,v 1.2 2005-10-02 01:20:55 a-pi Exp $</pre>
 </body>
 
 </html>
