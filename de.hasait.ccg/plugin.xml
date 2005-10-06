@@ -3,7 +3,7 @@
 <plugin
    id="de.hasait.ccg"
    name="CommentCodeGen Plug-in"
-   version="1.0.1"
+   version="1.0.2"
    provider-name="Sebastian Hasait"
    class="de.hasait.ccg.CcgPlugin">
 
@@ -51,14 +51,35 @@
             adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
             nameFilter="*"
-            id="de.hasait.ccg.objectContribution">
-         <action
-               label="Add/Remove CommentCodeGen Nature"
-               class="de.hasait.ccg.builder.ToggleCcgNatureAction"
-               menubarPath="additions"
-               enablesFor="+"
-               id="de.hasait.ccg.toggleCcgNatureAction">
-         </action>
+            id="de.hasait.ccg.objectContribution1">
+            <menu
+            	id="de.hasait.ccg.subMenu1"
+            	label="CommentCodeGen"
+            	path="additions">
+            	<separator name="group1"/>
+            </menu>
+  			<action
+  				label="Add Nature"
+  				class="de.hasait.ccg.action.AddCcgNatureAction"
+  				menubarPath="de.hasait.ccg.subMenu1/group1"
+  				enablesFor="1"
+  				id="de.hasait.ccg.addCcgNatureAction">
+  				<enablement>
+  					<not>
+  						<objectState name="projectNature" value="de.hasait.ccg.ccgNature"/>
+  					</not>
+  				</enablement>
+  			</action>
+  			<action
+  				label="Remove Nature"
+  				class="de.hasait.ccg.action.RemoveCcgNatureAction"
+  				menubarPath="de.hasait.ccg.subMenu1/group1"
+  				enablesFor="1"
+  				id="de.hasait.ccg.removeCcgNatureAction">
+  				<enablement>
+  						<objectState name="projectNature" value="de.hasait.ccg.ccgNature"/>
+  				</enablement>
+  			</action>
       </objectContribution>
    </extension>
    <extension
