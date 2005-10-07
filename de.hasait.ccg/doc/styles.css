@@ -1,0 +1,9 @@
+DIV.h1 { display:block; font-size:x-large; margin:10px 0px 0px 10px;}
+DIV.h2 { display:block; font-size:large; margin:10px 0px 0px 10px;}
+DIV.h3 {display:block; font-size:medium; font-weight:bold; margin:10px 0px 0px 10px;}
+DIV.p { display:block; font-size:medium; font-weight:normal; margin:10px 0px 0px 10px;}
+DIV.name { display:inline; border:1px solid #808080; background-color:#F0F0FF;}
+PRE.code { display:block; font-size:small; border:1px solid #808080; background-color:#F0F0C0; padding:5px;}
+DIV.code { display:inline; border:1px solid #808080; background-color:#F0F0C0;}
+A.nav { border:2px outset #808080; text-decoration:none; background-color:#C0C0F0;}
+A.navcurrent { border:2px outset #808080; text-decoration:none; background-color:#F0C0C0;}
