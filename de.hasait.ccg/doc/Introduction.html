@@ -1,14 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html version="-//W3C//DTD HTML 4.01 Transitional//EN" lang="en">
 
 <head>
 <title>CommentCodeGen (CCG) - Introduction</title>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 
-<body>
-<div class="h1">CommentCodeGen (CCG) - Introduction
+<body class="page">
+<table class="page"><tr><td class="header">
+<div class="h1">CommentCodeGen (CCG) - Introduction</div>
 <div class="p">
 <a class="nav" href="http://sourceforge.net/projects/commentcodegen">sourceforge project page</a>
 <a class="nav" href="index.html">Overview</a>
@@ -16,29 +16,29 @@
 <a class="nav" href="GettingStarted.html">Getting Started</a>
 <a class="nav" href="EclipseDevelopmentSetup.html">Eclipse Development Setup</a>
 </div>
-<hr />
+</td></tr><tr class="content"><td class="content"><div class="content">
 <div class="p">This is a <a href="www.eclipse.org">eclipse</a> plugin to
 generate code. Its special in the way you specifiy what code to
 generate.<br />
-The generated code is <b>not</b> placed in another file but generated
-within the file you are editing. This is done by adding a comment
-containing some keywords. These keywords are parsed by a builder and add
-a code block after that comment.</div>
-<div class="p">For example:<pre class="code">
+You add special comments to your code and after each of these comments the code is generated.
+This way you can easily add complex properties to your Java classes or include template files.
+On rebuilding of the file the generated code is updated to reflect changes of the comment or
+other external resources influencing the generation result.</div>
+<div class="h3">You write the following comment:<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
     * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
     */
 }
-</pre> will be modified by the builder to:<pre class="code">
+</pre>After save and build the following code will be appended (new code is highlighted):<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
     * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
-    * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]
+<span class="codenew">    * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]</span> 
     */
-   /**
+<span class="codenew">   /**
     * Property file
     */
    public static final String PROPERTYNAME_FILE = "file";
@@ -59,17 +59,17 @@ public class Folder {
    public final void setFile(final File file) {
       _file = file;
    }
-   // [be]da0cefbcc0a8000a01652e619a0c7d76[/be]
+   // [be]da0cefbcc0a8000a01652e619a0c7d76[/be]</span>
 }
 </pre></div>
 <div class="p">All the time you modify the above comment the generated
 code will be updated! So changing the name of the property or any other
-attribute will be reflected next time you save and rebuild.</div>
-<div class="p">Modifying the above example (adding <div class="code">many=&quot;true&quot;</div>):<pre class="code">
+attribute will be reflected next time you save and build.</div>
+<div class="h3">Modifying the above example and adding <div class="code"><span class="codenew">many=&quot;true&quot;</span></div>:<pre class="code">
 public class Folder {
    /*
     * My comments about the following property...
-    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
+    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; <span class="codenew">many=&quot;true&quot;</span> /&gt;[/c]
     */
 }
 </pre> will be modified by the builder to:<pre class="code">
@@ -77,9 +77,9 @@ public class Folder {
    /*
     * My comments about the following property...
     * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; many=&quot;true&quot; /&gt;[/c]
-    * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]
+<span class="codenew">    * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]</span>
     */
-   /**
+<span class="codenew">   /**
     * Property file
     */
    public static final String PROPERTYNAME_FILE = "files";
@@ -159,21 +159,22 @@ public class Folder {
          removeFile(files[i]);
       }
    }
-   // [be]da0cefbcc0a8000a01652e619a0c7d76[/be]
+   // [be]da0cefbcc0a8000a01652e619a0c7d76[/be]</span>
 }
 </pre></div>
 <hr />
 <div class="h2">Available Extension-points are:
    <div class="h3">Extension-point <div class="name">ccgGenerators</div>
-   <div class="p">is for adding more generator-tags
+   <div class="p">Is for adding more generator-tags
    (like <div class="name">JavaProperty</div>)</div></div>
    <div class="h3">Extension-point <div class="name">ccgParsers</div>
-   <div class="p">is for parsing other comment syntaxes
+   <div class="p">Is for parsing other comment syntaxes
    different from Java and C++</div></div>
 </div>
 <hr />
 <div class="h2">Available Generators are:
    <div class="h3">Generator <div class="name">IncludeFile</div>
+   <div class="p">Include a file and optional search and replace some keywords.</div>
    <div class="p">Attributes:<ul>
       <li><div class="name">path</div> (string: workspace path)</li>
    </ul>
@@ -187,7 +188,7 @@ public class Folder {
    </ul>
    </div></div>
    <div class="h3">Generator <div class="name">JavaProperty</div>
-   <div class="p">Generates a member variable with various accessor methods.</div>
+   <div class="p">Generates a member variable with various accessor methods (like setter, getter or adder, remover, ...).</div>
    <div class="p">Attributes:<ul>
       <li><div class="name">name</div> (string: property name)</li>
       <li><div class="name">type</div> (string: property type, e.g. String)</li>
@@ -216,16 +217,16 @@ public class Folder {
    </div>
 </div>
 <hr />
-<div class="h2">Planned features:
-<div class="p">ccgParser for HTML-Comments</div>
-<div class="p">ccgGenerator for including the output of different engines, like JET or Velocity</div>
-<div class="p">... other ideas are welcome</div>
+<div class="h2">Planned features:<div class="p"><ul>
+<li>ccgParser for HTML-comments: <div class="code">&lt;!-- HTML-comment --&gt;</div></li>
+<li>ccgGenerator for including the output of different engines, like JET or Velocity (may be integrated within <div class="name">IncludeFile</div></li>
+<li>... other ideas are welcome</li></ul></div>
 </div>
 <hr />
-<div class="p">Have fun... questions to hasait at web.de</div>
-</div>
-<hr />
-<pre>$Id: Introduction.html,v 1.7 2005-10-07 21:28:09 a-pi Exp $</pre>
+<div class="p">Have fun... questions to Sebastian Hasait (hasait at web.de)</div>
+</div></td></tr><tr>
+<td class="footer">$Id: Introduction.html,v 1.8 2005-10-10 22:31:05 a-pi Exp $</td>
+</tr></table>
 </body>
 
 </html>

@@ -1,9 +1,120 @@
-DIV.h1 { display:block; font-size:x-large; margin:10px 0px 0px 10px;}
-DIV.h2 { display:block; font-size:large; margin:10px 0px 0px 10px;}
-DIV.h3 {display:block; font-size:medium; font-weight:bold; margin:10px 0px 0px 10px;}
-DIV.p { display:block; font-size:medium; font-weight:normal; margin:10px 0px 0px 10px;}
-DIV.name { display:inline; border:1px solid #808080; background-color:#F0F0FF;}
-PRE.code { display:block; font-size:small; border:1px solid #808080; background-color:#F0F0C0; padding:5px;}
-DIV.code { display:inline; border:1px solid #808080; background-color:#F0F0C0;}
-A.nav { border:2px outset #808080; text-decoration:none; background-color:#C0C0F0;}
-A.navcurrent { border:2px outset #808080; text-decoration:none; background-color:#F0C0C0;}
+BODY.page {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+}
+
+DIV.h1 {
+	display: block;
+	font-size: x-large;
+	margin: 10px 0px 0px 10px;
+}
+
+DIV.h2 {
+	display: block;
+	font-size: large;
+	margin: 10px 0px 0px 10px;
+}
+
+DIV.h3 {
+	display: block;
+	font-size: medium;
+	font-weight: bold;
+	margin: 10px 0px 0px 10px;
+}
+
+DIV.p {
+	display: block;
+	font-size: small;
+	font-weight: normal;
+	margin: 10px 0px 0px 10px;
+}
+
+DIV.name {
+	display: inline;
+	font-weight: normal;
+	background-color: #F0F0FF;;
+	border: 1px solid #808080;
+}
+
+PRE.code {
+	display: block;
+	font-size: small;
+	font-weight: normal;
+	color: #0000A0;
+	font-size: small;
+	border: 1px solid #808080;
+	background-color: #F0F0C0;
+	padding: 5px;;
+	font-weight: normal;
+}
+
+SPAN.codenew {
+	color: #800080;
+}
+
+DIV.code {
+	display: inline;
+	font-weight: normal;
+	font-family: monospace;
+	color: #0000A0;
+	border: 1px solid #808080;
+	background-color: #F0F0C0;;
+	border: 1px solid #808080;;
+	font-weight: normal;;
+	color: #0000A0;
+}
+
+A.nav {
+	border: 2px outset #808080;
+	text-decoration: none;
+	background-color: #C0C0F0;
+	padding: 2px;
+}
+
+A.navcurrent {
+	border: 2px outset #808080;
+	text-decoration: none;
+	background-color: #F0C0C0;
+	padding: 2px;
+}
+
+TABLE.page {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+TD.header {
+	background-color: #F0F0C0;
+	padding-bottom: 5px;
+	border: 2px outset #F0F0C0;
+}
+
+TR.content {
+	height: 100%;
+}
+
+TD.content {
+	width: 100%;
+	height: 100%;
+	background-color: #FFFFF0;
+	height: 100%;
+}
+
+DIV.content {
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	display: block;
+}
+
+TD.footer {
+	font-family: monospace;
+	background-color: #C0C0F0;
+	padding: 5px;;
+	border: 2px outset #C0C0F0;
+}
