@@ -8,51 +8,50 @@ BODY.page {
 
 DIV.h1 {
 	display: block;
-	font-size: x-large;
+	font-size: 18pt;
+	font-weight: normal;
+	font-family: serif;
 	margin: 10px 0px 0px 10px;
 }
 
 DIV.h2 {
 	display: block;
-	font-size: large;
+	font-size: 16pt;
+	font-weight: normal;
+	font-family: serif;
 	margin: 10px 0px 0px 10px;
 }
 
 DIV.h3 {
 	display: block;
-	font-size: medium;
+	font-size: 14pt;
 	font-weight: bold;
+	font-family: serif;
 	margin: 10px 0px 0px 10px;
 }
 
 DIV.p {
 	display: block;
-	font-size: small;
+	font-size: 12pt;
 	font-weight: normal;
+	font-family: serif;
 	margin: 10px 0px 0px 10px;
 }
 
 DIV.name {
 	display: inline;
-	font-weight: normal;
 	background-color: #F0F0FF;;
 	border: 1px solid #808080;
 }
 
 PRE.code {
 	display: block;
-	font-size: small;
+	font-size: 12pt;
 	font-weight: normal;
 	color: #0000A0;
-	font-size: small;
-	border: 1px solid #808080;
 	background-color: #F0F0C0;
+	border: 1px solid #808080;
 	padding: 5px;;
-	font-weight: normal;
-}
-
-SPAN.codenew {
-	color: #800080;
 }
 
 DIV.code {
@@ -60,11 +59,12 @@ DIV.code {
 	font-weight: normal;
 	font-family: monospace;
 	color: #0000A0;
-	border: 1px solid #808080;
 	background-color: #F0F0C0;;
-	border: 1px solid #808080;;
-	font-weight: normal;;
-	color: #0000A0;
+	border: 1px solid #808080;
+}
+
+SPAN.codenew {
+	color: #800080;
 }
 
 A.nav {
@@ -75,10 +75,10 @@ A.nav {
 }
 
 A.navcurrent {
-	border: 2px outset #808080;
+	border: 1px outset #808080;
 	text-decoration: none;
 	background-color: #F0C0C0;
-	padding: 2px;
+	padding: 3px;
 }
 
 TABLE.page {
@@ -113,6 +113,7 @@ DIV.content {
 }
 
 TD.footer {
+	font-size: 10pt;
 	font-family: monospace;
 	background-color: #C0C0F0;
 	padding: 5px;;
