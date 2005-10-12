@@ -68,16 +68,26 @@ SPAN.codenew {
 }
 
 A.nav {
-	border: 2px outset #808080;
+	color: #000000;
+	border: 1px outset #808080;
 	text-decoration: none;
 	background-color: #C0C0F0;
+	padding: 3px;
+}
+
+A.nav:HOVER {
+	color: #000000;
+	border: 2px outset #808080;
+	text-decoration: none;
+	background-color: #D0D0F0;
 	padding: 2px;
 }
 
 A.navcurrent {
+	color: #804080;
 	border: 1px outset #808080;
 	text-decoration: none;
-	background-color: #F0C0C0;
+	background-color: #F0D0F0;
 	padding: 3px;
 }
 
