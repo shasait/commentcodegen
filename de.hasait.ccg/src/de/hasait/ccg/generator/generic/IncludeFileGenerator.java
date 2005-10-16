@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.3 2005-10-02 01:20:33 a-pi Exp $
+ * $Id: IncludeFileGenerator.java,v 1.4 2005-10-16 15:51:06 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Path;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -33,12 +31,13 @@ import de.hasait.ccg.generator.ICcgGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.util.IOUtil;
+import de.hasait.ccg.util.ResourceUtil;
 import de.hasait.ccg.util.StringUtil;
 import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IncludeFileGenerator implements ICcgGenerator {
     private final String[] KEYWORDS = new String[] { "IncludeFile" };
@@ -54,7 +53,7 @@ public class IncludeFileGenerator implements ICcgGenerator {
     public String generate(final Element element,
             final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
             final ICcgComment ccgComment, final IFile file) throws Exception {
-        String path = XmlUtil.getAttributeString(element, "path");
+        String includeFilePathS = XmlUtil.getAttributeString(element, "file");
         NodeList replaceElements = element.getElementsByTagName("replace");
         Map replacements = new HashMap();
         Element replacement;
@@ -72,8 +71,7 @@ public class IncludeFileGenerator implements ICcgGenerator {
                 }
             }
         }
-        IFile includeFile = ResourcesPlugin.getWorkspace().getRoot().getFile(
-                new Path(path));
+        IFile includeFile = ResourceUtil.getRelativeFile(file, includeFilePathS);
         InputStream inputFileIn = includeFile.getContents();
         Reader inputFileInR = new InputStreamReader(inputFileIn);
         String inputFileContent = IOUtil.readAll(inputFileInR);

@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.2 2005-10-02 00:27:39 a-pi Exp $
+ * $Id: CcgBuilder.java,v 1.3 2005-10-16 15:51:06 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -40,18 +40,18 @@ import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.CcgParserLookupEp;
 import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.parser.ICcgNonComment;
-import de.hasait.ccg.parser.ICcgRoot;
-import de.hasait.ccg.parser.ICcgTreeChild;
 import de.hasait.ccg.parser.ICcgParser;
 import de.hasait.ccg.parser.ICcgParserLookup;
-import de.hasait.ccg.util.IOUtil;
+import de.hasait.ccg.parser.ICcgRoot;
+import de.hasait.ccg.parser.ICcgTreeChild;
 import de.hasait.ccg.util.OidGenerator;
+import de.hasait.ccg.util.ResourceUtil;
 import de.hasait.ccg.util.Util;
 import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "de.hasait.ccg.ccgBuilder";
@@ -137,10 +137,10 @@ public class CcgBuilder extends IncrementalProjectBuilder {
             if (ccgParser != null) {
                 try {
                     deleteMarkers(file);
-                    String source = IOUtil.readFile(file);
+                    String source = ResourceUtil.readFile(file);
                     String newSource = applyGenerators(ccgParser, source, file);
                     if (!Util.equals(source, newSource)) {
-                        IOUtil.writeFile(file, newSource);
+                        ResourceUtil.writeFile(file, newSource);
                     }
                 } catch (Exception e) {
                     addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
@@ -193,8 +193,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
                                     "unknown generator tag: "
                                             + element.getTagName());
                         }
-                        ccgGeneratorResult = ccgGenerator.generate(element,
-                                _ccgGeneratorLookup, _context, ccgComment, file);
+                        ccgGeneratorResult = ccgGenerator
+                                .generate(element, _ccgGeneratorLookup,
+                                        _context, ccgComment, file);
                     } catch (Exception e) {
                         addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
                         return false;

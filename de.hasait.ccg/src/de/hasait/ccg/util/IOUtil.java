@@ -1,5 +1,5 @@
 /*
- * $Id: IOUtil.java,v 1.1.1.1 2005-09-01 23:06:35 a-pi Exp $
+ * $Id: IOUtil.java,v 1.2 2005-10-16 15:51:06 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,20 +17,15 @@
  */
 package de.hasait.ccg.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class IOUtil {
     private IOUtil() {
@@ -60,20 +55,5 @@ public final class IOUtil {
             }
         } while (cread != -1);
         return stringWriter.getBuffer().toString();
-    }
-
-    public static String readFile(IFile file) throws IOException, CoreException {
-        InputStream fileContents = file.getContents();
-        Reader fileContentsReader = new InputStreamReader(fileContents, file
-                .getCharset());
-        String contents = readAll(fileContentsReader);
-        fileContentsReader.close();
-        fileContents.close();
-        return contents;
-    }
-
-    public static void writeFile(IFile file, String contents) throws CoreException {
-        InputStream source = new ByteArrayInputStream(contents.getBytes());
-        file.setContents(source, false, true, null);
     }
 }

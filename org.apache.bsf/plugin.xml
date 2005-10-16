@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.apache.bsf"
+   name="Bsf Plug-in"
+   version="2.3.0"
+   provider-name="Apache Jakarta Project">
+
+   <runtime>
+      <library name="js.jar">
+         <export name="*"/>
+      </library>
+      <library name="bsf.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+</plugin>
