@@ -21,12 +21,14 @@
       <import plugin="org.eclipse.jdt"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.apache.bsf"/>
+      <import plugin="ognl"/>
    </requires>
    <extension
          point="de.hasait.ccg.ccgGenerators">
       <ccgGenerator class="de.hasait.ccg.javag.pattern.BsfGenerator"/>
       <ccgGenerator class="de.hasait.ccg.javag.pattern.EventSupportGenerator"/>
       <ccgGenerator class="de.hasait.ccg.javag.pattern.MemberDelegateGenerator"/>
+      <ccgGenerator class="de.hasait.ccg.javag.pattern.OgnlGenerator"/>
       <ccgGenerator class="de.hasait.ccg.javag.pattern.PropertyGenerator"/>
    </extension>
 

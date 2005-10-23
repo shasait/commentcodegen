@@ -1,5 +1,5 @@
 /*
- * $Id: BsfGenerator.java,v 1.2 2005-10-23 22:21:00 a-pi Exp $
+ * $Id: OgnlGenerator.java,v 1.1 2005-10-23 22:21:00 a-pi Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,7 +17,10 @@
  */
 package de.hasait.ccg.javag.pattern;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import ognl.Ognl;
 
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IFile;
@@ -26,23 +29,26 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.w3c.dom.Element;
 
 import de.hasait.ccg.generator.ICcgGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.util.ResourceUtil;
+import de.hasait.ccg.util.StringUtil;
+import de.hasait.ccg.util.Util;
 import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public class BsfGenerator implements ICcgGenerator {
-    private final String[] KEYWORDS = new String[] { "JavaBsf" };
+public class OgnlGenerator implements ICcgGenerator {
+    private final String[] KEYWORDS = new String[] { "JavaOgnl" };
 
     public String getDescription() {
-        return "Delegates the generation to a script";
+        return "Delegates the generation to Ognl";
     }
 
     public String[] getTagnames() {
@@ -52,18 +58,17 @@ public class BsfGenerator implements ICcgGenerator {
     public String generate(final Element element,
             final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
             final ICcgComment ccgComment, final IFile file) throws Exception {
-        String bsfLanguage = XmlUtil.getAttributeString(element, "language");
-        String bsfScriptFilePathS = XmlUtil.getAttributeString(element, "file",
-                null);
-        String bsfScript;
-        if (bsfScriptFilePathS != null) {
+        String ognlScriptFilePathS = XmlUtil.getAttributeString(element,
+                "file", null);
+        String ognlScript;
+        if (ognlScriptFilePathS != null) {
             // read script from file
             IFile bsfScriptFile = ResourceUtil.getRelativeFile(file,
-                    bsfScriptFilePathS);
-            bsfScript = ResourceUtil.readFile(bsfScriptFile);
+                    ognlScriptFilePathS);
+            ognlScript = ResourceUtil.readFile(bsfScriptFile);
         } else {
             // get script from element's body
-            bsfScript = element.getTextContent();
+            ognlScript = element.getTextContent();
         }
         // parse source file
         IJavaElement javaElement = JavaCore.create(file);
@@ -73,12 +78,11 @@ public class BsfGenerator implements ICcgGenerator {
         CompilationUnit compilationUnit = AST.parseCompilationUnit(
                 (ICompilationUnit) javaElement, true);
         // run script
-        BSFManager manager = new BSFManager();
-        manager.declareBean("e", element, Element.class);
-        manager.declareBean("cu", compilationUnit, CompilationUnit.class);
-        StringBuffer out = new StringBuffer();
-        manager.declareBean("out", out, StringBuffer.class);
-        manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
-        return "\n\t" + out.toString() + "\n\t";
+        Map ognlContext = new HashMap();
+        ognlContext.put("e", element);
+        ognlContext.put("cu", compilationUnit);
+        String result = StringUtil.toString(Ognl.getValue(ognlScript,
+                ognlContext, compilationUnit), "");
+        return "\n\t" + result + "\n\t";
     }
 }
