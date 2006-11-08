@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.4 2006-11-08 20:29:06 concentus Exp $
+ * $Id: CcgTagContentGeneratorAdapter.java,v 1.1 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -15,35 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.hasait.ccg.generator.generic;
+package de.hasait.ccg.generator;
 
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.w3c.dom.Element;
 
-import de.hasait.ccg.generator.ICcgTagGenerator;
-import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public class NopGenerator implements ICcgTagGenerator {
-    private final String[] TAGNAMES = new String[] { "NOP" };
+public class CcgTagContentGeneratorAdapter extends AbstractCcgTagContentGenerator {
+	private final ICcgTagContentGenerator _generator;
 
-    public String getDescription() {
-        return "NOP (no operation) generator - pipe through paramter";
-    }
+	public CcgTagContentGeneratorAdapter(final String description, final String[] tagnames,
+	      final ICcgTagContentGenerator generator) {
+		super(description, tagnames);
+		//
+		assert generator != null;
+		_generator = generator;
+	}
 
-    public String[] getTagnames() {
-        return TAGNAMES;
-    }
-
-    public String generate(final Element element,
-            final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final ICcgComment ccgComment, final IFile file) throws Exception {
-        return element.toString();
-    }
+	public final String generate(final Element element, final ICcgGeneratorLookup transformatorLookup,
+	      final Map context, final ICcgComment ccgComment, final IFile file) throws Exception {
+		return _generator.generate(element, transformatorLookup, context, ccgComment, file);
+	}
 }

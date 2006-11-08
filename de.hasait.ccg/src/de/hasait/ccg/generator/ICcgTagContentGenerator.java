@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgGenerator.java,v 1.2 2006-11-08 20:29:06 concentus Exp $
+ * $Id: ICcgTagContentGenerator.java,v 1.1 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,11 +17,18 @@
  */
 package de.hasait.ccg.generator;
 
+import java.util.Map;
+
+import org.eclipse.core.resources.IFile;
+import org.w3c.dom.Element;
+
+import de.hasait.ccg.parser.ICcgComment;
+
 /**
- * 
  * @author Sebastian Hasait (hasait at web.de)
- * @since 05.11.2006
+ * @version $Revision: 1.1 $
  */
-public interface ICcgGenerator {
-	String getDescription();
+public interface ICcgTagContentGenerator {
+    String generate(Element element, ICcgGeneratorLookup generatorLookup,
+            Map context, ICcgComment ccgComment, IFile file) throws Exception;
 }

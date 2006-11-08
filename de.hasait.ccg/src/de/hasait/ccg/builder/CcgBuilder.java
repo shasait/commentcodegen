@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.3 2005-10-16 15:51:06 a-pi Exp $
+ * $Id: CcgBuilder.java,v 1.4 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.w3c.dom.Element;
 
 import de.hasait.ccg.generator.CcgGeneratorLookupEp;
-import de.hasait.ccg.generator.ICcgGenerator;
+import de.hasait.ccg.generator.ICcgTagGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.CcgParserLookupEp;
 import de.hasait.ccg.parser.ICcgComment;
@@ -51,7 +51,7 @@ import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
     public static final String BUILDER_ID = "de.hasait.ccg.ccgBuilder";
@@ -173,7 +173,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
         ICcgComment ccgComment;
         String command;
         Element element;
-        ICcgGenerator ccgGenerator;
+        ICcgTagGenerator ccgGenerator;
         String ccgGeneratorResult;
         String blockId;
         ICcgNonComment ccgNonComment;
@@ -187,7 +187,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
                     try {
                         element = XmlUtil.buildW3cElementFromString(command);
                         ccgGenerator = _ccgGeneratorLookup
-                                .findTransformator(element.getTagName());
+                                .findGenerator(element.getTagName());
                         if (ccgGenerator == null) {
                             throw new IllegalArgumentException(
                                     "unknown generator tag: "

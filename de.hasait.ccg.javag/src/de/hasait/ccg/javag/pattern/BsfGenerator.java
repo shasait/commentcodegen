@@ -1,5 +1,5 @@
 /*
- * $Id: BsfGenerator.java,v 1.2 2005-10-23 22:21:00 a-pi Exp $
+ * $Id: BsfGenerator.java,v 1.3 2006-11-08 20:29:28 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,14 +21,9 @@ import java.util.Map;
 
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.w3c.dom.Element;
 
-import de.hasait.ccg.generator.ICcgGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.util.ResourceUtil;
@@ -36,49 +31,33 @@ import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class BsfGenerator implements ICcgGenerator {
-    private final String[] KEYWORDS = new String[] { "JavaBsf" };
+public class BsfGenerator extends AbstractJavaAstTagContentGenerator {
+	public BsfGenerator() {
+		super("Delegates the generation to a script", new String[] { "JavaBsf" });
+	}
 
-    public String getDescription() {
-        return "Delegates the generation to a script";
-    }
-
-    public String[] getTagnames() {
-        return KEYWORDS;
-    }
-
-    public String generate(final Element element,
-            final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final ICcgComment ccgComment, final IFile file) throws Exception {
-        String bsfLanguage = XmlUtil.getAttributeString(element, "language");
-        String bsfScriptFilePathS = XmlUtil.getAttributeString(element, "file",
-                null);
-        String bsfScript;
-        if (bsfScriptFilePathS != null) {
-            // read script from file
-            IFile bsfScriptFile = ResourceUtil.getRelativeFile(file,
-                    bsfScriptFilePathS);
-            bsfScript = ResourceUtil.readFile(bsfScriptFile);
-        } else {
-            // get script from element's body
-            bsfScript = element.getTextContent();
-        }
-        // parse source file
-        IJavaElement javaElement = JavaCore.create(file);
-        if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
-            throw new IllegalArgumentException("Not a Java source file");
-        }
-        CompilationUnit compilationUnit = AST.parseCompilationUnit(
-                (ICompilationUnit) javaElement, true);
-        // run script
-        BSFManager manager = new BSFManager();
-        manager.declareBean("e", element, Element.class);
-        manager.declareBean("cu", compilationUnit, CompilationUnit.class);
-        StringBuffer out = new StringBuffer();
-        manager.declareBean("out", out, StringBuffer.class);
-        manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
-        return "\n\t" + out.toString() + "\n\t";
-    }
+	public String generate(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment ccgComment,
+	      IFile file, CompilationUnit compilationUnit) throws Exception {
+		String bsfLanguage = XmlUtil.getAttributeString(element, "language");
+		String bsfScriptFilePathS = XmlUtil.getAttributeString(element, "file", null);
+		String bsfScript;
+		if (bsfScriptFilePathS != null) {
+			// read script from file
+			IFile bsfScriptFile = ResourceUtil.getRelativeFile(file, bsfScriptFilePathS);
+			bsfScript = ResourceUtil.readFile(bsfScriptFile);
+		} else {
+			// get script from element's body
+			bsfScript = element.getTextContent();
+		}
+		// run script
+		BSFManager manager = new BSFManager();
+		manager.declareBean("e", element, Element.class);
+		manager.declareBean("cu", compilationUnit, CompilationUnit.class);
+		StringBuffer out = new StringBuffer();
+		manager.declareBean("out", out, StringBuffer.class);
+		manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
+		return "\n\t" + out.toString() + "\n\t";
+	}
 }

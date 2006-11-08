@@ -38,7 +38,7 @@
          point="org.eclipse.core.resources.natures">
       <runtime>
          <run
-               class="de.hasait.ccg.builder.CcgNature">
+               class="de.hasait.ccg.nature.CcgNature">
          </run>
       </runtime>
       <builder

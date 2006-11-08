@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.4 2005-10-16 15:51:06 a-pi Exp $
+ * $Id: IncludeFileGenerator.java,v 1.5 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import de.hasait.ccg.generator.ICcgGenerator;
+import de.hasait.ccg.generator.ICcgTagGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 import de.hasait.ccg.util.IOUtil;
@@ -37,9 +37,9 @@ import de.hasait.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public class IncludeFileGenerator implements ICcgGenerator {
+public class IncludeFileGenerator implements ICcgTagGenerator {
     private final String[] KEYWORDS = new String[] { "IncludeFile" };
 
     public String getDescription() {

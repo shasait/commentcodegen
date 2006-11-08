@@ -1,5 +1,5 @@
 /*
- * $Id: CcgJetGenerator.skeleton,v 1.2 2005-10-02 00:32:19 a-pi Exp $
+ * $Id: CcgJetGenerator.skeleton,v 1.3 2006-11-08 20:29:28 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -18,7 +18,7 @@
 import java.util.Map;
 import org.w3c.dom.Element;
 import org.eclipse.core.resources.IFile;
-import de.hasait.ccg.generator.ICcgJetGenerator;
+import de.hasait.ccg.generator.ICcgTagContentGenerator;
 import de.hasait.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.ccg.parser.ICcgComment;
 
@@ -26,9 +26,9 @@ import de.hasait.ccg.parser.ICcgComment;
  * ATTENTION: generated code - DO NOT MODIFY.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class CLASS implements ICcgJetGenerator {
+public class CLASS implements ICcgTagContentGenerator {
 	public String generate(final Element e, final ICcgGeneratorLookup l,
             final Map c, final ICcgComment ccgComment, final IFile f) throws Exception {
 		return "";

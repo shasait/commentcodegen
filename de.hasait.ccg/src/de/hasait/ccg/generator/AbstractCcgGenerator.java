@@ -1,7 +1,7 @@
 /*
- * $Id: ICcgJetGenerator.java,v 1.2 2005-10-02 00:32:23 a-pi Exp $
+ * $Id: AbstractCcgGenerator.java,v 1.1 2006-11-08 20:29:06 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2006 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.ccg.generator;
 
-import java.util.Map;
-
-import org.eclipse.core.resources.IFile;
-import org.w3c.dom.Element;
-
-import de.hasait.ccg.parser.ICcgComment;
-
 /**
+ * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @since 05.11.2006
  */
-public interface ICcgJetGenerator {
-    String generate(Element element, ICcgGeneratorLookup generatorLookup,
-            Map context, ICcgComment ccgComment, IFile file) throws Exception;
+public abstract class AbstractCcgGenerator implements ICcgGenerator {
+	private final String _description;
+
+	protected AbstractCcgGenerator(final String description) {
+		super();
+		_description = description;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public final String getDescription() {
+		return _description;
+	}
 }

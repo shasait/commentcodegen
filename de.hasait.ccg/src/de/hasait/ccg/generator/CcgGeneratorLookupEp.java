@@ -1,5 +1,5 @@
 /*
- * $Id: CcgGeneratorLookupEp.java,v 1.1.1.1 2005-09-01 23:06:35 a-pi Exp $
+ * $Id: CcgGeneratorLookupEp.java,v 1.2 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.ccg.util.Util;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
     private final String _extensionPointId;
@@ -49,13 +49,13 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
                     .getExtensionPoint(_extensionPointId);
             IExtension[] extensions = extensionPoint.getExtensions();
             IConfigurationElement[] configurationElements;
-            ICcgGenerator ccgGenerator;
+            ICcgTagGenerator ccgGenerator;
             for (int extensionsI = 0; extensionsI < extensions.length; extensionsI++) {
                 configurationElements = extensions[extensionsI]
                         .getConfigurationElements();
                 for (int configurationElementsI = 0; configurationElementsI < configurationElements.length; configurationElementsI++) {
                     try {
-                        ccgGenerator = (ICcgGenerator) configurationElements[configurationElementsI]
+                        ccgGenerator = (ICcgTagGenerator) configurationElements[configurationElementsI]
                                 .createExecutableExtension("class");
                         _ccgGenerators.add(ccgGenerator);
                     } catch (Exception ce) {
@@ -67,13 +67,13 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
         return _ccgGenerators;
     }
 
-    public ICcgGenerator findTransformator(String keyword) {
+    public ICcgTagGenerator findGenerator(String keyword) {
         List ccgGenerators = getCcgGenerators();
         Iterator ccgGeneratorsI = ccgGenerators.iterator();
-        ICcgGenerator ccgGenerator;
+        ICcgTagGenerator ccgGenerator;
         String[] tagnames;
         while (ccgGeneratorsI.hasNext()) {
-            ccgGenerator = (ICcgGenerator) ccgGeneratorsI.next();
+            ccgGenerator = (ICcgTagGenerator) ccgGeneratorsI.next();
             tagnames = ccgGenerator.getTagnames();
             for (int tagnamesI = 0; tagnamesI < tagnames.length; tagnamesI++) {
                 if (Util.equals(keyword, tagnames[tagnamesI])) {

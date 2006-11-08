@@ -21,7 +21,6 @@
       <import plugin="org.eclipse.jdt"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.apache.bsf"/>
-      <import plugin="ognl"/>
    </requires>
    <extension
          point="de.hasait.ccg.ccgGenerators">

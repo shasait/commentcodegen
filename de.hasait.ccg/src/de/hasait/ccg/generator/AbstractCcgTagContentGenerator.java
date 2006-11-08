@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgGenerator.java,v 1.2 2006-11-08 20:29:06 concentus Exp $
+ * $Id: AbstractCcgTagContentGenerator.java,v 1.1 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -18,10 +18,22 @@
 package de.hasait.ccg.generator;
 
 /**
- * 
  * @author Sebastian Hasait (hasait at web.de)
- * @since 05.11.2006
+ * @version $Revision: 1.1 $
  */
-public interface ICcgGenerator {
-	String getDescription();
+public abstract class AbstractCcgTagContentGenerator extends
+		AbstractCcgGenerator implements ICcgTagGenerator {
+	private final String[] _tagnames;
+
+	protected AbstractCcgTagContentGenerator(final String description,
+			final String[] tagnames) {
+		super(description);
+		//
+		assert tagnames != null && tagnames.length > 0;
+		_tagnames = tagnames;
+	}
+
+	public final String[] getTagnames() {
+		return _tagnames;
+	}
 }

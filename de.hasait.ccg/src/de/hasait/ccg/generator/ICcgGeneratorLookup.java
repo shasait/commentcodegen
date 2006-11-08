@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgGeneratorLookup.java,v 1.1.1.1 2005-09-01 23:06:35 a-pi Exp $
+ * $Id: ICcgGeneratorLookup.java,v 1.2 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,8 +19,8 @@ package de.hasait.ccg.generator;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ICcgGeneratorLookup {
-    ICcgGenerator findTransformator(String keyword);
+    ICcgTagGenerator findGenerator(String keyword);
 }

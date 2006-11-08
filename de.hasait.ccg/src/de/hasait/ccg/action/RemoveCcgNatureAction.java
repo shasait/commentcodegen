@@ -1,5 +1,5 @@
 /*
- * $Id: RemoveCcgNatureAction.java,v 1.1 2005-10-06 19:28:49 a-pi Exp $
+ * $Id: RemoveCcgNatureAction.java,v 1.2 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,12 +26,12 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
-import de.hasait.ccg.builder.CcgNature;
+import de.hasait.ccg.nature.CcgNature;
 import de.hasait.ccg.util.NatureUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RemoveCcgNatureAction implements IObjectActionDelegate {
     private ISelection _selection;

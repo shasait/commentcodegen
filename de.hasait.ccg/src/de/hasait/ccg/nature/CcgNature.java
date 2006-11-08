@@ -1,5 +1,5 @@
 /*
- * $Id: CcgNature.java,v 1.1.1.1 2005-09-01 23:06:36 a-pi Exp $
+ * $Id: CcgNature.java,v 1.1 2006-11-08 20:29:06 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.hasait.ccg.builder;
+package de.hasait.ccg.nature;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -23,9 +23,11 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
+import de.hasait.ccg.builder.CcgBuilder;
+
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1.1.1 $
+ * @version $Revision: 1.1 $
  */
 public class CcgNature implements IProjectNature {
 
