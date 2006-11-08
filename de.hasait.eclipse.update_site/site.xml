@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.hasait.eclipse.common.bsf_feature_2.3.0.jar" id="de.hasait.eclipse.common.bsf_feature" version="2.3.0"/>
-   <feature url="features/de.hasait.eclipse.easycodegen_feature_1.0.2.jar" id="de.hasait.eclipse.easycodegen_feature" version="1.0.2"/>
-   <feature url="features/de.hasait.eclipse.charreplacer_feature_1.0.3.jar" id="de.hasait.eclipse.charreplacer_feature" version="1.0.3"/>
    <feature url="features/de.hasait.eclipse.common_feature_1.0.1.jar" id="de.hasait.eclipse.common_feature" version="1.0.1"/>
+   <feature url="features/org.apache.bsf_feature_2.3.0.jar" id="org.apache.bsf_feature" version="2.3.0"/>
 </site>

@@ -6,7 +6,7 @@
       provider-name="Sebastian Hasait">
 
    <description>
-      Code used by multiple Plug-ins.
+      Code used by multiple Eclipse Plug-ins.
    </description>
 
    <copyright>
@@ -34,7 +34,7 @@ and limitations under the License.
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="de.hasait.eclipse.common.bsf"/>
+      <import plugin="org.apache.bsf"/>
    </requires>
 
    <plugin
