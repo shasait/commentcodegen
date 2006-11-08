@@ -6,12 +6,11 @@
       provider-name="Sebastian Hasait">
 
    <description>
-      Provides the BeanScriptionFramework as Plug-in.
+      Provides the BeanScriptionFramework as Eclipse Plug-in.
    </description>
 
    <copyright>
       Copyright 2005 Apache Software Foundation
-      Copyright 2005 Sebastian Hasait
    </copyright>
 
    <license url="http://www.apache.org/licenses/LICENSE-2.0">
