@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.hasait.eclipse.common.bsf_feature"
-      label="de.hasait.eclipse.common.bsf_feature"
+      id="org.apache.bsf_feature"
+      label="org.apache.bsf_feature"
       version="2.3.0"
       provider-name="Sebastian Hasait">
 
@@ -33,7 +33,7 @@ and limitations under the License.
    </url>
 
    <plugin
-         id="de.hasait.eclipse.common.bsf"
+         id="org.apache.bsf"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
