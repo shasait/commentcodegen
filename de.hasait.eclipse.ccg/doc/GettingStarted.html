@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html version="-//W3C//DTD HTML 4.01 Transitional//EN" lang="en">
+
+<head>
+<title>CommentCodeGen (CCG) - Getting Started</title>
+<link rel="stylesheet" type="text/css" href="styles.css" />
+</head>
+
+<body class="page">
+<table class="page"><tr><td class="header">
+<div class="h1">CommentCodeGen (CCG) - Getting Started</div>
+<div class="p">
+<a class="nav" href="http://sourceforge.net/projects/commentcodegen">sourceforge project page</a>
+<a class="nav" href="index.html">Overview</a>
+<a class="nav" href="Introduction.html">Introduction</a>
+<a class="navcurrent" href="GettingStarted.html">Getting Started</a>
+<a class="nav" href="EclipseDevelopmentSetup.html">Eclipse Development Setup</a>
+</div>
+</td></tr><tr class="content"><td class="content"><div class="content">
+<div class="p">First of all download the latest version of the plugin from
+the <a href="http://sourceforge.net/project/showfiles.php?group_id=146603">files section</a> of
+the <a href="http://sourceforge.net/projects/commentcodegen">sourceforge project page</a> and
+extract it into your <a href="www.eclipse.org">eclipse</a> program folder.</div>
+<table><tr>
+   <td><img src="step2.jpg" /></td>
+   <td>
+<div class="p">Start eclipse and right click onto a project you want to enable commentcodegen for and
+select <div class="name">CommentCodeGen</div>&gt;<div class="name">Add Nature</div>.</div></td></tr></table>
+<div class="p">Now open any supported file (currently <div class="name">.java</div> or <div class="name">.cpp</div>) and insert a comment where you
+want the generated code to be inserted.</div>
+<div class="p">The comment may look like:
+<pre class="code">
+/*
+ * [c]&lt;element attribute=&quot;value&quot; /&gt;[/c]
+ */
+</pre>
+or
+<pre class="code">
+/*
+ * [c]&lt;element attribute=&quot;value&quot;&gt;[/c]
+ * [c]&lt;innerElement /&gt;[/c]
+ * [c]&lt;/element&gt;[/c]
+ */
+</pre>
+The blocks <div class="code">[c] [/c]</div> of a comment are merged - this is to allow comment formatting (like the leading <div class="code">*</div>). May be future versions
+are more intellegent in parsing comments and their formattings so can omit them.</div>
+<div class="p">The outer element type must match a registered generator - it receives the XML as input
+and defines what attributes and inner elements are allowed.</div>
+<div class="h3">For example before save and build:<br />
+<img src="step3a.jpg"/><br />
+After save and build:<br />
+<img src="step3b.jpg"/>
+</div>
+<hr />
+<div class="p">Have fun... questions to Sebastian Hasait (hasait at web.de)</div>
+</div>
+</div></td></tr><tr>
+<td class="footer">$Id: GettingStarted.html,v 1.1 2006-11-08 20:54:47 concentus Exp $</td>
+</tr></table>
+</body>
+
+</html>
