@@ -1,5 +1,5 @@
 /*
- * $Id: BsfGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
+ * $Id: BsfGenerator.java,v 1.3 2006-11-10 14:07:57 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,12 +26,12 @@ import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.ccg.util.ResourceUtil;
-import de.hasait.eclipse.ccg.util.XmlUtil;
+import de.hasait.eclipse.common.ResourceUtil;
+import de.hasait.eclipse.common.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class BsfGenerator extends AbstractJavaAstTagContentGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";

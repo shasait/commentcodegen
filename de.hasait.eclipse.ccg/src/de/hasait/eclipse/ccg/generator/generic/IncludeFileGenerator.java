@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.2 2006-11-10 14:01:01 concentus Exp $
+ * $Id: IncludeFileGenerator.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,14 +30,14 @@ import org.w3c.dom.NodeList;
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.ccg.util.IOUtil;
-import de.hasait.eclipse.ccg.util.ResourceUtil;
-import de.hasait.eclipse.ccg.util.StringUtil;
-import de.hasait.eclipse.ccg.util.XmlUtil;
+import de.hasait.eclipse.common.IOUtil;
+import de.hasait.eclipse.common.ResourceUtil;
+import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.common.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class IncludeFileGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";

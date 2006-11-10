@@ -21,6 +21,7 @@
       <import plugin="org.eclipse.jdt"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.apache.bsf"/>
+      <import plugin="de.hasait.eclipse.common"/>
    </requires>
    
    <extension point="de.hasait.eclipse.ccg.generators">

@@ -1,5 +1,5 @@
 /*
- * $Id: CcgGeneratorLookupEp.java,v 1.2 2006-11-10 14:00:59 concentus Exp $
+ * $Id: CcgGeneratorLookupEp.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,11 +26,11 @@ import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
-import de.hasait.eclipse.ccg.util.Util;
+import de.hasait.eclipse.common.Util;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 	private final String _extensionPointId;

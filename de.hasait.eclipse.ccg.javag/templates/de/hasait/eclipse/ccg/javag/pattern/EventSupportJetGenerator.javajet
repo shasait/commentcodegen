@@ -1,7 +1,7 @@
 <%@ jet
 	package="de.hasait.eclipse.ccg.javag.pattern"
 	class="EventSupportJetGenerator"
-	imports="de.hasait.eclipse.ccg.util.StringUtil de.hasait.eclipse.ccg.util.XmlUtil"
+	imports="de.hasait.eclipse.common.StringUtil de.hasait.eclipse.common.XmlUtil"
 	skeleton="../CcgJetBlockGenerator.skeleton"
 %>
 <%

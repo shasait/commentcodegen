@@ -17,6 +17,7 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="de.hasait.eclipse.ccg"/>
+      <import plugin="de.hasait.eclipse.common"/>
    </requires>
    
    <extension point="de.hasait.eclipse.ccg.parsers">

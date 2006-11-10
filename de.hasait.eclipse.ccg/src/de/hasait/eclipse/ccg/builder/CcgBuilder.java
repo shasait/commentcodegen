@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.2 2006-11-10 14:01:04 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -45,14 +45,14 @@ import de.hasait.eclipse.ccg.parser.ICcgParser;
 import de.hasait.eclipse.ccg.parser.ICcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgRoot;
 import de.hasait.eclipse.ccg.parser.ICcgTreeChild;
-import de.hasait.eclipse.ccg.util.OidGenerator;
-import de.hasait.eclipse.ccg.util.ResourceUtil;
-import de.hasait.eclipse.ccg.util.Util;
-import de.hasait.eclipse.ccg.util.XmlUtil;
+import de.hasait.eclipse.common.OidGenerator;
+import de.hasait.eclipse.common.ResourceUtil;
+import de.hasait.eclipse.common.Util;
+import de.hasait.eclipse.common.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
