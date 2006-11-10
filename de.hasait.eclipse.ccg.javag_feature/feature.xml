@@ -6,7 +6,7 @@
       provider-name="Sebastian Hasait">
 
    <description>
-      Code used by multiple Eclipse Plug-ins.
+      Java code generators for CommentCodeGen.
    </description>
 
    <copyright>
@@ -31,10 +31,14 @@ and limitations under the License.
    </url>
 
    <requires>
+      <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui"/>
       <import plugin="org.apache.bsf"/>
+      <import plugin="de.hasait.eclipse.ccg"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="de.hasait.eclipse.common"/>
    </requires>
 
    <plugin

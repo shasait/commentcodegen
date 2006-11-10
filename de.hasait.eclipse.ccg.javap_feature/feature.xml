@@ -6,7 +6,7 @@
       provider-name="Sebastian Hasait">
 
    <description>
-      Code used by multiple Eclipse Plug-ins.
+      Java parser for CommentCodeGen.
    </description>
 
    <copyright>
