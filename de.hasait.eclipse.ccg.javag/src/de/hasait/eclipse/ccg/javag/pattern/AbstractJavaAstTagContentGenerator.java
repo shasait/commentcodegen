@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractJavaAstTagContentGenerator.java,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: AbstractJavaAstTagContentGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.w3c.dom.Element;
 
-import de.hasait.eclipse.ccg.generator.AbstractCcgTagContentGenerator;
+import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 
@@ -38,25 +38,25 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
  * @author Sebastian Hasait (hasait at web.de)
  * @since 05.11.2006
  */
-public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgTagContentGenerator {
+public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgBlockGenerator {
 	protected AbstractJavaAstTagContentGenerator(String description, String[] tagnames) {
 		super(description, tagnames);
 	}
 
-	public final String generate(Element element, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment ccgComment, IFile file) throws Exception {
+	public final String generateBlock(Element config, ICcgGeneratorLookup generatorLookup, Map context,
+	      ICcgComment comment, IFile file) throws Exception {
 		// parse source file
 		IJavaElement javaElement = JavaCore.create(file);
 		if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
 			throw new IllegalArgumentException("Not a Java source file");
 		}
-		ASTParser astParser = ASTParser.newParser(AST.JLS3);
-		astParser.setSource((ICompilationUnit) javaElement);
-		astParser.setResolveBindings(true);
-		CompilationUnit compilationUnit = (CompilationUnit) astParser.createAST(null);
-		return generate(element, generatorLookup, context, ccgComment, file, compilationUnit);
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setSource((ICompilationUnit) javaElement);
+		parser.setResolveBindings(true);
+		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+		return generateBlock(config, generatorLookup, context, comment, file, compilationUnit);
 	}
 
-	public abstract String generate(Element element, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment ccgComment, IFile file, CompilationUnit compilationUnit) throws Exception;
+	public abstract String generateBlock(Element config, ICcgGeneratorLookup generatorLookup, Map context,
+	      ICcgComment comment, IFile file, CompilationUnit compilationUnit) throws Exception;
 }

@@ -2,7 +2,7 @@
 	package="de.hasait.eclipse.ccg.javag.pattern"
 	class="PropertyJetGenerator"
 	imports="de.hasait.eclipse.ccg.util.StringUtil de.hasait.eclipse.ccg.util.XmlUtil"
-	skeleton="../CcgJetGenerator.skeleton"
+	skeleton="../CcgJetBlockGenerator.skeleton"
 %>
 <%
 String type = XmlUtil.getAttributeString(e, "type");

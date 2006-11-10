@@ -1,5 +1,5 @@
 /*
- * $Id: BsfGenerator.java,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: BsfGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,14 +31,18 @@ import de.hasait.eclipse.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class BsfGenerator extends AbstractJavaAstTagContentGenerator {
+public final class BsfGenerator extends AbstractJavaAstTagContentGenerator {
+	private static final String DESCRIPTION = "Delegates the generation to a script";
+
+	private static final String[] TAG_NAMES = new String[] { "JavaBsf" };
+
 	public BsfGenerator() {
-		super("Delegates the generation to a script", new String[] { "JavaBsf" });
+		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generate(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment ccgComment,
+	public String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment comment,
 	      IFile file, CompilationUnit compilationUnit) throws Exception {
 		String bsfLanguage = XmlUtil.getAttributeString(element, "language");
 		String bsfScriptFilePathS = XmlUtil.getAttributeString(element, "file", null);

@@ -1,5 +1,5 @@
 /*
- * $Id: CcgJetGenerator.skeleton,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: ICcgBlockGenerator.java,v 1.1 2006-11-10 14:00:59 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -15,22 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import java.util.Map;
-import org.w3c.dom.Element;
-import org.eclipse.core.resources.IFile;
-import de.hasait.eclipse.ccg.generator.ICcgTagContentGenerator;
-import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.ccg.parser.ICcgComment;
+package de.hasait.eclipse.ccg.generator;
 
 /**
- * ATTENTION: generated code - DO NOT MODIFY.
+ * Generates a code block.
  * 
  * @author Sebastian Hasait (hasait at web.de)
  * @version $Revision: 1.1 $
  */
-public class CLASS implements ICcgTagContentGenerator {
-	public String generate(final Element e, final ICcgGeneratorLookup l,
-            final Map c, final ICcgComment ccgComment, final IFile f) throws Exception {
-		return "";
-	}
+public interface ICcgBlockGenerator extends ICcgGenerator, ICcgBlockGeneratorGenerate {
+	// only merging two interfaces
 }

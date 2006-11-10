@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.1 2006-11-08 20:54:50 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.2 2006-11-10 14:01:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.CcgGeneratorLookupEp;
-import de.hasait.eclipse.ccg.generator.ICcgTagGenerator;
+import de.hasait.eclipse.ccg.generator.ICcgBlockGenerator;
+import de.hasait.eclipse.ccg.generator.ICcgGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.CcgParserLookupEp;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
@@ -51,227 +52,194 @@ import de.hasait.eclipse.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
-    public static final String BUILDER_ID = "de.hasait.eclipse.ccg.ccgBuilder";
+	/**
+	 * ID of this builder.
+	 */
+	public static final String BUILDER_ID = "de.hasait.eclipse.ccg.builder";
 
-    private static final String MARKER_TYPE = "de.hasait.eclipse.ccg.ccgProblem";
+	private static final String MARKER_TYPE = "de.hasait.eclipse.ccg.problem";
 
-    public static final String CCG_PARSERS_EXTENSIONPOINT_ID = "de.hasait.eclipse.ccg.ccgParsers";
+	/**
+	 * ID of {@link ICcgParser} extension point.
+	 */
+	public static final String PARSERS_EXTENSION_POINT_ID = "de.hasait.eclipse.ccg.parsers";
 
-    private final ICcgParserLookup _ccgParserLookup = new CcgParserLookupEp(
-            CCG_PARSERS_EXTENSIONPOINT_ID);
+	private final ICcgParserLookup _parserLookup = new CcgParserLookupEp(PARSERS_EXTENSION_POINT_ID);
 
-    public static final String CCG_GENERATORS_EXTENSIONPOINT_ID = "de.hasait.eclipse.ccg.ccgGenerators";
+	/**
+	 * ID of {@link ICcgGenerator} extension point.
+	 */
+	public static final String GENERATORS_EXTENSION_POINT_ID = "de.hasait.eclipse.ccg.generators";
 
-    private final ICcgGeneratorLookup _ccgGeneratorLookup = new CcgGeneratorLookupEp(
-            CCG_GENERATORS_EXTENSIONPOINT_ID);
+	private final ICcgGeneratorLookup _generatorLookup = new CcgGeneratorLookupEp(GENERATORS_EXTENSION_POINT_ID);
 
-    private final Map _context = new HashMap();
+	private final Map _context = new HashMap();
 
-    private final IResourceDeltaVisitor _resourceDeltaVisitor = new IResourceDeltaVisitor() {
-        public boolean visit(final IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-            switch (delta.getKind()) {
-            case IResourceDelta.ADDED:
-                applyGenerators(resource);
-                break;
-            case IResourceDelta.REMOVED:
-                break;
-            case IResourceDelta.CHANGED:
-                applyGenerators(resource);
-                break;
-            }
-            return true;
-        }
-    };
+	private final IResourceDeltaVisitor _resourceDeltaVisitor = new IResourceDeltaVisitor() {
+		public boolean visit(final IResourceDelta delta) throws CoreException {
+			IResource resource = delta.getResource();
+			switch (delta.getKind()) {
+			case IResourceDelta.ADDED:
+				applyGenerators(resource);
+				break;
+			case IResourceDelta.REMOVED:
+				break;
+			case IResourceDelta.CHANGED:
+				applyGenerators(resource);
+				break;
+			}
+			return true;
+		}
+	};
 
-    private final IResourceVisitor _resourceVisitor = new IResourceVisitor() {
-        public boolean visit(final IResource resource) {
-            applyGenerators(resource);
-            return true;
-        }
-    };
+	private final IResourceVisitor _resourceVisitor = new IResourceVisitor() {
+		public boolean visit(final IResource resource) {
+			applyGenerators(resource);
+			return true;
+		}
+	};
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-     *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
-     */
-    protected IProject[] build(final int kind, final Map args,
-            final IProgressMonitor monitor) throws CoreException {
-        if (kind == FULL_BUILD) {
-            fullBuild(monitor);
-        } else {
-            IResourceDelta delta = getDelta(getProject());
-            if (delta == null) {
-                fullBuild(monitor);
-            } else {
-                incrementalBuild(delta, monitor);
-            }
-        }
-        return null;
-    }
+	protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
+		if (kind == FULL_BUILD) {
+			fullBuild();
+		} else {
+			IResourceDelta delta = getDelta(getProject());
+			if (delta == null) {
+				fullBuild();
+			} else {
+				incrementalBuild(delta);
+			}
+		}
+		return null;
+	}
 
-    protected void fullBuild(final IProgressMonitor monitor)
-            throws CoreException {
-        try {
-            getProject().accept(_resourceVisitor);
-        } catch (CoreException e) {
-            // ignore
-        }
-    }
+	protected void fullBuild() throws CoreException {
+		getProject().accept(_resourceVisitor);
+	}
 
-    protected void incrementalBuild(final IResourceDelta delta,
-            IProgressMonitor monitor) throws CoreException {
-        delta.accept(_resourceDeltaVisitor);
-    }
+	protected void incrementalBuild(final IResourceDelta delta) throws CoreException {
+		delta.accept(_resourceDeltaVisitor);
+	}
 
-    private void applyGenerators(final IResource resource) {
-        if (resource instanceof IFile) {
-            IFile file = (IFile) resource;
-            ICcgParser ccgParser = _ccgParserLookup.findCcgParser(file
-                    .getFileExtension());
-            if (ccgParser != null) {
-                try {
-                    deleteMarkers(file);
-                    String source = ResourceUtil.readFile(file);
-                    String newSource = applyGenerators(ccgParser, source, file);
-                    if (!Util.equals(source, newSource)) {
-                        ResourceUtil.writeFile(file, newSource);
-                    }
-                } catch (Exception e) {
-                    addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-                }
-            }
-        }
-    }
+	private void applyGenerators(final IResource resource) {
+		if (resource instanceof IFile) {
+			IFile file = (IFile) resource;
+			ICcgParser parser = _parserLookup.findParser(file.getFileExtension());
+			if (parser != null) {
+				try {
+					deleteMarkers(file);
+					String source = ResourceUtil.readFile(file);
+					String newSource = executeGenerators(parser, source, file);
+					if (!Util.equals(source, newSource)) {
+						ResourceUtil.writeFile(file, newSource);
+					}
+				} catch (Exception e) {
+					addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
+				}
+			}
+		}
+	}
 
-    private String applyGenerators(final ICcgParser ccgParser,
-            final String source, final IFile file) {
-        ICcgRoot ccgRoot;
-        try {
-            ccgRoot = ccgParser.parse(source);
-        } catch (Exception e) {
-            addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-            return source;
-        }
-        //
-        if (!applyTransformators(ccgRoot, file)) {
-            return source;
-        }
-        //
-        return ccgRoot.getSource();
-    }
+	private String executeGenerators(final ICcgParser parser, final String source, final IFile file) {
+		ICcgRoot root;
+		try {
+			root = parser.parse(source);
+		} catch (Exception e) {
+			addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
+			return source;
+		}
+		//
+		if (!executeGenerators(root, file)) {
+			return source;
+		}
+		//
+		return root.getSource();
+	}
 
-    private boolean applyTransformators(final ICcgRoot ccgRoot, final IFile file) {
-        _context.clear();
-        int index = 0;
-        ICcgTreeChild child;
-        ICcgComment ccgComment;
-        String command;
-        Element element;
-        ICcgTagGenerator ccgGenerator;
-        String ccgGeneratorResult;
-        String blockId;
-        ICcgNonComment ccgNonComment;
-        ICcgComment blockEnd;
-        while (index < ccgRoot.childNodesSize()) {
-            child = ccgRoot.getChildNode(index);
-            if (child instanceof ICcgComment) {
-                ccgComment = (ICcgComment) child;
-                command = ccgComment.getCommand();
-                if (command != null) {
-                    try {
-                        element = XmlUtil.buildW3cElementFromString(command);
-                        ccgGenerator = _ccgGeneratorLookup
-                                .findGenerator(element.getTagName());
-                        if (ccgGenerator == null) {
-                            throw new IllegalArgumentException(
-                                    "unknown generator tag: "
-                                            + element.getTagName());
-                        }
-                        ccgGeneratorResult = ccgGenerator
-                                .generate(element, _ccgGeneratorLookup,
-                                        _context, ccgComment, file);
-                    } catch (Exception e) {
-                        addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-                        return false;
-                    }
-                    blockId = ccgComment.getBlockStart();
-                    ccgNonComment = null;
-                    blockEnd = null;
-                    if (blockId != null) {
-                        int a = 1;
-                        while (index + a < ccgRoot.childNodesSize()
-                                && blockEnd == null) {
-                            child = ccgRoot.getChildNode(index + a);
-                            if (child instanceof ICcgComment
-                                    && Util.equals(((ICcgComment) child)
-                                            .getBlockEnd(), blockId)) {
-                                blockEnd = (ICcgComment) child;
-                            } else {
-                                ccgRoot.removeChildNode(index + a);
-                            }
-                        }
-                    }
-                    if (blockId == null) {
-                        blockId = OidGenerator.getInstance().getOid();
-                    }
-                    if (ccgNonComment == null) {
-                        ccgNonComment = ccgRoot.createNonComment();
-                        ccgRoot.insertChildNode(index + 1, ccgNonComment);
-                    }
-                    if (blockEnd == null) {
-                        blockEnd = ccgRoot.createComment();
-                        ccgRoot.insertChildNode(index + 2, blockEnd);
-                    }
-                    ccgComment.setBlockStart(blockId);
-                    ccgNonComment.setSource(ccgGeneratorResult);
-                    blockEnd.setBlockEnd(blockId);
-                }
-            }
-            index++;
-        }
-        return true;
-    }
+	private boolean executeGenerators(final ICcgRoot root, final IFile file) {
+		_context.clear();
+		int index = 0;
+		while (index < root.childNodesSize()) {
+			ICcgTreeChild child = root.getChildNode(index);
+			if (child instanceof ICcgComment) {
+				ICcgComment blockStartComment = (ICcgComment) child;
+				String command = blockStartComment.getCommand();
+				if (command != null) {
+					String block;
+					try {
+						Element element = XmlUtil.buildW3cElementFromString(command);
+						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(element.getTagName());
+						if (generator == null) {
+							throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());
+						}
+						block = generator.generateBlock(element, _generatorLookup, _context, blockStartComment, file);
+					} catch (Exception e) {
+						addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
+						return false;
+					}
+					String blockId = blockStartComment.getBlockStart();
+					ICcgComment blockEndComment = null;
+					if (blockId != null) {
+						int a = 1;
+						while (index + a < root.childNodesSize() && blockEndComment == null) {
+							child = root.getChildNode(index + a);
+							if (child instanceof ICcgComment && Util.equals(((ICcgComment) child).getBlockEnd(), blockId)) {
+								blockEndComment = (ICcgComment) child;
+							} else {
+								root.removeChildNode(index + a);
+							}
+						}
+					}
+					if (blockId == null) {
+						blockId = OidGenerator.getInstance().getOid();
+					}
+					ICcgNonComment blockNonComment = root.createNonComment();
+					root.insertChildNode(index + 1, blockNonComment);
+					if (blockEndComment == null) {
+						blockEndComment = root.createComment();
+						root.insertChildNode(index + 2, blockEndComment);
+					}
+					blockStartComment.setBlockStart(blockId);
+					blockNonComment.setSource(block);
+					blockEndComment.setBlockEnd(blockId);
+				}
+			}
+			index++;
+		}
+		return true;
+	}
 
-    private void addMarker(IFile file, Exception exception, int lineNumber,
-            int severity) {
-        StringWriter messageWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(messageWriter);
-        if (exception != null) {
-            printWriter.println(exception.getMessage());
-            exception.printStackTrace(printWriter);
-        } else {
-            printWriter.println("Exception is null");
-        }
-        addMarker(file, messageWriter.getBuffer().toString(), lineNumber,
-                severity);
-    }
+	private void addMarker(IFile file, Exception exception, int lineNumber, int severity) {
+		StringWriter messageWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(messageWriter);
+		if (exception != null) {
+			printWriter.println(exception.getMessage());
+			exception.printStackTrace(printWriter);
+		} else {
+			printWriter.println("Exception is null");
+		}
+		addMarker(file, messageWriter.getBuffer().toString(), lineNumber, severity);
+	}
 
-    private void addMarker(IFile file, String message, int lineNumber,
-            int severity) {
-        try {
-            IMarker marker = file.createMarker(MARKER_TYPE);
-            marker.setAttribute(IMarker.MESSAGE, message);
-            marker.setAttribute(IMarker.SEVERITY, severity);
-            if (lineNumber < 1) {
-                lineNumber = 1;
-            }
-            marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-        } catch (CoreException e) {
-            // ignore
-        }
-    }
+	private void addMarker(IFile file, String message, int lineNumber, int severity) {
+		try {
+			IMarker marker = file.createMarker(MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, message);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber < 1 ? 1 : lineNumber);
+		} catch (CoreException e) {
+			// ignore
+		}
+	}
 
-    private void deleteMarkers(IFile file) {
-        try {
-            file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-        } catch (CoreException e) {
-            // ignore
-        }
-    }
+	private void deleteMarkers(IFile file) {
+		try {
+			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+		} catch (CoreException e) {
+			// ignore
+		}
+	}
 }

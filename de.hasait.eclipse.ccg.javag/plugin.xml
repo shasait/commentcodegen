@@ -3,7 +3,7 @@
 <plugin
    id="de.hasait.eclipse.ccg.javag"
    name="JavaGenerator Plug-in"
-   version="1.0.1"
+   version="2.0.0"
    provider-name="Sebastian Hasait"
    class="de.hasait.eclipse.ccg.javag.JavagPlugin">
 
@@ -22,13 +22,13 @@
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="org.apache.bsf"/>
    </requires>
-   <extension
-         point="de.hasait.eclipse.ccg.ccgGenerators">
-      <ccgGenerator class="de.hasait.eclipse.ccg.javag.pattern.BsfGenerator"/>
-      <ccgGenerator class="de.hasait.eclipse.ccg.javag.pattern.EventSupportGenerator"/>
-      <ccgGenerator class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateGenerator"/>
-      <ccgGenerator class="de.hasait.eclipse.ccg.javag.pattern.OgnlGenerator"/>
-      <ccgGenerator class="de.hasait.eclipse.ccg.javag.pattern.PropertyGenerator"/>
+   
+   <extension point="de.hasait.eclipse.ccg.generators">
+      <generator class="de.hasait.eclipse.ccg.javag.pattern.BsfGenerator"/>
+      <generator class="de.hasait.eclipse.ccg.javag.pattern.EventSupportGenerator"/>
+      <generator class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateGenerator"/>
+      <generator class="de.hasait.eclipse.ccg.javag.pattern.OgnlGenerator"/>
+      <generator class="de.hasait.eclipse.ccg.javag.pattern.PropertyGenerator"/>
    </extension>
 
 </plugin>

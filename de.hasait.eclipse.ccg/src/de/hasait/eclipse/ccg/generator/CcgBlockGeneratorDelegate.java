@@ -1,7 +1,7 @@
 /*
- * $Id: CcgTagContentGeneratorAdapter.java,v 1.2 2006-11-10 14:00:59 concentus Exp $
+ * $Id: CcgBlockGeneratorDelegate.java,v 1.1 2006-11-10 14:00:58 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2006 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.eclipse.ccg.generator;
 
 import java.util.Map;
@@ -25,22 +26,24 @@ import org.w3c.dom.Element;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
+ * Delegates generation to an instance of {@link ICcgBlockGeneratorGenerate}.
+ * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
+ * @since 10.11.2006
  */
-public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator {
-	private final ICcgBlockGenerator _generator;
+public class CcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
+	private final ICcgBlockGeneratorGenerate _generate;
 
-	public CcgTagContentGeneratorAdapter(final String description, final String[] tagnames,
-	      final ICcgBlockGenerator generator) {
-		super(description, tagnames);
+	protected CcgBlockGeneratorDelegate(String description, String[] tagNames, ICcgBlockGeneratorGenerate generate) {
+		super(description, tagNames);
 		//
-		assert generator != null;
-		_generator = generator;
+		assert generate != null;
+		_generate = generate;
 	}
 
-	public final String generate(final Element element, final ICcgGeneratorLookup transformatorLookup,
-	      final Map context, final ICcgComment ccgComment, final IFile file) throws Exception {
-		return _generator.generateBlock(element, transformatorLookup, context, ccgComment, file);
+	public final String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context,
+	      ICcgComment ccgComment, IFile file) throws Exception {
+		return _generate.generateBlock(element, generatorLookup, context, ccgComment, file);
 	}
 }

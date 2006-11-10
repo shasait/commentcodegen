@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgGeneratorLookup.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: ICcgGeneratorLookup.java,v 1.2 2006-11-10 14:00:59 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,8 +19,8 @@ package de.hasait.eclipse.ccg.generator;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ICcgGeneratorLookup {
-    ICcgTagGenerator findGenerator(String keyword);
+	ICcgBlockGenerator findBlockGenerator(String tagName);
 }

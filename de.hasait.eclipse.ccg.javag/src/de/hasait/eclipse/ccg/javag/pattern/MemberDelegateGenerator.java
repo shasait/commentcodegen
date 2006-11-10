@@ -1,5 +1,5 @@
 /*
- * $Id: MemberDelegateGenerator.java,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: MemberDelegateGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -40,15 +40,19 @@ import de.hasait.eclipse.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class MemberDelegateGenerator extends AbstractJavaAstTagContentGenerator {
-	public MemberDelegateGenerator(String description, String[] tagnames) {
-		super("Member delegate pattern generator - adds public method delegates", new String[] { "JavaMemberDelegate" });
+public final class MemberDelegateGenerator extends AbstractJavaAstTagContentGenerator {
+	private static final String DESCRIPTION = "Member delegate pattern generator - adds public method delegates";
+
+	private static final String[] TAG_NAMES = new String[] { "JavaMemberDelegate" };
+
+	public MemberDelegateGenerator() {
+		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generate(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment ccgComment,
-	      IFile file, CompilationUnit compilationUnit) throws Exception {
+	public String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context,
+	      ICcgComment ccgComment, IFile file, CompilationUnit compilationUnit) throws Exception {
 		String name = XmlUtil.getAttributeString(element, "name");
 		Iterator types = compilationUnit.types().iterator();
 		AbstractTypeDeclaration abstractTypeDeclaration;

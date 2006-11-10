@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyGenerator.java,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: PropertyGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,15 +17,18 @@
  */
 package de.hasait.eclipse.ccg.javag.pattern;
 
-import de.hasait.eclipse.ccg.generator.CcgTagContentGeneratorAdapter;
+import de.hasait.eclipse.ccg.generator.CcgBlockGeneratorDelegate;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class PropertyGenerator extends CcgTagContentGeneratorAdapter {
-    public PropertyGenerator() {
-        super("Bean Property", new String[] { "JavaProperty" },
-                new PropertyJetGenerator());
-    }
+public final class PropertyGenerator extends CcgBlockGeneratorDelegate {
+	private static final String DESCRIPTION = "Bean Property";
+
+	private static final String[] TAG_NAMES = new String[] { "JavaProperty" };
+
+	public PropertyGenerator() {
+		super(DESCRIPTION, TAG_NAMES, new PropertyJetGenerator());
+	}
 }

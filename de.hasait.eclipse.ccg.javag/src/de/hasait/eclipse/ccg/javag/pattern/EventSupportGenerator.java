@@ -1,5 +1,5 @@
 /*
- * $Id: EventSupportGenerator.java,v 1.1 2006-11-08 22:17:24 concentus Exp $
+ * $Id: EventSupportGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,15 +17,18 @@
  */
 package de.hasait.eclipse.ccg.javag.pattern;
 
-import de.hasait.eclipse.ccg.generator.CcgTagContentGeneratorAdapter;
+import de.hasait.eclipse.ccg.generator.CcgBlockGeneratorDelegate;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class EventSupportGenerator extends CcgTagContentGeneratorAdapter {
-    public EventSupportGenerator() {
-        super("EventSupport", new String[] { "JavaEventSupport" },
-                new EventSupportJetGenerator());
-    }
+public final class EventSupportGenerator extends CcgBlockGeneratorDelegate {
+	private static final String DESCRIPTION = "EventSupport";
+
+	private static final String[] TAG_NAMES = new String[] { "JavaEventSupport" };
+
+	public EventSupportGenerator() {
+		super(DESCRIPTION, TAG_NAMES, new EventSupportJetGenerator());
+	}
 }

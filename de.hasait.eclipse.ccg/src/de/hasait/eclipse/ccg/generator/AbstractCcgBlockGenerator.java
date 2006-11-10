@@ -1,7 +1,7 @@
 /*
- * $Id: AbstractCcgTagContentGenerator.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: AbstractCcgBlockGenerator.java,v 1.1 2006-11-10 14:00:59 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2006 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.eclipse.ccg.generator;
 
 /**
+ * 
  * @author Sebastian Hasait (hasait at web.de)
  * @version $Revision: 1.1 $
+ * @since 10.11.2006
  */
-public abstract class AbstractCcgTagContentGenerator extends
-		AbstractCcgGenerator implements ICcgTagGenerator {
-	private final String[] _tagnames;
-
-	protected AbstractCcgTagContentGenerator(final String description,
-			final String[] tagnames) {
-		super(description);
-		//
-		assert tagnames != null && tagnames.length > 0;
-		_tagnames = tagnames;
-	}
-
-	public final String[] getTagnames() {
-		return _tagnames;
+public abstract class AbstractCcgBlockGenerator extends AbstractCcgGenerator implements ICcgBlockGenerator {
+	protected AbstractCcgBlockGenerator(String description, String[] tagNames) {
+		super(description, tagNames);
 	}
 }

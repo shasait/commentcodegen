@@ -3,7 +3,7 @@
 <schema targetNamespace="de.hasait.eclipse.ccg">
 <annotation>
       <appInfo>
-         <meta.schema plugin="de.hasait.eclipse.ccg" id="ccgGenerators" name="CommentCodeGen Generators"/>
+         <meta.schema plugin="de.hasait.eclipse.ccg" id="generators" name="CommentCodeGen Generators"/>
       </appInfo>
       <documentation>
          [Enter description of this extension point.]
@@ -13,7 +13,7 @@
    <element name="extension">
       <complexType>
          <sequence minOccurs="0" maxOccurs="unbounded">
-            <element ref="ccgGenerator"/>
+            <element ref="generator"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,7 +42,7 @@
       </complexType>
    </element>
 
-   <element name="ccgGenerator">
+   <element name="generator">
       <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>

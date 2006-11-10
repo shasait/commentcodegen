@@ -17,36 +17,28 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
+      <import plugin="de.hasait.eclipse.common"/>
    </requires>
-   <extension-point id="ccgGenerators" name="CommentCodeGen Generators" schema="schema/ccgGenerators.exsd"/>
-   <extension-point id="ccgParsers" name="CommentCodeGen Parsers" schema="schema/ccgParsers.exsd"/>
+   <extension-point id="generators" name="CommentCodeGen Generators" schema="schema/generators.exsd"/>
+   <extension-point id="parsers" name="CommentCodeGen Parsers" schema="schema/parsers.exsd"/>
 
-   <extension
-         id="ccgBuilder"
-         name="CommentCodeGen Project Builder"
-         point="org.eclipse.core.resources.builders">
-      <builder
-            hasNature="true">
-         <run
-               class="de.hasait.eclipse.ccg.builder.CcgBuilder">
+   <extension id="builder" name="CommentCodeGen Project Builder" point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="de.hasait.eclipse.ccg.builder.CcgBuilder">
          </run>
       </builder>
    </extension>
-   <extension
-         id="ccgNature"
-         name="CommentCodeGen Project Nature"
-         point="org.eclipse.core.resources.natures">
+   
+   <extension id="nature" name="CommentCodeGen Project Nature" point="org.eclipse.core.resources.natures">
       <runtime>
-         <run
-               class="de.hasait.eclipse.ccg.nature.CcgNature">
+         <run class="de.hasait.eclipse.ccg.nature.CcgNature">
          </run>
       </runtime>
-      <builder
-            id="de.hasait.eclipse.ccg.ccgBuilder">
+      <builder id="de.hasait.eclipse.ccg.builder">
       </builder>
    </extension>
-   <extension
-         point="org.eclipse.ui.popupMenus">
+   
+   <extension point="org.eclipse.ui.popupMenus">
       <objectContribution
             adaptable="true"
             objectClass="org.eclipse.core.resources.IProject"
@@ -82,21 +74,17 @@
   			</action>
       </objectContribution>
    </extension>
-   <extension
-         id="ccgProblem"
-         name="CommentCodeGen Problem"
-         point="org.eclipse.core.resources.markers">
-      <super
-            type="org.eclipse.core.resources.problemmarker">
+   
+   <extension id="problem" name="CommentCodeGen Problem" point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker">
       </super>
-      <persistent
-            value="true">
+      <persistent value="true">
       </persistent>
    </extension>
-   <extension
-         point="de.hasait.eclipse.ccg.ccgGenerators">
-      <ccgGenerator class="de.hasait.eclipse.ccg.generator.generic.NopGenerator"/>
-      <ccgGenerator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileGenerator"/>
+   
+   <extension point="de.hasait.eclipse.ccg.generators">
+      <generator class="de.hasait.eclipse.ccg.generator.generic.NopGenerator"/>
+      <generator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileGenerator"/>
    </extension>
 
 </plugin>

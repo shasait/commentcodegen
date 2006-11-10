@@ -1,5 +1,5 @@
 /*
- * $Id: AddCcgNatureAction.java,v 1.1 2006-11-08 20:54:51 concentus Exp $
+ * $Id: AddCcgNatureAction.java,v 1.2 2006-11-10 14:01:01 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,68 +17,18 @@
  */
 package de.hasait.eclipse.ccg.action;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IAdaptable;
-import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.IObjectActionDelegate;
-import org.eclipse.ui.IWorkbenchPart;
-
 import de.hasait.eclipse.ccg.nature.CcgNature;
-import de.hasait.eclipse.ccg.util.NatureUtil;
+import de.hasait.eclipse.common.nature.AbstractAddNatureAction;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class AddCcgNatureAction implements IObjectActionDelegate {
-    private ISelection _selection;
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
-     */
-    public void run(IAction action) {
-        if (_selection instanceof IStructuredSelection) {
-            Object element = ((IStructuredSelection) _selection)
-                    .getFirstElement();
-            IProject project = null;
-            if (element instanceof IProject) {
-                project = (IProject) element;
-            } else if (element instanceof IAdaptable) {
-                project = (IProject) ((IAdaptable) element)
-                        .getAdapter(IProject.class);
-            }
-            if (project != null) {
-                try {
-                    NatureUtil.addNature(project, CcgNature.NATURE_ID);
-                } catch (CoreException e) {
-                    // ignore
-                }
-            }
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-     *      org.eclipse.jface.viewers.ISelection)
-     */
-    public void selectionChanged(IAction action, ISelection selection) {
-        _selection = selection;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-     *      org.eclipse.ui.IWorkbenchPart)
-     */
-    public void setActivePart(IAction action, IWorkbenchPart targetPart) {
-        // ignore
-    }
+public final class AddCcgNatureAction extends AbstractAddNatureAction {
+	/**
+	 * Constructor.
+	 */
+	public AddCcgNatureAction() {
+		super(CcgNature.NATURE_ID);
+	}
 }

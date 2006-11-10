@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: NopGenerator.java,v 1.2 2006-11-10 14:01:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,28 +22,28 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.w3c.dom.Element;
 
-import de.hasait.eclipse.ccg.generator.ICcgTagGenerator;
+import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class NopGenerator implements ICcgTagGenerator {
-    private final String[] TAGNAMES = new String[] { "NOP" };
+public final class NopGenerator extends AbstractCcgBlockGenerator {
+	private static final String DESCRIPTION = "NOP (no operation) generator - pipe through paramter";
 
-    public String getDescription() {
-        return "NOP (no operation) generator - pipe through paramter";
-    }
+	private static final String[] TAG_NAMES = new String[] { "NOP" };
 
-    public String[] getTagnames() {
-        return TAGNAMES;
-    }
+	/**
+	 * Constructor.
+	 */
+	public NopGenerator() {
+		super(DESCRIPTION, TAG_NAMES);
+	}
 
-    public String generate(final Element element,
-            final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final ICcgComment ccgComment, final IFile file) throws Exception {
-        return element.toString();
-    }
+	public String generateBlock(final Element element, final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
+	      final ICcgComment ccgComment, final IFile file) throws Exception {
+		return element.toString();
+	}
 }

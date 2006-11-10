@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: IncludeFileGenerator.java,v 1.2 2006-11-10 14:01:01 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import de.hasait.eclipse.ccg.generator.ICcgTagGenerator;
+import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.util.IOUtil;
@@ -37,46 +37,43 @@ import de.hasait.eclipse.ccg.util.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public class IncludeFileGenerator implements ICcgTagGenerator {
-    private final String[] KEYWORDS = new String[] { "IncludeFile" };
+public final class IncludeFileGenerator extends AbstractCcgBlockGenerator {
+	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
 
-    public String getDescription() {
-        return "Include file generator - includes the file specified as parameter with optional replacing keywords";
-    }
+	private static final String[] TAG_NAMES = new String[] { "IncludeFile" };
 
-    public String[] getTagnames() {
-        return KEYWORDS;
-    }
+	/**
+	 * Constructor.
+	 */
+	public IncludeFileGenerator() {
+		super(DESCRIPTION, TAG_NAMES);
+	}
 
-    public String generate(final Element element,
-            final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-            final ICcgComment ccgComment, final IFile file) throws Exception {
-        String includeFilePathS = XmlUtil.getAttributeString(element, "file");
-        NodeList replaceElements = element.getElementsByTagName("replace");
-        Map replacements = new HashMap();
-        Element replacement;
-        int anon = 0;
-        for (int i = 0; i < replaceElements.getLength(); i++) {
-            replacement = (Element) replaceElements.item(i);
-            if (replacement.hasAttribute("r")) {
-                if (replacement.hasAttribute("s")) {
-                    replacements.put(replacement.getAttribute("s"), replacement
-                            .getAttribute("r"));
-                } else {
-                    replacements.put("${" + anon + "}", replacement
-                            .getAttribute("r"));
-                    anon++;
-                }
-            }
-        }
-        IFile includeFile = ResourceUtil.getRelativeFile(file, includeFilePathS);
-        InputStream inputFileIn = includeFile.getContents();
-        Reader inputFileInR = new InputStreamReader(inputFileIn);
-        String inputFileContent = IOUtil.readAll(inputFileInR);
-        inputFileContent = StringUtil
-                .replaceAll(inputFileContent, replacements);
-        return inputFileContent;
-    }
+	public String generateBlock(final Element element, final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
+	      final ICcgComment ccgComment, final IFile file) throws Exception {
+		String includeFilePathS = XmlUtil.getAttributeString(element, "file");
+		NodeList replaceElements = element.getElementsByTagName("replace");
+		Map replacements = new HashMap();
+		Element replacement;
+		int anon = 0;
+		for (int i = 0; i < replaceElements.getLength(); i++) {
+			replacement = (Element) replaceElements.item(i);
+			if (replacement.hasAttribute("r")) {
+				if (replacement.hasAttribute("s")) {
+					replacements.put(replacement.getAttribute("s"), replacement.getAttribute("r"));
+				} else {
+					replacements.put("${" + anon + "}", replacement.getAttribute("r"));
+					anon++;
+				}
+			}
+		}
+		IFile includeFile = ResourceUtil.getRelativeFile(file, includeFilePathS);
+		InputStream inputFileIn = includeFile.getContents();
+		Reader inputFileInR = new InputStreamReader(inputFileIn);
+		String inputFileContent = IOUtil.readAll(inputFileInR);
+		inputFileContent = StringUtil.replaceAll(inputFileContent, replacements);
+		return inputFileContent;
+	}
 }

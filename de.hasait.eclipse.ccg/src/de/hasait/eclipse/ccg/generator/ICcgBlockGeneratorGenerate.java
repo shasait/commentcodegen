@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgTagGenerator.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: ICcgBlockGeneratorGenerate.java,v 1.1 2006-11-10 14:00:59 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,10 +17,20 @@
  */
 package de.hasait.eclipse.ccg.generator;
 
+import java.util.Map;
+
+import org.eclipse.core.resources.IFile;
+import org.w3c.dom.Element;
+
+import de.hasait.eclipse.ccg.parser.ICcgComment;
+
 /**
+ * Generates a code block.
+ * 
  * @author Sebastian Hasait (hasait at web.de)
  * @version $Revision: 1.1 $
  */
-public interface ICcgTagGenerator extends ICcgGenerator, ICcgTagContentGenerator {
-	String[] getTagnames();
+public interface ICcgBlockGeneratorGenerate {
+	String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment ccgComment,
+	      IFile file) throws Exception;
 }
