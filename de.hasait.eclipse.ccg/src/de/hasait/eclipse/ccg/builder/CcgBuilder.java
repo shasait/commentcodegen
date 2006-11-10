@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -38,6 +38,7 @@ import de.hasait.eclipse.ccg.generator.CcgGeneratorLookupEp;
 import de.hasait.eclipse.ccg.generator.ICcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
+import de.hasait.eclipse.ccg.generator.ICcgResourceGenerator;
 import de.hasait.eclipse.ccg.parser.CcgParserLookupEp;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.parser.ICcgNonComment;
@@ -49,10 +50,11 @@ import de.hasait.eclipse.common.OidGenerator;
 import de.hasait.eclipse.common.ResourceUtil;
 import de.hasait.eclipse.common.Util;
 import de.hasait.eclipse.common.XmlUtil;
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -76,6 +78,16 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	private final ICcgGeneratorLookup _generatorLookup = new CcgGeneratorLookupEp(GENERATORS_EXTENSION_POINT_ID);
 
+	/**
+	 * File extension used for resource generator scripts.
+	 */
+	public static final String RESOURCE_GENERATOR_FILE_EXTENSION = "ccg";
+
+	/**
+	 * File extension used for resource generator scripts.
+	 */
+	public static final String RESOURCE_GENERATOR_ROOT_TAG_NAME = "ccg";
+
 	private final Map _context = new HashMap();
 
 	private final IResourceDeltaVisitor _resourceDeltaVisitor = new IResourceDeltaVisitor() {
@@ -83,12 +95,12 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			IResource resource = delta.getResource();
 			switch (delta.getKind()) {
 			case IResourceDelta.ADDED:
-				applyGenerators(resource);
+				executeGenerators(resource);
 				break;
 			case IResourceDelta.REMOVED:
 				break;
 			case IResourceDelta.CHANGED:
-				applyGenerators(resource);
+				executeGenerators(resource);
 				break;
 			}
 			return true;
@@ -97,7 +109,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	private final IResourceVisitor _resourceVisitor = new IResourceVisitor() {
 		public boolean visit(final IResource resource) {
-			applyGenerators(resource);
+			executeGenerators(resource);
 			return true;
 		}
 	};
@@ -124,42 +136,48 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		delta.accept(_resourceDeltaVisitor);
 	}
 
-	private void applyGenerators(final IResource resource) {
+	private void executeGenerators(final IResource resource) {
 		if (resource instanceof IFile) {
 			IFile file = (IFile) resource;
-			ICcgParser parser = _parserLookup.findParser(file.getFileExtension());
-			if (parser != null) {
-				try {
-					deleteMarkers(file);
-					String source = ResourceUtil.readFile(file);
-					String newSource = executeGenerators(parser, source, file);
-					if (!Util.equals(source, newSource)) {
-						ResourceUtil.writeFile(file, newSource);
-					}
-				} catch (Exception e) {
-					addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-				}
+			String fileExtension = file.getFileExtension();
+			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension) || _parserLookup.containsParser(fileExtension)) {
+				executeGenerators(file, fileExtension);
 			}
 		}
 	}
 
-	private String executeGenerators(final ICcgParser parser, final String source, final IFile file) {
-		ICcgRoot root;
+	private void executeGenerators(final IFile file, final String fileExtension) {
 		try {
-			root = parser.parse(source);
+			deleteMarkers(file);
+			String source = ResourceUtil.readFile(file);
+			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension)) {
+				// TODO
+			} else {
+				deleteMarkers(file);
+				ICcgParser parser = _parserLookup.findParser(fileExtension);
+				ICcgRoot root = parser.parse(source);
+				if (executeBlockGenerators(file, root)) {
+					ResourceUtil.writeFile(file, root.getSource());
+				}
+			}
 		} catch (Exception e) {
 			addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-			return source;
 		}
-		//
-		if (!executeGenerators(root, file)) {
-			return source;
-		}
-		//
-		return root.getSource();
 	}
 
-	private boolean executeGenerators(final ICcgRoot root, final IFile file) {
+	private void executeResourceGenerators(final IFile file, final String source) throws Exception {
+		XElement element = XmlUtil.buildXElementFromString(source);
+		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(element.getTagName())) {
+			XElement[] childElements = element.getChildElements();
+			for (int childElementsI = 0; childElementsI < childElements.length; childElementsI++) {
+				XElement childElement = childElements[childElementsI];
+				String childElementTagName = childElement.getTagName();
+				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(childElementTagName);
+			}
+		}
+	}
+
+	private boolean executeBlockGenerators(final IFile file, final ICcgRoot root) {
 		_context.clear();
 		int index = 0;
 		while (index < root.childNodesSize()) {
@@ -175,7 +193,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 						if (generator == null) {
 							throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());
 						}
-						block = generator.generateBlock(element, _generatorLookup, _context, blockStartComment, file);
+						block = generator.generateBlock(file, blockStartComment, element, _context, _generatorLookup);
 					} catch (Exception e) {
 						addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
 						return false;

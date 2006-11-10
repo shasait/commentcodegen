@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.2 2006-11-10 14:01:04 concentus Exp $
+ * $Id: NopGenerator.java,v 1.3 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -28,7 +28,7 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class NopGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "NOP (no operation) generator - pipe through paramter";
@@ -42,8 +42,8 @@ public final class NopGenerator extends AbstractCcgBlockGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(final Element element, final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-	      final ICcgComment ccgComment, final IFile file) throws Exception {
+	public String generateBlock(final IFile file, final ICcgComment comment, final Element element,
+	      final Map context, final ICcgGeneratorLookup generatorLookup) throws Exception {
 		return element.toString();
 	}
 }

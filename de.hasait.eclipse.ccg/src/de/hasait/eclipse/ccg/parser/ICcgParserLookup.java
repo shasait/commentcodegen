@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgParserLookup.java,v 1.2 2006-11-10 14:01:00 concentus Exp $
+ * $Id: ICcgParserLookup.java,v 1.3 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,8 +19,10 @@ package de.hasait.eclipse.ccg.parser;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ICcgParserLookup {
-    ICcgParser findParser(String fileExtension);
+	boolean containsParser(String fileExtension);
+
+	ICcgParser findParser(String fileExtension);
 }

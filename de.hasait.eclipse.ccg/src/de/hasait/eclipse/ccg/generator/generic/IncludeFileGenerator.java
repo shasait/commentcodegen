@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
+ * $Id: IncludeFileGenerator.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -37,7 +37,7 @@ import de.hasait.eclipse.common.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class IncludeFileGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
@@ -51,8 +51,8 @@ public final class IncludeFileGenerator extends AbstractCcgBlockGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(final Element element, final ICcgGeneratorLookup ccgGeneratorLookup, final Map context,
-	      final ICcgComment ccgComment, final IFile file) throws Exception {
+	public String generateBlock(final IFile file, final ICcgComment comment, final Element element,
+	      final Map context, final ICcgGeneratorLookup generatorLookup) throws Exception {
 		String includeFilePathS = XmlUtil.getAttributeString(element, "file");
 		NodeList replaceElements = element.getElementsByTagName("replace");
 		Map replacements = new HashMap();

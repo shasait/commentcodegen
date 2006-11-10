@@ -83,8 +83,8 @@
    </extension>
    
    <extension point="de.hasait.eclipse.ccg.generators">
-      <generator class="de.hasait.eclipse.ccg.generator.generic.NopGenerator"/>
-      <generator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileGenerator"/>
+      <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.NopGenerator"/>
+      <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileGenerator"/>
    </extension>
 
 </plugin>

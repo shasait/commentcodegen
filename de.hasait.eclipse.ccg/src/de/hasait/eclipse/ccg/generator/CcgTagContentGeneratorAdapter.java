@@ -1,5 +1,5 @@
 /*
- * $Id: CcgTagContentGeneratorAdapter.java,v 1.2 2006-11-10 14:00:59 concentus Exp $
+ * $Id: CcgTagContentGeneratorAdapter.java,v 1.3 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,7 +26,7 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator {
 	private final ICcgBlockGenerator _generator;
@@ -41,6 +41,6 @@ public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator {
 
 	public final String generate(final Element element, final ICcgGeneratorLookup transformatorLookup,
 	      final Map context, final ICcgComment ccgComment, final IFile file) throws Exception {
-		return _generator.generateBlock(element, transformatorLookup, context, ccgComment, file);
+		return _generator.generateBlock(file, ccgComment, element, context, transformatorLookup);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: MemberDelegateGenerator.java,v 1.3 2006-11-10 14:07:57 concentus Exp $
+ * $Id: MemberDelegateGenerator.java,v 1.4 2006-11-10 16:20:20 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -40,7 +40,7 @@ import de.hasait.eclipse.common.XmlUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class MemberDelegateGenerator extends AbstractJavaAstTagContentGenerator {
 	private static final String DESCRIPTION = "Member delegate pattern generator - adds public method delegates";
@@ -51,8 +51,8 @@ public final class MemberDelegateGenerator extends AbstractJavaAstTagContentGene
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment ccgComment, IFile file, CompilationUnit compilationUnit) throws Exception {
+	public String generateBlock(IFile file, ICcgComment comment, Element element,
+	      CompilationUnit compilationUnit, Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
 		String name = XmlUtil.getAttributeString(element, "name");
 		Iterator types = compilationUnit.types().iterator();
 		AbstractTypeDeclaration abstractTypeDeclaration;

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractJavaAstTagContentGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
+ * $Id: AbstractJavaAstTagContentGenerator.java,v 1.3 2006-11-10 16:20:20 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -43,8 +43,8 @@ public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgBloc
 		super(description, tagnames);
 	}
 
-	public final String generateBlock(Element config, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment comment, IFile file) throws Exception {
+	public final String generateBlock(IFile file, ICcgComment comment, Element element,
+	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
 		// parse source file
 		IJavaElement javaElement = JavaCore.create(file);
 		if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
@@ -54,9 +54,9 @@ public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgBloc
 		parser.setSource((ICompilationUnit) javaElement);
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-		return generateBlock(config, generatorLookup, context, comment, file, compilationUnit);
+		return generateBlock(file, comment, element, compilationUnit, context, generatorLookup);
 	}
 
-	public abstract String generateBlock(Element config, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment comment, IFile file, CompilationUnit compilationUnit) throws Exception;
+	public abstract String generateBlock(IFile file, ICcgComment comment, Element element,
+	      CompilationUnit compilationUnit, Map context, ICcgGeneratorLookup generatorLookup) throws Exception;
 }

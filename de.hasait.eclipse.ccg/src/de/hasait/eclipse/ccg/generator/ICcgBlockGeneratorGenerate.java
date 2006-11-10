@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgBlockGeneratorGenerate.java,v 1.1 2006-11-10 14:00:59 concentus Exp $
+ * $Id: ICcgBlockGeneratorGenerate.java,v 1.2 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -28,9 +28,9 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
  * Generates a code block.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ICcgBlockGeneratorGenerate {
-	String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context, ICcgComment ccgComment,
-	      IFile file) throws Exception;
+	String generateBlock(IFile file, ICcgComment comment, Element element, Map context,
+	      ICcgGeneratorLookup generatorLookup) throws Exception;
 }

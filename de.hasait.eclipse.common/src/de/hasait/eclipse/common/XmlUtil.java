@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: XmlUtil.java,v 1.2 2006-11-10 16:20:18 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,10 +21,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,14 +35,15 @@ import org.xml.sax.SAXException;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class XmlUtil {
 	private XmlUtil() {
 		super();
 	}
 
-	public static Element buildW3cElementFromString(final String xml) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+	public static Element buildW3cElementFromString(final String xml) throws ParserConfigurationException,
+	      FactoryConfigurationError, SAXException, IOException {
 		if (xml == null) {
 			throw new IllegalArgumentException("xml == null");
 		}
@@ -52,16 +55,18 @@ public final class XmlUtil {
 		return document.getDocumentElement();
 	}
 
-	public static XElement buildXElementFromString(final String xml) throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+	public static XElement buildXElementFromString(final String xml) throws ParserConfigurationException,
+	      FactoryConfigurationError, SAXException, IOException {
 		return new XElement(buildW3cElementFromString(xml));
 	}
 
 	/**
-	 * Returns required attribute's value or an {@link IllegalArgumentException}
-	 * if not set.
+	 * Returns required attribute's value or an {@link IllegalArgumentException} if not set.
 	 * 
-	 * @param element y.k.
-	 * @param attribute y.k.
+	 * @param element
+	 *           y.k.
+	 * @param attribute
+	 *           y.k.
 	 * @return s.d.
 	 */
 	public static boolean getAttributeBoolean(final Element element, final String attribute) {
@@ -78,12 +83,14 @@ public final class XmlUtil {
 	}
 
 	/**
-	 * Returns the attribute's value or the <code>defaultValue</code> if not
-	 * set.
+	 * Returns the attribute's value or the <code>defaultValue</code> if not set.
 	 * 
-	 * @param element y.k.
-	 * @param attribute y.k.
-	 * @param defaultValue y.k.
+	 * @param element
+	 *           y.k.
+	 * @param attribute
+	 *           y.k.
+	 * @param defaultValue
+	 *           y.k.
 	 * @return s.d.
 	 */
 	public static boolean getAttributeBoolean(final Element element, final String attribute, final boolean defaultValue) {
@@ -101,11 +108,12 @@ public final class XmlUtil {
 	}
 
 	/**
-	 * Returns required attribute's value or an {@link IllegalArgumentException}
-	 * if not set.
+	 * Returns required attribute's value or an {@link IllegalArgumentException} if not set.
 	 * 
-	 * @param element y.k.
-	 * @param attribute y.k.
+	 * @param element
+	 *           y.k.
+	 * @param attribute
+	 *           y.k.
 	 * @return s.d.
 	 */
 	public static String getAttributeString(final Element element, final String attribute) {
@@ -122,12 +130,14 @@ public final class XmlUtil {
 	}
 
 	/**
-	 * Returns the attribute's value or the <code>defaultValue</code> if not
-	 * set.
+	 * Returns the attribute's value or the <code>defaultValue</code> if not set.
 	 * 
-	 * @param element y.k.
-	 * @param attribute y.k.
-	 * @param defaultValue y.k.
+	 * @param element
+	 *           y.k.
+	 * @param attribute
+	 *           y.k.
+	 * @param defaultValue
+	 *           y.k.
 	 * @return s.d.
 	 */
 	public static String getAttributeString(final Element element, final String attribute, String defaultValue) {
@@ -143,12 +153,16 @@ public final class XmlUtil {
 		return defaultValue;
 	}
 
-	public static class XElement {
+	public static final class XElement {
 		private final Element _element;
 
 		public XElement(Element element) {
 			super();
 			_element = element;
+		}
+
+		public String getTagName() {
+			return _element.getTagName();
 		}
 
 		public XElement[] getChildElements(String tagName) {

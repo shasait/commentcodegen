@@ -1,5 +1,5 @@
 /*
- * $Id: CcgJetBlockGenerator.skeleton,v 1.1 2006-11-10 14:01:10 concentus Exp $
+ * $Id: CcgJetBlockGenerator.skeleton,v 1.2 2006-11-10 16:20:19 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,11 +26,11 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
  * ATTENTION: generated code - DO NOT MODIFY.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CLASS implements ICcgBlockGeneratorGenerate {
-	public String generateBlock(final Element e, final ICcgGeneratorLookup generatorLookup,
-            final Map context, final ICcgComment comment, final IFile file) throws Exception {
+	public String generateBlock(final IFile file, final ICcgComment comment, final Element e,
+            final Map context, final ICcgGeneratorLookup generatorLookup) throws Exception {
 		return "";
 	}
 }

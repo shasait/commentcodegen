@@ -1,7 +1,7 @@
 /*
- * $Id: ICcgGeneratorLookup.java,v 1.3 2006-11-10 16:20:12 concentus Exp $
+ * $Id: AbstractCcgResourceGenerator.java,v 1.1 2006-11-10 16:20:12 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2006 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.eclipse.ccg.generator;
 
 /**
+ * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
+ * @since 10.11.2006
  */
-public interface ICcgGeneratorLookup {
-	boolean containsBlockGenerator(String tagName);
-
-	ICcgBlockGenerator findBlockGenerator(String tagName);
-
-	boolean containsResourceGenerator(String tagName);
-
-	ICcgResourceGenerator findResourceGenerator(String tagName);
+public abstract class AbstractCcgResourceGenerator extends AbstractCcgGenerator implements ICcgResourceGenerator {
+	protected AbstractCcgResourceGenerator(String description, String[] tagNames) {
+		super(description, tagNames);
+	}
 }

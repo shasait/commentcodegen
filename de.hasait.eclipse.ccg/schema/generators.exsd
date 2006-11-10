@@ -13,7 +13,8 @@
    <element name="extension">
       <complexType>
          <sequence minOccurs="0" maxOccurs="unbounded">
-            <element ref="generator"/>
+            <element ref="blockGenerator"/>
+            <element ref="resourceGenerator"/>
          </sequence>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -42,7 +43,19 @@
       </complexType>
    </element>
 
-   <element name="generator">
+   <element name="blockGenerator">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="resourceGenerator">
       <complexType>
          <attribute name="class" type="string" use="required">
             <annotation>

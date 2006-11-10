@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBlockGeneratorDelegate.java,v 1.1 2006-11-10 14:00:58 concentus Exp $
+ * $Id: CcgBlockGeneratorDelegate.java,v 1.2 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
  * Delegates generation to an instance of {@link ICcgBlockGeneratorGenerate}.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 10.11.2006
  */
 public class CcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
@@ -42,8 +42,8 @@ public class CcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
 		_generate = generate;
 	}
 
-	public final String generateBlock(Element element, ICcgGeneratorLookup generatorLookup, Map context,
-	      ICcgComment ccgComment, IFile file) throws Exception {
-		return _generate.generateBlock(element, generatorLookup, context, ccgComment, file);
+	public final String generateBlock(IFile file, ICcgComment comment, Element element,
+	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
+		return _generate.generateBlock(file, comment, element, context, generatorLookup);
 	}
 }

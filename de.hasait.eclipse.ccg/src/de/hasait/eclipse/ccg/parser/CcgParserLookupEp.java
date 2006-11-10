@@ -1,5 +1,5 @@
 /*
- * $Id: CcgParserLookupEp.java,v 1.3 2006-11-10 14:07:54 concentus Exp $
+ * $Id: CcgParserLookupEp.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,68 +17,64 @@
  */
 package de.hasait.eclipse.ccg.parser;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
 
-import de.hasait.eclipse.common.Util;
-
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class CcgParserLookupEp implements ICcgParserLookup {
 	private final String _extensionPointId;
 
-	private List _ccgParsers = null;
+	private Map _parsersByFileExtension = null;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param extensionPointId
+	 */
 	public CcgParserLookupEp(String extensionPointId) {
 		super();
 		_extensionPointId = extensionPointId;
 	}
 
-	private List getCcgParsers() {
-		if (_ccgParsers == null) {
-			_ccgParsers = new ArrayList();
+	private Map getParsersByFileExtension() {
+		if (_parsersByFileExtension == null) {
+			_parsersByFileExtension = new HashMap();
 			IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(_extensionPointId);
 			IExtension[] extensions = extensionPoint.getExtensions();
 			IConfigurationElement[] configurationElements;
-			ICcgParser ccgParser;
+			ICcgParser parser;
 			for (int extensionsI = 0; extensionsI < extensions.length; extensionsI++) {
 				configurationElements = extensions[extensionsI].getConfigurationElements();
 				for (int configurationElementsI = 0; configurationElementsI < configurationElements.length; configurationElementsI++) {
 					try {
-						ccgParser = (ICcgParser) configurationElements[configurationElementsI]
+						parser = (ICcgParser) configurationElements[configurationElementsI]
 						      .createExecutableExtension("class");
-						_ccgParsers.add(ccgParser);
+						String[] fileExtensions = parser.getFileExtensions();
+						for (int fileExtensionsI = 0; fileExtensionsI < fileExtensions.length; fileExtensionsI++) {
+							_parsersByFileExtension.put(fileExtensions[fileExtensionsI], parser);
+						}
 					} catch (Exception ce) {
 						// ignore
 					}
 				}
 			}
 		}
-		return _ccgParsers;
+		return _parsersByFileExtension;
 	}
 
 	public ICcgParser findParser(String fileExtension) {
-		List ccgParsers = getCcgParsers();
-		Iterator ccgParsersI = ccgParsers.iterator();
-		ICcgParser ccgParser;
-		String[] fileExtensions;
-		while (ccgParsersI.hasNext()) {
-			ccgParser = (ICcgParser) ccgParsersI.next();
-			fileExtensions = ccgParser.getFileExtensions();
-			for (int fileExtensionsI = 0; fileExtensionsI < fileExtensions.length; fileExtensionsI++) {
-				if (Util.equals(fileExtension, fileExtensions[fileExtensionsI])) {
-					return ccgParser;
-				}
-			}
-		}
-		return null;
+		return (ICcgParser) getParsersByFileExtension().get(fileExtension);
+	}
+
+	public boolean containsParser(String fileExtension) {
+		return getParsersByFileExtension().containsKey(fileExtension);
 	}
 }
