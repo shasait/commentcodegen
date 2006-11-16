@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.5 2006-11-16 16:08:44 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.6 2006-11-16 17:34:47 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -53,7 +53,7 @@ import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -172,6 +172,10 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	}
 
 	private void executeResourceGenerators(final IFile file, final String source) throws Exception {
+		if (source.trim().length() == 0) {
+			// ignore empty files
+			return;
+		}
 		XElement element = XmlUtil.buildXElementFromString(source);
 		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(element.getTagName())) {
 			// contains our tag - continue...
@@ -185,7 +189,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(childElementTagName);
 				if (generator != null) {
 					// found a generator for tagName - execute...
-					generator.generateResources(element, _generatorLookup, context, file);
+					generator.generateResources(childElement, _generatorLookup, context, file);
+				} else {
+					throw new IllegalArgumentException("Unknown generator: " + childElementTagName);
 				}
 			}
 		}

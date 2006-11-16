@@ -1,5 +1,5 @@
 /*
- * $Id: BsfResourceGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
+ * $Id: BsfResourceGenerator.java,v 1.2 2006-11-16 17:34:47 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IFile;
+import org.jruby.exceptions.RaiseException;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
@@ -30,7 +31,7 @@ import de.hasait.eclipse.common.bsf.ResourceScriptHelper;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -46,24 +47,30 @@ public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 
 	public void generateResources(XElement element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
 	      throws Exception {
-		String bsfLanguage = element.getRequiredAttribute("language");
-		String bsfScriptFilePathS = element.getAttribute("file");
-		String bsfScript;
-		if (bsfScriptFilePathS != null) {
-			// read script from file
-			IFile bsfScriptFile = ResourceUtil.getRelativeFile(file, bsfScriptFilePathS);
-			bsfScript = ResourceUtil.readFile(bsfScriptFile);
-		} else {
-			// get script from element's body
-			bsfScript = element.getTextContent();
+		String scriptFilePathS = element.getRequiredAttribute("file");
+		IFile scriptFile = ResourceUtil.getRelativeFile(file, scriptFilePathS);
+		if (!scriptFile.exists()) {
+			throw new IllegalArgumentException("Script-file does not exist: " + scriptFilePathS);
 		}
+		String scriptName = scriptFile.getLocation().toOSString();
+		String scriptLang = BSFManager.getLangFromFilename(scriptName);
+		if (scriptLang == null) {
+			throw new IllegalArgumentException("Unknown scripting language for: " + scriptFile);
+		}
+		String script = ResourceUtil.readFile(scriptFile);
 		// run script
 		BSFManager manager = new BSFManager();
 		//
 		manager.declareBean("element", element, XElement.class);
-		ResourceScriptHelper resourceScriptHelper = new ResourceScriptHelper(file);
-		manager.declareBean("resource", resourceScriptHelper, ResourceScriptHelper.class);
+		manager.declareBean("sourceFile", file, IFile.class);
+		manager.declareBean("scriptFile", scriptFile, IFile.class);
+		manager.declareBean("resources", new ResourceScriptHelper(), ResourceScriptHelper.class);
 		//
-		manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
+		try {
+			manager.exec(scriptLang, scriptName, 0, 0, script);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 	}
 }

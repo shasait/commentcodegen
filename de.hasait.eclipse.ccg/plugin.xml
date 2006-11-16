@@ -86,6 +86,7 @@
       <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.NopBlockGenerator"/>
       <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileBlockGenerator"/>
       <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.BsfBlockGenerator"/>
+      <resourceGenerator class="de.hasait.eclipse.ccg.generator.generic.BsfResourceGenerator"/>
    </extension>
 
 </plugin>

@@ -1,5 +1,5 @@
 /*
- * $Id: ResourceUtil.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: ResourceUtil.java,v 1.2 2006-11-16 17:34:46 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.Path;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class ResourceUtil {
 	private ResourceUtil() {
@@ -43,21 +43,18 @@ public final class ResourceUtil {
 
 	public static String readFile(IFile file) throws IOException, CoreException {
 		InputStream fileContents = file.getContents();
-		Reader fileContentsReader = new InputStreamReader(fileContents, file
-				.getCharset());
+		Reader fileContentsReader = new InputStreamReader(fileContents, file.getCharset());
 		String contents = IOUtil.readAll(fileContentsReader);
 		fileContentsReader.close();
 		fileContents.close();
 		return contents;
 	}
 
-	public static void writeFile(IFile file, String contents)
-			throws CoreException {
+	public static void writeFile(IFile file, String contents) throws CoreException {
 		writeFile(file, contents, null);
 	}
 
-	public static void writeFile(IFile file, String contents, Boolean derived)
-			throws CoreException {
+	public static void writeFile(IFile file, String contents, Boolean derived) throws CoreException {
 		InputStream source = new ByteArrayInputStream(contents.getBytes());
 		if (file.exists()) {
 			file.setContents(source, false, true, null);
@@ -70,13 +67,11 @@ public final class ResourceUtil {
 		}
 	}
 
-	public static void createParentFolder(IResource resource)
-			throws CoreException {
+	public static void createParentFolder(IResource resource) throws CoreException {
 		createParentFolder(resource, null);
 	}
 
-	public static void createParentFolder(IResource resource, Boolean derived)
-			throws CoreException {
+	public static void createParentFolder(IResource resource, Boolean derived) throws CoreException {
 		if (resource != null) {
 			if (!resource.exists()) {
 				createParentFolder(resource.getParent(), derived);
@@ -118,8 +113,7 @@ public final class ResourceUtil {
 		return baseContainer.getFolder(path);
 	}
 
-	public static IFolder getRelativeFolder(IContainer baseContainer,
-			String pathS) {
+	public static IFolder getRelativeFolder(IContainer baseContainer, String pathS) {
 		return getRelativeFolder(baseContainer, new Path(pathS));
 	}
 
@@ -131,23 +125,22 @@ public final class ResourceUtil {
 		return getRelativeFolder(baseFile.getParent(), pathS);
 	}
 
-	public static void deleteAllFiles(IContainer container)
-			throws CoreException {
+	public static void deleteAllFiles(IContainer container) throws CoreException {
 		deleteAllFiles(container, null);
 	}
 
-	public static void deleteAllFiles(IContainer container, Boolean derived)
-			throws CoreException {
-		IResource[] members = container.members();
-		for (int i = 0; i < members.length; i++) {
-			IResource member = members[i];
-			switch (member.getType()) {
-			case IResource.FILE:
-				if (derived == null
-						|| derived.booleanValue() == member.isDerived()) {
-					member.delete(false, null);
+	public static void deleteAllFiles(IContainer container, Boolean derived) throws CoreException {
+		if (container.exists()) {
+			IResource[] members = container.members();
+			for (int i = 0; i < members.length; i++) {
+				IResource member = members[i];
+				switch (member.getType()) {
+				case IResource.FILE:
+					if (derived == null || derived.booleanValue() == member.isDerived()) {
+						member.delete(false, null);
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}
