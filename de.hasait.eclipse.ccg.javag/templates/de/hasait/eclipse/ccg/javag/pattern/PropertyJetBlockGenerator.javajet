@@ -1,23 +1,23 @@
 <%@ jet
 	package="de.hasait.eclipse.ccg.javag.pattern"
-	class="PropertyJetGenerator"
-	imports="de.hasait.eclipse.common.StringUtil de.hasait.eclipse.common.XmlUtil"
+	class="PropertyJetBlockGenerator"
+	imports="de.hasait.eclipse.common.StringUtil"
 	skeleton="../CcgJetBlockGenerator.skeleton"
 %>
 <%
-String type = XmlUtil.getAttributeString(e, "type");
-String name = XmlUtil.getAttributeString(e, "name");
+String type = e.getRequiredAttribute("type");
+String name = e.getRequiredAttribute("name");
 String capName = StringUtil.capitalize(name);
 String oldName = "old" + capName;
-boolean many = XmlUtil.getAttributeBoolean(e, "many", false);
-boolean bound = XmlUtil.getAttributeBoolean(e, "bound", false);
-boolean afterSet = XmlUtil.getAttributeBoolean(e, "afterset", false);
-boolean beforeSet = XmlUtil.getAttributeBoolean(e, "beforeset", false);
-boolean hooked = XmlUtil.getAttributeBoolean(e, "hooked", false);
-boolean threadsafe = XmlUtil.getAttributeBoolean(e, "threadsafe", false);
-boolean readonly = XmlUtil.getAttributeBoolean(e, "readonly", false);
-String otherend = XmlUtil.getAttributeString(e, "otherend", null);
-boolean otherendmany = XmlUtil.getAttributeBoolean(e, "otherendmany", false);
+boolean many = e.getAttributeAsBoolean("many");
+boolean bound = e.getAttributeAsBoolean("bound");
+boolean afterSet = e.getAttributeAsBoolean("afterset");
+boolean beforeSet = e.getAttributeAsBoolean("beforeset");
+boolean hooked = e.getAttributeAsBoolean("hooked");
+boolean threadsafe = e.getAttributeAsBoolean("threadsafe");
+boolean readonly = e.getAttributeAsBoolean("readonly");
+String otherend = e.getAttribute("otherend");
+boolean otherendmany = e.getAttributeAsBoolean("otherendmany");
 
 String setterVisibility = null;
 if (readonly) {

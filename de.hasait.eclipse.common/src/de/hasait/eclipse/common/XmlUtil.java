@@ -1,5 +1,5 @@
 /*
- * $Id: XmlUtil.java,v 1.2 2006-11-10 16:20:18 concentus Exp $
+ * $Id: XmlUtil.java,v 1.3 2006-11-16 16:08:37 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class XmlUtil {
 	private XmlUtil() {
@@ -165,6 +165,51 @@ public final class XmlUtil {
 			return _element.getTagName();
 		}
 
+		public String getTextContent() {
+			return _element.getTextContent();
+		}
+
+		public boolean hasAttribute(String name) {
+			return _element.hasAttribute(name);
+		}
+
+		public String getAttribute(String name) {
+			return getAttribute(name, null);
+		}
+
+		public String getAttribute(String name, String defaultValue) {
+			if (hasAttribute(name)) {
+				return _element.getAttribute(name);
+			}
+			return defaultValue;
+		}
+
+		public String getRequiredAttribute(String name) {
+			if (hasAttribute(name)) {
+				return getAttribute(name);
+			}
+			throw new IllegalArgumentException("attribute \"" + name + "\" required");
+		}
+
+		public boolean getAttributeAsBoolean(String name) {
+			return getAttributeAsBoolean(name, false);
+		}
+
+		public boolean getAttributeAsBoolean(String name, boolean defaultValue) {
+			if (hasAttribute(name)) {
+				String value = _element.getAttribute(name);
+				return "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value);
+			}
+			return defaultValue;
+		}
+
+		public boolean getRequiredAttributeAsBoolean(String name) {
+			if (hasAttribute(name)) {
+				return getAttributeAsBoolean(name);
+			}
+			throw new IllegalArgumentException("attribute \"" + name + "\" required");
+		}
+
 		public XElement[] getChildElements(String tagName) {
 			List result = new ArrayList();
 			NodeList childNodes = _element.getChildNodes();
@@ -182,22 +227,6 @@ public final class XmlUtil {
 
 		public XElement[] getChildElements() {
 			return getChildElements(null);
-		}
-
-		public String getAttribute(String name) {
-			return getAttribute(name, null);
-		}
-
-		public String getAttribute(String name, String defaultValue) {
-			if (_element.hasAttribute(name)) {
-				return _element.getAttribute(name);
-			}
-			return defaultValue;
-		}
-
-		public boolean isAttribute(String name) {
-			String value = getAttribute(name);
-			return value != null && (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes"));
 		}
 	}
 }

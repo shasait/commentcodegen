@@ -1,5 +1,5 @@
 /*
- * $Id: NopGenerator.java,v 1.3 2006-11-10 16:20:12 concentus Exp $
+ * $Id: NopBlockGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -20,30 +20,30 @@ package de.hasait.eclipse.ccg.generator.generic;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
  */
-public final class NopGenerator extends AbstractCcgBlockGenerator {
+public final class NopBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "NOP (no operation) generator - pipe through paramter";
 
-	private static final String[] TAG_NAMES = new String[] { "NOP" };
+	private static final String[] TAG_NAMES = new String[] { "nop" };
 
 	/**
 	 * Constructor.
 	 */
-	public NopGenerator() {
+	public NopBlockGenerator() {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(final IFile file, final ICcgComment comment, final Element element,
-	      final Map context, final ICcgGeneratorLookup generatorLookup) throws Exception {
+	public String generateBlock(final IFile file, final ICcgComment comment, final XElement element, final Map context,
+	      final ICcgGeneratorLookup generatorLookup) throws Exception {
 		return element.toString();
 	}
 }

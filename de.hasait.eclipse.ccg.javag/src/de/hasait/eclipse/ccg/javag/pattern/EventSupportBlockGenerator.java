@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyGenerator.java,v 1.2 2006-11-10 14:01:11 concentus Exp $
+ * $Id: EventSupportBlockGenerator.java,v 1.1 2006-11-16 16:08:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,14 +21,17 @@ import de.hasait.eclipse.ccg.generator.CcgBlockGeneratorDelegate;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.1 $
  */
-public final class PropertyGenerator extends CcgBlockGeneratorDelegate {
-	private static final String DESCRIPTION = "Bean Property";
+public final class EventSupportBlockGenerator extends CcgBlockGeneratorDelegate {
+	private static final String DESCRIPTION = "Event Support";
 
-	private static final String[] TAG_NAMES = new String[] { "JavaProperty" };
+	private static final String[] TAG_NAMES = new String[] { "javaeventsupport" };
 
-	public PropertyGenerator() {
-		super(DESCRIPTION, TAG_NAMES, new PropertyJetGenerator());
+	/**
+	 * Constructor.
+	 */
+	public EventSupportBlockGenerator() {
+		super(DESCRIPTION, TAG_NAMES, new EventSupportJetBlockGenerator());
 	}
 }

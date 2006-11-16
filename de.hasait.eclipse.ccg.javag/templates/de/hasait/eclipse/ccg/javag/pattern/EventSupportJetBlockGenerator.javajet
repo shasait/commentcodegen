@@ -1,20 +1,20 @@
 <%@ jet
 	package="de.hasait.eclipse.ccg.javag.pattern"
-	class="EventSupportJetGenerator"
-	imports="de.hasait.eclipse.common.StringUtil de.hasait.eclipse.common.XmlUtil"
+	class="EventSupportJetBlockGenerator"
+	imports="de.hasait.eclipse.common.StringUtil"
 	skeleton="../CcgJetBlockGenerator.skeleton"
 %>
 <%
 if (!e.hasAttribute("type")) {
 	throw new IllegalArgumentException("missing attribute \"type\"");
 }
-String type = XmlUtil.getAttributeString(e, "type");
+String type = e.getRequiredAttribute("type");
 String rtype = type.startsWith("I") ? type.substring(1) : type;
 String utype = StringUtil.uncapitalize(rtype);
-String methodVisibility = XmlUtil.getAttributeString(e, "visibility", "public");
-String methodSuffix = XmlUtil.getAttributeString(e, "suffix", "");
-boolean methodAdd = XmlUtil.getAttributeBoolean(e, "add", true);
-String methodFinal = XmlUtil.getAttributeBoolean(e, "final", false) ? "" : "final ";
+String methodVisibility = e.getAttribute("visibility", "public");
+String methodSuffix = e.getAttribute("suffix", "");
+boolean methodAdd = e.getAttributeAsBoolean("add", true);
+String methodFinal = e.getAttributeAsBoolean("final") ? "" : "final ";
 %>
 
 	/**

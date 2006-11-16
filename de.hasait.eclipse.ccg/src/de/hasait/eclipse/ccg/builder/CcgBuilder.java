@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.5 2006-11-16 16:08:44 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -32,7 +32,6 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.CcgGeneratorLookupEp;
 import de.hasait.eclipse.ccg.generator.ICcgBlockGenerator;
@@ -54,7 +53,7 @@ import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -151,13 +150,20 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			deleteMarkers(file);
 			String source = ResourceUtil.readFile(file);
 			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension)) {
-				// TODO
+				// our own file-format - execute generators...
+				executeResourceGenerators(file, source);
 			} else {
-				deleteMarkers(file);
+				// foreign file - lookup comment-parser...
 				ICcgParser parser = _parserLookup.findParser(fileExtension);
-				ICcgRoot root = parser.parse(source);
-				if (executeBlockGenerators(file, root)) {
-					ResourceUtil.writeFile(file, root.getSource());
+				if (parser != null) {
+					// ok - found a parser - try to parse...
+					ICcgRoot root = parser.parse(source);
+					if (root != null) {
+						// parsed - execute generators...
+						if (executeBlockGenerators(file, root)) {
+							ResourceUtil.writeFile(file, root.getSource());
+						}
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -168,11 +174,19 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	private void executeResourceGenerators(final IFile file, final String source) throws Exception {
 		XElement element = XmlUtil.buildXElementFromString(source);
 		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(element.getTagName())) {
+			// contains our tag - continue...
+			// create a context to allow data-exchange between generators...
+			Map context = new HashMap();
+			// each childElement of root represents a generator...
 			XElement[] childElements = element.getChildElements();
 			for (int childElementsI = 0; childElementsI < childElements.length; childElementsI++) {
 				XElement childElement = childElements[childElementsI];
 				String childElementTagName = childElement.getTagName();
 				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(childElementTagName);
+				if (generator != null) {
+					// found a generator for tagName - execute...
+					generator.generateResources(element, _generatorLookup, context, file);
+				}
 			}
 		}
 	}
@@ -188,7 +202,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				if (command != null) {
 					String block;
 					try {
-						Element element = XmlUtil.buildW3cElementFromString(command);
+						XElement element = XmlUtil.buildXElementFromString(command);
 						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(element.getTagName());
 						if (generator == null) {
 							throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());

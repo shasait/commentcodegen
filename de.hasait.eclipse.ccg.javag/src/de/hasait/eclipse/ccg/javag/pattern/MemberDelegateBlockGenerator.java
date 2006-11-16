@@ -1,5 +1,5 @@
 /*
- * $Id: MemberDelegateGenerator.java,v 1.4 2006-11-10 16:20:20 concentus Exp $
+ * $Id: MemberDelegateBlockGenerator.java,v 1.1 2006-11-16 16:08:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -32,28 +32,31 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
+import de.hasait.eclipse.ccg.javag.AbstractJavaAstTagContentBlockGenerator;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.XmlUtil;
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public final class MemberDelegateGenerator extends AbstractJavaAstTagContentGenerator {
+public final class MemberDelegateBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Member delegate pattern generator - adds public method delegates";
 
-	private static final String[] TAG_NAMES = new String[] { "JavaMemberDelegate" };
+	private static final String[] TAG_NAMES = new String[] { "javamemberdelegate" };
 
-	public MemberDelegateGenerator() {
+	/**
+	 * Constructor.
+	 */
+	public MemberDelegateBlockGenerator() {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(IFile file, ICcgComment comment, Element element,
-	      CompilationUnit compilationUnit, Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
-		String name = XmlUtil.getAttributeString(element, "name");
+	public String generateBlock(IFile file, ICcgComment comment, XElement element, CompilationUnit compilationUnit,
+	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
+		String name = element.getRequiredAttribute("name");
 		Iterator types = compilationUnit.types().iterator();
 		AbstractTypeDeclaration abstractTypeDeclaration;
 		TypeDeclaration typeDeclaration;

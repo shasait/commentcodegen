@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractJavaAstTagContentGenerator.java,v 1.3 2006-11-10 16:20:20 concentus Exp $
+ * $Id: AbstractJavaAstTagContentBlockGenerator.java,v 1.1 2006-11-16 16:08:39 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package de.hasait.eclipse.ccg.javag.pattern;
+package de.hasait.eclipse.ccg.javag;
 
 import java.util.Map;
 
@@ -27,24 +27,24 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.w3c.dom.Element;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
  * @since 05.11.2006
  */
-public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgBlockGenerator {
-	protected AbstractJavaAstTagContentGenerator(String description, String[] tagnames) {
+public abstract class AbstractJavaAstTagContentBlockGenerator extends AbstractCcgBlockGenerator {
+	protected AbstractJavaAstTagContentBlockGenerator(String description, String[] tagnames) {
 		super(description, tagnames);
 	}
 
-	public final String generateBlock(IFile file, ICcgComment comment, Element element,
-	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
+	public final String generateBlock(IFile file, ICcgComment comment, XElement element, Map context,
+	      ICcgGeneratorLookup generatorLookup) throws Exception {
 		// parse source file
 		IJavaElement javaElement = JavaCore.create(file);
 		if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
@@ -57,6 +57,6 @@ public abstract class AbstractJavaAstTagContentGenerator extends AbstractCcgBloc
 		return generateBlock(file, comment, element, compilationUnit, context, generatorLookup);
 	}
 
-	public abstract String generateBlock(IFile file, ICcgComment comment, Element element,
+	public abstract String generateBlock(IFile file, ICcgComment comment, XElement element,
 	      CompilationUnit compilationUnit, Map context, ICcgGeneratorLookup generatorLookup) throws Exception;
 }

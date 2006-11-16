@@ -1,5 +1,5 @@
 /*
- * $Id: BsfGenerator.java,v 1.4 2006-11-10 16:20:19 concentus Exp $
+ * $Id: BsfResourceGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -15,37 +15,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.hasait.eclipse.ccg.javag.pattern;
+package de.hasait.eclipse.ccg.generator.generic;
 
 import java.util.Map;
 
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.w3c.dom.Element;
 
+import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.ResourceUtil;
-import de.hasait.eclipse.common.XmlUtil;
+import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.bsf.ResourceScriptHelper;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public final class BsfGenerator extends AbstractJavaAstTagContentGenerator {
+public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
 
-	private static final String[] TAG_NAMES = new String[] { "JavaBsf" };
+	private static final String[] TAG_NAMES = new String[] { "bsf" };
 
-	public BsfGenerator() {
+	/**
+	 * Constructor.
+	 */
+	public BsfResourceGenerator() {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(IFile file, ICcgComment comment, Element element, CompilationUnit compilationUnit,
-	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
-		String bsfLanguage = XmlUtil.getAttributeString(element, "language");
-		String bsfScriptFilePathS = XmlUtil.getAttributeString(element, "file", null);
+	public void generateResources(XElement element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
+	      throws Exception {
+		String bsfLanguage = element.getRequiredAttribute("language");
+		String bsfScriptFilePathS = element.getAttribute("file");
 		String bsfScript;
 		if (bsfScriptFilePathS != null) {
 			// read script from file
@@ -57,11 +59,11 @@ public final class BsfGenerator extends AbstractJavaAstTagContentGenerator {
 		}
 		// run script
 		BSFManager manager = new BSFManager();
-		manager.declareBean("e", element, Element.class);
-		manager.declareBean("cu", compilationUnit, CompilationUnit.class);
-		StringBuffer out = new StringBuffer();
-		manager.declareBean("out", out, StringBuffer.class);
+		//
+		manager.declareBean("element", element, XElement.class);
+		ResourceScriptHelper resourceScriptHelper = new ResourceScriptHelper(file);
+		manager.declareBean("resource", resourceScriptHelper, ResourceScriptHelper.class);
+		//
 		manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
-		return "\n\t" + out.toString() + "\n\t";
 	}
 }

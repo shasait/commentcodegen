@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgResourceGenerator.java,v 1.1 2006-11-10 16:20:12 concentus Exp $
+ * $Id: ICcgResourceGenerator.java,v 1.2 2006-11-16 16:08:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -20,15 +20,16 @@ package de.hasait.eclipse.ccg.generator;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.w3c.dom.Element;
+
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * Generates resources.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ICcgResourceGenerator extends ICcgGenerator {
-	void generateResources(Element element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
+	void generateResources(XElement element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
 	      throws Exception;
 }

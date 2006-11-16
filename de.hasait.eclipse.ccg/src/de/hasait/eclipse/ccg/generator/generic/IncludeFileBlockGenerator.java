@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileGenerator.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
+ * $Id: IncludeFileBlockGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
@@ -33,41 +31,42 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.IOUtil;
 import de.hasait.eclipse.common.ResourceUtil;
 import de.hasait.eclipse.common.StringUtil;
-import de.hasait.eclipse.common.XmlUtil;
+import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public final class IncludeFileGenerator extends AbstractCcgBlockGenerator {
+public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
 
-	private static final String[] TAG_NAMES = new String[] { "IncludeFile" };
+	private static final String[] TAG_NAMES = new String[] { "includefile" };
 
 	/**
 	 * Constructor.
 	 */
-	public IncludeFileGenerator() {
+	public IncludeFileBlockGenerator() {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(final IFile file, final ICcgComment comment, final Element element,
-	      final Map context, final ICcgGeneratorLookup generatorLookup) throws Exception {
-		String includeFilePathS = XmlUtil.getAttributeString(element, "file");
-		NodeList replaceElements = element.getElementsByTagName("replace");
+	public String generateBlock(final IFile file, final ICcgComment comment, final XElement element, final Map context,
+	      final ICcgGeneratorLookup generatorLookup) throws Exception {
+		String includeFilePathS = element.getRequiredAttribute("file");
+		XElement[] replaceElements = element.getChildElements("replace");
 		Map replacements = new HashMap();
-		Element replacement;
+		XElement replacement;
 		int anon = 0;
-		for (int i = 0; i < replaceElements.getLength(); i++) {
-			replacement = (Element) replaceElements.item(i);
-			if (replacement.hasAttribute("r")) {
-				if (replacement.hasAttribute("s")) {
-					replacements.put(replacement.getAttribute("s"), replacement.getAttribute("r"));
-				} else {
-					replacements.put("${" + anon + "}", replacement.getAttribute("r"));
-					anon++;
-				}
+		for (int i = 0; i < replaceElements.length; i++) {
+			replacement = replaceElements[i];
+			String search;
+			if (replacement.hasAttribute("s")) {
+				search = replacement.getAttribute("s");
+			} else {
+				search = "${" + anon + "}";
+				anon++;
 			}
+			String replace = replacement.getAttribute("r", "");
+			replacements.put(search, replace);
 		}
 		IFile includeFile = ResourceUtil.getRelativeFile(file, includeFilePathS);
 		InputStream inputFileIn = includeFile.getContents();
