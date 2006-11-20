@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="de.hasait.eclipse.ccg.javap_feature"
-      label="de.hasait.eclipse.ccg.javap_feature"
+      id="de.hasait.eclipse.ccg.java_feature"
+      label="de.hasait.eclipse.ccg.java_feature"
       version="2.0.0"
       provider-name="Sebastian Hasait">
 
    <description>
-      Java parser for CommentCodeGen.
+      Java support for CommentCodeGen.
    </description>
 
    <copyright>
@@ -33,14 +33,24 @@ and limitations under the License.
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.apache.bsf"/>
       <import plugin="de.hasait.eclipse.ccg"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.core"/>
       <import plugin="de.hasait.eclipse.common"/>
    </requires>
+
+   <plugin
+         id="de.hasait.eclipse.ccg.javag"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
 
    <plugin
          id="de.hasait.eclipse.ccg.javap"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-
 </feature>
