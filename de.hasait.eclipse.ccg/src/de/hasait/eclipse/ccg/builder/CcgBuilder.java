@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.6 2006-11-16 17:34:47 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.7 2006-11-27 22:48:14 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -53,7 +53,7 @@ import de.hasait.eclipse.common.XmlUtil.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -167,6 +167,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
 		}
 	}
@@ -197,7 +198,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private boolean executeBlockGenerators(final IFile file, final ICcgRoot root) {
+	private boolean executeBlockGenerators(final IFile file, final ICcgRoot root) throws Exception {
 		_context.clear();
 		int index = 0;
 		while (index < root.childNodesSize()) {
@@ -207,17 +208,12 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				String command = blockStartComment.getCommand();
 				if (command != null) {
 					String block;
-					try {
-						XElement element = XmlUtil.buildXElementFromString(command);
-						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(element.getTagName());
-						if (generator == null) {
-							throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());
-						}
-						block = generator.generateBlock(file, blockStartComment, element, _context, _generatorLookup);
-					} catch (Exception e) {
-						addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
-						return false;
+					XElement element = XmlUtil.buildXElementFromString(command);
+					ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(element.getTagName());
+					if (generator == null) {
+						throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());
 					}
+					block = generator.generateBlock(file, blockStartComment, element, _context, _generatorLookup);
 					String blockId = blockStartComment.getBlockStart();
 					ICcgComment blockEndComment = null;
 					if (blockId != null) {
