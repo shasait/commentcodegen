@@ -1,5 +1,5 @@
 /*
- * $Id: BsfResourceGenerator.java,v 1.2 2006-11-16 17:34:47 concentus Exp $
+ * $Id: BsfResourceGenerator.java,v 1.3 2006-11-27 22:48:57 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,21 +17,26 @@
  */
 package de.hasait.eclipse.ccg.generator.generic;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Map;
 
+import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IFile;
+import org.jruby.RubyException;
 import org.jruby.exceptions.RaiseException;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.common.ResourceUtil;
+import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.XmlUtil.XElement;
 import de.hasait.eclipse.common.bsf.ResourceScriptHelper;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -69,8 +74,28 @@ public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 		try {
 			manager.exec(scriptLang, scriptName, 0, 0, script);
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
+			throw handleException(e);
+		}
+	}
+
+	private Exception handleException(Exception exception) {
+		try {
+			throw exception;
+		} catch (RaiseException re) {
+			RubyException rubyException = re.getException();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			PrintStream pos = new PrintStream(bos);
+			pos.println(StringUtil.toString(rubyException.message));
+			rubyException.printBacktrace(pos);
+			return new Exception(bos.toString(), re);
+		} catch (BSFException e) {
+			Throwable t = e.getTargetException();
+			if (t instanceof Exception) {
+				return handleException((Exception) t);
+			}
+			return e;
+		} catch (Exception e) {
+			return e;
 		}
 	}
 }
