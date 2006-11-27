@@ -1,5 +1,5 @@
 puts("load")
-load $resources.getRelativeFile($scriptFile, "bean50.rb").location.toOSString()
+load $resources.getRelativeFile($scriptFile, "bean14.rb").location.toOSString()
 
 puts("new")
 root = Root.new($sourceFile, $element)

@@ -1,29 +1,35 @@
 <ccg>
-	<bsf file="../scripts/bean50main.rb" sourcefolder="/ccgtest/gen">
+	<bsf file="../scripts/bean14main.rb" sourcefolder="/ccgtest/gen">
 		<package name="de.tolina.uzb" clean="true">
 			<bean name="Verbund">
+				<property name="nummer" type="String" />
 				<property name="name" type="String" />
-				<property name="nummer" type="int" />
+
+				<property name="kunde" type="Kunde" cardinality="*" backref="verbund" />
 			</bean>
 			<bean name="Kunde">
+				<property name="verbund" type="Verbund" backref="kunde" />
+
+				<property name="nummer" type="String" />
 				<property name="name" type="String" />
-				<property name="nummer" type="int" />
 	
-				<property name="verbund" type="Verbund" />
 				<property name="konto" type="Konto" cardinality="*" backref="kunde" />
 			</bean>
 			<bean name="Konto">
-				<property name="name" type="String" />
-				<property name="nummer" type="int" />
-	
 				<property name="kunde" type="Kunde" backref="konto" />
-	
-				<property name="zusatz" type="KontoZusatz" backref="konto" />
+
+				<property name="nummer" type="String" />
+		
+				<property name="abfrage" type="AbstractKontoAbfrage" backref="konto" cardinality="*">
+					<managedMap ref="ausgefuehrtAm" order="key" />
+					<managedMap ref="ausgefuehrtDurch" cardinality="*" />
+				</property>
 			</bean>
-			<bean name="KontoZusatz">
-				<property name="tgueberz" type="boolean" />
-	
-				<property name="konto" type="Konto" backref="zusatz" />
+			<bean name="AbstractKontoAbfrage">
+				<property name="konto" type="Konto" backref="abfrage" />
+
+				<property name="ausgefuehrtAm" type="java.util.Date" />	
+				<property name="ausgefuehrtDurch" type="String" />	
 			</bean>
 		</package>
 	</bsf>

@@ -141,34 +141,25 @@ class Bean
 	end
 end
 
-class SingleProperty
+class Property
 	attr_accessor :bean
 	attr_accessor :name
-	attr_accessor :type
-	attr_accessor :backref
 	attr_accessor :varName
 	attr_accessor :capName
-	attr_accessor :getterPrefix
+	attr_accessor :type
+	attr_accessor :backref
+	attr_accessor :backrefProperty
 	attr_accessor :getterVisibility
 	attr_accessor :setterVisibility
-	attr_accessor :backrefProperty
-	
+
 	def initialize(bean, element)
 		@bean = bean
 		@name = element.getAttribute("name")
+		@varName = "_#{name}"
+		@capName = @name.dup
+		@capName[0,1] = @capName[0,1].upcase
 		@type = element.getAttribute("type")
 		@backref = element.getAttribute("backref")
-		
-		@varName = "_#{name}"
-
-		@capName = @name.capitalize
-		
-		if @type == "boolean"
-			@getterPrefix = "is"
-		else
-			@getterPrefix = "get"
-		end
-
 		@getterVisibility = "public"
 		@setterVisibility = "public"
 	end
@@ -176,16 +167,14 @@ class SingleProperty
 	def resolve()		
 		if !@backref.nil?
 			@backrefProperty = @bean.package.beans[@type].properties[@backref]
+			if @backrefProperty.nil?
+				raise "Unknown backref #{@backref}"
+			end
+			if !@backrefProperty.backrefProperty.nil? and @backrefProperty.backrefProperty != self
+				raise "Backref of backref #{@backref} is not #{@name}, but #{@backrefProperty.backrefProperty.name}"
+			end
 			puts("backref of #{@bean.name}.#{@name} is #{@backrefProperty.bean.name}.#{@backrefProperty.name}")
 		end
-	end
-	
-	def getAdderCall(instance, value)
-		return "#{instance}.set#{@capName}(#{value});"
-	end
-	
-	def getRemoverCall(instance, value)
-		return "#{instance}.set#{@capName}(null);"
 	end
 	
 	def getNameConstant()
@@ -198,6 +187,27 @@ class SingleProperty
 	
 	def getJavaDocFullName()
 		return "{@link #{@bean.package.name}.#{@bean.name}\##{@varName}}"
+	end
+end
+
+class SingleProperty < Property
+	attr_accessor :getterPrefix
+	
+	def initialize(bean, element)
+		super
+		if @type == "boolean"
+			@getterPrefix = "is"
+		else
+			@getterPrefix = "get"
+		end
+	end
+	
+	def getAdderCall(instance, value)
+		return "#{instance}.set#{@capName}(#{value});"
+	end
+	
+	def getRemoverCall(instance, value)
+		return "#{instance}.set#{@capName}(null);"
 	end
 	
 	def write(content)
@@ -257,36 +267,9 @@ class SingleProperty
 	end
 end
 
-class MultiProperty
-	attr_accessor :bean
-	attr_accessor :name
-	attr_accessor :type
-	attr_accessor :backref
-	attr_accessor :varName
-	attr_accessor :capName
-	attr_accessor :getterVisibility
-	attr_accessor :setterVisibility
-	attr_accessor :backrefProperty
-	
+class MultiProperty < Property
 	def initialize(bean, element)
-		@bean = bean
-		@name = element.getAttribute("name")
-		@type = element.getAttribute("type")
-		@backref = element.getAttribute("backref")
-		
-		@varName = "_#{name}"
-
-		@capName = @name.capitalize
-		
-		@getterVisibility = "public"
-		@setterVisibility = "public"
-	end
-	
-	def resolve()		
-		if !@backref.nil?
-			@backrefProperty = @bean.package.beans[@type].properties[@backref]
-			puts("backref of #{@bean.name}.#{@name} is #{@backrefProperty.bean.name}.#{@backrefProperty.name}")
-		end
+		super
 	end
 	
 	def getAdderCall(instance, value)
@@ -295,18 +278,6 @@ class MultiProperty
 	
 	def getRemoverCall(instance, value)
 		return "#{instance}.remove#{@capName}(#{value});"
-	end
-	
-	def getNameConstant()
-		return "PROPERTY_#{@name.upcase()}_NAME"
-	end
-	
-	def getTypeConstant()
-		return "PROPERTY_#{@name.upcase()}_TYPE"
-	end
-	
-	def getJavaDocFullName()
-		return "{@link #{@bean.package.name}.#{@bean.name}\##{@varName}}"
 	end
 	
 	def write(content)
@@ -326,7 +297,7 @@ class MultiProperty
 		# variable
 		#
 		content.p()
-		content.p("private final java.util.List<#{@type}> #{@varName} = new java.util.ArrayList<#{@type}>();")
+		content.p("private final java.util.List #{@varName} = new java.util.ArrayList();")
 		
 		#
 		# getter
@@ -334,12 +305,12 @@ class MultiProperty
 		content.p()
 		content.pi("#{@getterVisibility} final #{@type} get#{@capName}(int index) {")
 		
-		content.p("return #{@varName}.get(index);")
+		content.p("return (#{@type}) #{@varName}.get(index);")
 		
 		content.pu("}")
 		
 		content.p()
-		content.pi("#{@getterVisibility} final java.util.Iterator<#{@type}> #{@name}Iterator() {")
+		content.pi("#{@getterVisibility} final java.util.Iterator #{@name}Iterator() {")
 		
 		content.p("return #{@varName}.iterator();")
 		
@@ -360,6 +331,9 @@ class MultiProperty
 		
 		if @backrefProperty.nil?
 			content.p("#{@varName}.add(#{@name});")
+		elsif @backrefProperty.backrefProperty.nil?
+			content.p("#{@varName}.add(#{@name});")
+			content.p(@backrefProperty.getAdderCall(@name, "this"))
 		else
 			content.pi("if (#{@varName}.contains(#{@name})) {")
 			content.p("return;")
@@ -378,6 +352,9 @@ class MultiProperty
 		
 		if @backrefProperty.nil?
 			content.p("#{@varName}.remove(#{@name});")
+		elsif @backrefProperty.backrefProperty.nil?
+			content.p("#{@varName}.remove(#{@name});")
+			content.p(@backrefProperty.getRemoverCall(@name, "this"))
 		else
 			content.pi("if (!#{@varName}.contains(#{@name})) {")
 			content.p("return;")
