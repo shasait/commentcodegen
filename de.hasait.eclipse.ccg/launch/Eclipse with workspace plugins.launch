@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launchConfiguration type="org.eclipse.pde.ui.RuntimeWorkbench">
 <stringAttribute key="product" value="org.eclipse.sdk.ide"/>
-<booleanAttribute key="clearws" value="true"/>
 <booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+<booleanAttribute key="clearws" value="false"/>
 <booleanAttribute key="usefeatures" value="false"/>
 <stringAttribute key="bootstrap" value=""/>
 <booleanAttribute key="useProduct" value="true"/>
 <booleanAttribute key="tracing" value="false"/>
 <stringAttribute key="location1" value="c:\runtime-EclipseApplication"/>
 <stringAttribute key="pde.version" value="3.2a"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value=""/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value=""/>
-<booleanAttribute key="default" value="true"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
 </listAttribute>
+<booleanAttribute key="default" value="true"/>
 <booleanAttribute key="clearConfig" value="false"/>
+<booleanAttribute key="automaticValidate" value="false"/>
 <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 <booleanAttribute key="useDefaultConfigArea" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
@@ -25,4 +24,5 @@
 <booleanAttribute key="includeFragments" value="false"/>
 <stringAttribute key="location" value="c:\runtime-EclipseApplication"/>
 <booleanAttribute key="includeOptional" value="true"/>
+<stringAttribute key="configLocation" value=""/>
 </launchConfiguration>
