@@ -1,9 +1,9 @@
 <ccg>
-	<bsf file="../scripts/bean14main.rb" sourcefolder="/ccgtest/gen">
+	<bsf file="../scripts/bean14main.rb">
 		<package name="de.tolina.uzb" clean="true">
 			<bean name="Verbund">
 				<property name="nummer" type="String" />
-				<property name="name" type="String" />
+				<property name="name2" type="String" />
 
 				<property name="kunde" type="Kunde" cardinality="*" backref="verbund" />
 			</bean>

@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.8 2006-12-03 01:09:46 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.9 2006-12-03 21:43:18 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -46,15 +46,17 @@ import de.hasait.eclipse.ccg.parser.ICcgParser;
 import de.hasait.eclipse.ccg.parser.ICcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgRoot;
 import de.hasait.eclipse.ccg.parser.ICcgTreeChild;
+import de.hasait.eclipse.ccg.properties.CcgProjectConfiguration;
 import de.hasait.eclipse.common.OidGenerator;
 import de.hasait.eclipse.common.Util;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.resource.XFolder;
+import de.hasait.eclipse.common.resource.XProject;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -90,42 +92,45 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	protected final IProject[] build(final int kind, final Map args, final IProgressMonitor monitor)
 	      throws CoreException {
+		CcgProjectConfiguration configuration = CcgProjectConfiguration.getProjectConfiguration(getProject());
 		if (kind == FULL_BUILD) {
-			fullBuild(monitor);
+			fullBuild(configuration, monitor);
 		} else {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta == null) {
-				fullBuild(monitor);
+				fullBuild(configuration, monitor);
 			} else {
-				fullBuild(monitor);
+				fullBuild(configuration, monitor);
 				// incrementalBuild(delta, monitor);
 			}
 		}
 		return null;
 	}
 
-	protected final void fullBuild(final IProgressMonitor monitor) throws CoreException {
+	protected final void fullBuild(final CcgProjectConfiguration configuration, final IProgressMonitor monitor)
+	      throws CoreException {
 		getProject().accept(new IResourceVisitor() {
 			public boolean visit(final IResource resource) {
-				executeGenerators(resource, monitor);
+				executeGenerators(resource, configuration, monitor);
 				return true;
 			}
 		});
 	}
 
-	protected final void incrementalBuild(final IResourceDelta buildDelta, final IProgressMonitor monitor)
-	      throws CoreException {
+	protected final void incrementalBuild(final IResourceDelta buildDelta, final CcgProjectConfiguration configuration,
+	      final IProgressMonitor monitor) throws CoreException {
 		buildDelta.accept(new IResourceDeltaVisitor() {
 			public boolean visit(final IResourceDelta delta) throws CoreException {
 				IResource resource = delta.getResource();
 				switch (delta.getKind()) {
 				case IResourceDelta.ADDED:
-					executeGenerators(resource, monitor);
+					executeGenerators(resource, configuration, monitor);
 					break;
 				case IResourceDelta.REMOVED:
+					executeGenerators(resource, configuration, monitor);
 					break;
 				case IResourceDelta.CHANGED:
-					executeGenerators(resource, monitor);
+					executeGenerators(resource, configuration, monitor);
 					break;
 				}
 				return true;
@@ -133,25 +138,29 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		});
 	}
 
-	protected final void executeGenerators(final IResource resource, final IProgressMonitor monitor) {
+	protected final void executeGenerators(final IResource resource, final CcgProjectConfiguration configuration,
+	      final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
 			XFile file = new XFile((IFile) resource, getProject());
 			String fileExtension = file.getFileExtension();
 			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension) || _parserLookup.containsParser(fileExtension)) {
-				executeGenerators(file, fileExtension, monitor);
+				executeGenerators(file, fileExtension, configuration, monitor);
 			}
 		}
 	}
 
 	private void executeGenerators(final XFile sourceFile, final String sourceFileExtension,
-	      final IProgressMonitor monitor) {
+	      final CcgProjectConfiguration configuration, final IProgressMonitor monitor) {
 		try {
 			deleteMarkers(sourceFile.getRawFile());
 			// create a context to allow data-exchange between generators...
 			Map sourceFileContext = new HashMap();
 			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(sourceFileExtension)) {
-				// our own file-format - execute generators...
-				executeResourceGenerators(sourceFile, sourceFileContext, monitor);
+				// check for valid sourceFolder
+				if (isPrefixOf(getProject(), configuration.getSourceFolderPaths(), sourceFile.getRawResource())) {
+					// our own file-format - execute generators...
+					executeResourceGenerators(sourceFile, sourceFileContext, configuration, monitor);
+				}
 			} else {
 				// foreign file - lookup comment-parser...
 				ICcgParser parser = _parserLookup.findParser(sourceFileExtension);
@@ -172,14 +181,23 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
+	private boolean isPrefixOf(IProject base, String[] paths, IResource resource) {
+		for (int i = 0; i < paths.length; i++) {
+			IFolder folder = base.getFolder(paths[i]);
+			if (folder.getFullPath().isPrefixOf(resource.getFullPath())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void executeResourceGenerators(final XFile sourceFile, final Map sourceFileContext,
-	      final IProgressMonitor monitor) throws Exception {
+	      final CcgProjectConfiguration configuration, final IProgressMonitor monitor) throws Exception {
 		XElement sourceElement = sourceFile.parseXml();
 		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(sourceElement.getTagName())) {
 			// contains our tag - continue...
-			// TODO read targetBaseFolder from project-configuration
-			IFolder tf = getProject().getFolder("ccgout");
-			XFolder targetBaseFolder = new XFolder(tf, getProject());
+			XFolder targetBaseFolder = new XProject(getProject(), getProject()).getFolder(configuration
+			      .getOutputFolderPath());
 			// each childElement of root represents a generator...
 			XElement[] configElements = sourceElement.getChildElements();
 			for (int configElementsI = 0; configElementsI < configElements.length; configElementsI++) {
