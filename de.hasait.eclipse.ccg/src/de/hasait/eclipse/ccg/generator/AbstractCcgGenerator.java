@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCcgGenerator.java,v 1.2 2006-11-10 14:00:59 concentus Exp $
+ * $Id: AbstractCcgGenerator.java,v 1.3 2006-12-03 01:09:45 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -42,7 +42,7 @@ public abstract class AbstractCcgGenerator implements ICcgGenerator {
 		return _description;
 	}
 
-	public final String[] getTagnames() {
+	public final String[] getTagNames() {
 		return (String[]) _tagNames.clone();
 	}
 }

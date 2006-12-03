@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgResourceGenerator.java,v 1.2 2006-11-16 16:08:43 concentus Exp $
+ * $Id: ICcgResourceGenerator.java,v 1.3 2006-12-03 01:09:45 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,17 +19,35 @@ package de.hasait.eclipse.ccg.generator;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.resource.XFolder;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * Generates resources.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public interface ICcgResourceGenerator extends ICcgGenerator {
-	void generateResources(XElement element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
-	      throws Exception;
+	/**
+	 * @param configElement
+	 *           The generators XML configuration.
+	 * @param sourceFile
+	 *           The source file containing the XML configuration.
+	 * @param targetBaseFolder
+	 *           The base folder where generated resources have to be created.
+	 * @param sourceFileContext
+	 *           A context bound to the sourceFile - not preserved between multiple sourceFile changes.
+	 * @param generatorLookup
+	 *           Can be used to lookup other generators e.g. for nested generation.
+	 * @param monitor
+	 *           The progress monitor.
+	 * @throws Exception
+	 *            Give me your exceptions...
+	 */
+	void generateResources(XElement configElement, XFile sourceFile, XFolder targetBaseFolder, Map sourceFileContext,
+	      ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception;
 }

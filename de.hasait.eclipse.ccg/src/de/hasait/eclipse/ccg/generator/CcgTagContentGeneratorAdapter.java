@@ -1,5 +1,5 @@
 /*
- * $Id: CcgTagContentGeneratorAdapter.java,v 1.4 2006-11-16 16:08:43 concentus Exp $
+ * $Id: CcgTagContentGeneratorAdapter.java,v 1.5 2006-12-03 01:09:45 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,28 +19,36 @@ package de.hasait.eclipse.ccg.generator;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
-public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator {
-	private final ICcgBlockGenerator _generator;
+public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator implements ICcgBlockGenerator {
+	private final ICcgBlockGeneratorGenerate _generator;
 
-	public CcgTagContentGeneratorAdapter(final String description, final String[] tagnames,
-	      final ICcgBlockGenerator generator) {
-		super(description, tagnames);
+	/**
+	 * Constructor.
+	 * 
+	 * @param description
+	 * @param tagNames
+	 * @param generator
+	 */
+	public CcgTagContentGeneratorAdapter(final String description, final String[] tagNames,
+	      final ICcgBlockGeneratorGenerate generator) {
+		super(description, tagNames);
 		//
 		assert generator != null;
 		_generator = generator;
 	}
 
-	public final String generate(final XElement element, final ICcgGeneratorLookup transformatorLookup,
-	      final Map context, final ICcgComment ccgComment, final IFile file) throws Exception {
-		return _generator.generateBlock(file, ccgComment, element, context, transformatorLookup);
+	public String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile, Map sourceFileContext,
+	      ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+		return _generator.generateBlock(configElement, comment, sourceFile, sourceFileContext, generatorLookup, monitor);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractJavaAstTagContentBlockGenerator.java,v 1.1 2006-11-16 16:08:39 concentus Exp $
+ * $Id: AbstractJavaAstTagContentBlockGenerator.java,v 1.2 2006-12-03 01:10:09 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,7 +20,7 @@ package de.hasait.eclipse.ccg.javag;
 
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
@@ -31,7 +31,8 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * 
@@ -43,10 +44,10 @@ public abstract class AbstractJavaAstTagContentBlockGenerator extends AbstractCc
 		super(description, tagnames);
 	}
 
-	public final String generateBlock(IFile file, ICcgComment comment, XElement element, Map context,
-	      ICcgGeneratorLookup generatorLookup) throws Exception {
+	public final String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile,
+	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
 		// parse source file
-		IJavaElement javaElement = JavaCore.create(file);
+		IJavaElement javaElement = JavaCore.create(sourceFile.getRawFile());
 		if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
 			throw new IllegalArgumentException("Not a Java source file");
 		}
@@ -54,9 +55,11 @@ public abstract class AbstractJavaAstTagContentBlockGenerator extends AbstractCc
 		parser.setSource((ICompilationUnit) javaElement);
 		parser.setResolveBindings(true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
-		return generateBlock(file, comment, element, compilationUnit, context, generatorLookup);
+		return generateBlock(compilationUnit, configElement, comment, sourceFile, sourceFileContext, generatorLookup,
+		      monitor);
 	}
 
-	public abstract String generateBlock(IFile file, ICcgComment comment, XElement element,
-	      CompilationUnit compilationUnit, Map context, ICcgGeneratorLookup generatorLookup) throws Exception;
+	public abstract String generateBlock(CompilationUnit compilationUnit, XElement configElement, ICcgComment comment,
+	      XFile sourceFile, Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor)
+	      throws Exception;
 }

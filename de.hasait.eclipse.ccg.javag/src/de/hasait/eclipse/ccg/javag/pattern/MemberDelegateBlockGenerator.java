@@ -1,5 +1,5 @@
 /*
- * $Id: MemberDelegateBlockGenerator.java,v 1.1 2006-11-16 16:08:40 concentus Exp $
+ * $Id: MemberDelegateBlockGenerator.java,v 1.2 2006-12-03 01:10:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,7 +22,7 @@ import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -36,11 +36,12 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.javag.AbstractJavaAstTagContentBlockGenerator;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class MemberDelegateBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Member delegate pattern generator - adds public method delegates";
@@ -54,9 +55,9 @@ public final class MemberDelegateBlockGenerator extends AbstractJavaAstTagConten
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(IFile file, ICcgComment comment, XElement element, CompilationUnit compilationUnit,
-	      Map context, ICcgGeneratorLookup generatorLookup) throws Exception {
-		String name = element.getRequiredAttribute("name");
+	public String generateBlock(CompilationUnit compilationUnit, XElement configElement, ICcgComment comment, XFile sourceFile,
+	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+		String name = configElement.getRequiredAttribute("name");
 		Iterator types = compilationUnit.types().iterator();
 		AbstractTypeDeclaration abstractTypeDeclaration;
 		TypeDeclaration typeDeclaration;

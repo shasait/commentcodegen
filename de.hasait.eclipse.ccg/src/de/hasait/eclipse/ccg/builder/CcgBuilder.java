@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.7 2006-11-27 22:48:14 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.8 2006-12-03 01:09:46 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -46,14 +47,14 @@ import de.hasait.eclipse.ccg.parser.ICcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgRoot;
 import de.hasait.eclipse.ccg.parser.ICcgTreeChild;
 import de.hasait.eclipse.common.OidGenerator;
-import de.hasait.eclipse.common.ResourceUtil;
 import de.hasait.eclipse.common.Util;
-import de.hasait.eclipse.common.XmlUtil;
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.resource.XFolder;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -87,119 +88,117 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	 */
 	public static final String RESOURCE_GENERATOR_ROOT_TAG_NAME = "ccg";
 
-	private final Map _context = new HashMap();
-
-	private final IResourceDeltaVisitor _resourceDeltaVisitor = new IResourceDeltaVisitor() {
-		public boolean visit(final IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
-			switch (delta.getKind()) {
-			case IResourceDelta.ADDED:
-				executeGenerators(resource);
-				break;
-			case IResourceDelta.REMOVED:
-				break;
-			case IResourceDelta.CHANGED:
-				executeGenerators(resource);
-				break;
-			}
-			return true;
-		}
-	};
-
-	private final IResourceVisitor _resourceVisitor = new IResourceVisitor() {
-		public boolean visit(final IResource resource) {
-			executeGenerators(resource);
-			return true;
-		}
-	};
-
-	protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
+	protected final IProject[] build(final int kind, final Map args, final IProgressMonitor monitor)
+	      throws CoreException {
 		if (kind == FULL_BUILD) {
-			fullBuild();
+			fullBuild(monitor);
 		} else {
 			IResourceDelta delta = getDelta(getProject());
 			if (delta == null) {
-				fullBuild();
+				fullBuild(monitor);
 			} else {
-				incrementalBuild(delta);
+				fullBuild(monitor);
+				// incrementalBuild(delta, monitor);
 			}
 		}
 		return null;
 	}
 
-	protected void fullBuild() throws CoreException {
-		getProject().accept(_resourceVisitor);
+	protected final void fullBuild(final IProgressMonitor monitor) throws CoreException {
+		getProject().accept(new IResourceVisitor() {
+			public boolean visit(final IResource resource) {
+				executeGenerators(resource, monitor);
+				return true;
+			}
+		});
 	}
 
-	protected void incrementalBuild(final IResourceDelta delta) throws CoreException {
-		delta.accept(_resourceDeltaVisitor);
+	protected final void incrementalBuild(final IResourceDelta buildDelta, final IProgressMonitor monitor)
+	      throws CoreException {
+		buildDelta.accept(new IResourceDeltaVisitor() {
+			public boolean visit(final IResourceDelta delta) throws CoreException {
+				IResource resource = delta.getResource();
+				switch (delta.getKind()) {
+				case IResourceDelta.ADDED:
+					executeGenerators(resource, monitor);
+					break;
+				case IResourceDelta.REMOVED:
+					break;
+				case IResourceDelta.CHANGED:
+					executeGenerators(resource, monitor);
+					break;
+				}
+				return true;
+			}
+		});
 	}
 
-	private void executeGenerators(final IResource resource) {
+	protected final void executeGenerators(final IResource resource, final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
-			IFile file = (IFile) resource;
+			XFile file = new XFile((IFile) resource, getProject());
 			String fileExtension = file.getFileExtension();
 			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension) || _parserLookup.containsParser(fileExtension)) {
-				executeGenerators(file, fileExtension);
+				executeGenerators(file, fileExtension, monitor);
 			}
 		}
 	}
 
-	private void executeGenerators(final IFile file, final String fileExtension) {
+	private void executeGenerators(final XFile sourceFile, final String sourceFileExtension,
+	      final IProgressMonitor monitor) {
 		try {
-			deleteMarkers(file);
-			String source = ResourceUtil.readFile(file);
-			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension)) {
+			deleteMarkers(sourceFile.getRawFile());
+			// create a context to allow data-exchange between generators...
+			Map sourceFileContext = new HashMap();
+			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(sourceFileExtension)) {
 				// our own file-format - execute generators...
-				executeResourceGenerators(file, source);
+				executeResourceGenerators(sourceFile, sourceFileContext, monitor);
 			} else {
 				// foreign file - lookup comment-parser...
-				ICcgParser parser = _parserLookup.findParser(fileExtension);
+				ICcgParser parser = _parserLookup.findParser(sourceFileExtension);
 				if (parser != null) {
 					// ok - found a parser - try to parse...
-					ICcgRoot root = parser.parse(source);
+					ICcgRoot root = parser.parse(sourceFile.read());
 					if (root != null) {
 						// parsed - execute generators...
-						if (executeBlockGenerators(file, root)) {
-							ResourceUtil.writeFile(file, root.getSource());
+						if (executeBlockGenerators(sourceFile, root, sourceFileContext, monitor)) {
+							sourceFile.write(root.getSource(), null, monitor);
 						}
 					}
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
+			addMarker(sourceFile.getRawFile(), e, -1, IMarker.SEVERITY_ERROR);
 		}
 	}
 
-	private void executeResourceGenerators(final IFile file, final String source) throws Exception {
-		if (source.trim().length() == 0) {
-			// ignore empty files
-			return;
-		}
-		XElement element = XmlUtil.buildXElementFromString(source);
-		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(element.getTagName())) {
+	private void executeResourceGenerators(final XFile sourceFile, final Map sourceFileContext,
+	      final IProgressMonitor monitor) throws Exception {
+		XElement sourceElement = sourceFile.parseXml();
+		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(sourceElement.getTagName())) {
 			// contains our tag - continue...
-			// create a context to allow data-exchange between generators...
-			Map context = new HashMap();
+			// TODO read targetBaseFolder from project-configuration
+			IFolder tf = getProject().getFolder("ccgout");
+			XFolder targetBaseFolder = new XFolder(tf, getProject());
 			// each childElement of root represents a generator...
-			XElement[] childElements = element.getChildElements();
-			for (int childElementsI = 0; childElementsI < childElements.length; childElementsI++) {
-				XElement childElement = childElements[childElementsI];
-				String childElementTagName = childElement.getTagName();
-				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(childElementTagName);
+			XElement[] configElements = sourceElement.getChildElements();
+			for (int configElementsI = 0; configElementsI < configElements.length; configElementsI++) {
+				XElement configElement = configElements[configElementsI];
+				String configElementTagName = configElement.getTagName();
+				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(configElementTagName);
 				if (generator != null) {
 					// found a generator for tagName - execute...
-					generator.generateResources(childElement, _generatorLookup, context, file);
+					generator.generateResources(configElement, sourceFile, targetBaseFolder, sourceFileContext,
+					      _generatorLookup, monitor);
 				} else {
-					throw new IllegalArgumentException("Unknown generator: " + childElementTagName);
+					throw new IllegalArgumentException("Unknown generator: " + configElementTagName);
 				}
 			}
 		}
 	}
 
-	private boolean executeBlockGenerators(final IFile file, final ICcgRoot root) throws Exception {
-		_context.clear();
+	private boolean executeBlockGenerators(final XFile sourceFile, final ICcgRoot root, final Map sourceFileContext,
+	      final IProgressMonitor monitor) throws Exception {
 		int index = 0;
 		while (index < root.childNodesSize()) {
 			ICcgTreeChild child = root.getChildNode(index);
@@ -208,12 +207,13 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				String command = blockStartComment.getCommand();
 				if (command != null) {
 					String block;
-					XElement element = XmlUtil.buildXElementFromString(command);
-					ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(element.getTagName());
+					XElement configElement = XElement.parse(command);
+					ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getTagName());
 					if (generator == null) {
-						throw new IllegalArgumentException("unknown generator tag: " + element.getTagName());
+						throw new IllegalArgumentException("Unknown generator: " + configElement.getTagName());
 					}
-					block = generator.generateBlock(file, blockStartComment, element, _context, _generatorLookup);
+					block = generator.generateBlock(configElement, blockStartComment, sourceFile, sourceFileContext,
+					      _generatorLookup, monitor);
 					String blockId = blockStartComment.getBlockStart();
 					ICcgComment blockEndComment = null;
 					if (blockId != null) {

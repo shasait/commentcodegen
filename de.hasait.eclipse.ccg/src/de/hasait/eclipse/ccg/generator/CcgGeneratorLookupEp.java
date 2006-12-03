@@ -1,5 +1,5 @@
 /*
- * $Id: CcgGeneratorLookupEp.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
+ * $Id: CcgGeneratorLookupEp.java,v 1.5 2006-12-03 01:09:45 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Platform;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 	private final String _extensionPointId;
@@ -61,7 +61,7 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 						try {
 							ICcgBlockGenerator blockGenerator = (ICcgBlockGenerator) configurationElements[configurationElementsI]
 							      .createExecutableExtension("class");
-							String[] tagNames = blockGenerator.getTagnames();
+							String[] tagNames = blockGenerator.getTagNames();
 							for (int tagNamesI = 0; tagNamesI < tagNames.length; tagNamesI++) {
 								_blockGeneratorsByTagName.put(tagNames[tagNamesI], blockGenerator);
 							}
@@ -72,7 +72,7 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 						try {
 							ICcgResourceGenerator resourceGenerator = (ICcgResourceGenerator) configurationElements[configurationElementsI]
 							      .createExecutableExtension("class");
-							String[] tagNames = resourceGenerator.getTagnames();
+							String[] tagNames = resourceGenerator.getTagNames();
 							for (int tagNamesI = 0; tagNamesI < tagNames.length; tagNamesI++) {
 								_resourceGeneratorsByTagName.put(tagNames[tagNamesI], resourceGenerator);
 							}

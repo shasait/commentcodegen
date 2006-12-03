@@ -5,19 +5,19 @@
 	skeleton="../CcgJetBlockGenerator.skeleton"
 %>
 <%
-String type = e.getRequiredAttribute("type");
-String name = e.getRequiredAttribute("name");
+String type = configElement.getRequiredAttribute("type");
+String name = configElement.getRequiredAttribute("name");
 String capName = StringUtil.capitalize(name);
 String oldName = "old" + capName;
-boolean many = e.getAttributeAsBoolean("many");
-boolean bound = e.getAttributeAsBoolean("bound");
-boolean afterSet = e.getAttributeAsBoolean("afterset");
-boolean beforeSet = e.getAttributeAsBoolean("beforeset");
-boolean hooked = e.getAttributeAsBoolean("hooked");
-boolean threadsafe = e.getAttributeAsBoolean("threadsafe");
-boolean readonly = e.getAttributeAsBoolean("readonly");
-String otherend = e.getAttribute("otherend");
-boolean otherendmany = e.getAttributeAsBoolean("otherendmany");
+boolean many = configElement.getAttributeAsBoolean("many", false);
+boolean bound = configElement.getAttributeAsBoolean("bound", false);
+boolean afterSet = configElement.getAttributeAsBoolean("afterset", false);
+boolean beforeSet = configElement.getAttributeAsBoolean("beforeset", false);
+boolean hooked = configElement.getAttributeAsBoolean("hooked", false);
+boolean threadsafe = configElement.getAttributeAsBoolean("threadsafe", false);
+boolean readonly = configElement.getAttributeAsBoolean("readonly", false);
+String otherend = configElement.getAttribute("otherend");
+boolean otherendmany = configElement.getAttributeAsBoolean("otherendmany", false);
 
 String setterVisibility = null;
 if (readonly) {

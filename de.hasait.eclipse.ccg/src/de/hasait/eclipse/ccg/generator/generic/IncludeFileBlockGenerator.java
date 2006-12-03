@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileBlockGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
+ * $Id: IncludeFileBlockGenerator.java,v 1.2 2006-12-03 01:09:45 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,25 +17,20 @@
  */
 package de.hasait.eclipse.ccg.generator.generic;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.IOUtil;
-import de.hasait.eclipse.common.ResourceUtil;
-import de.hasait.eclipse.common.StringUtil;
-import de.hasait.eclipse.common.XmlUtil.XElement;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
@@ -49,10 +44,11 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(final IFile file, final ICcgComment comment, final XElement element, final Map context,
-	      final ICcgGeneratorLookup generatorLookup) throws Exception {
-		String includeFilePathS = element.getRequiredAttribute("file");
-		XElement[] replaceElements = element.getChildElements("replace");
+	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
+		String includeFilePathS = configElement.getRequiredAttribute("file");
+		XElement[] replaceElements = configElement.getChildElements("replace");
 		Map replacements = new HashMap();
 		XElement replacement;
 		int anon = 0;
@@ -68,11 +64,6 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 			String replace = replacement.getAttribute("r", "");
 			replacements.put(search, replace);
 		}
-		IFile includeFile = ResourceUtil.getRelativeFile(file, includeFilePathS);
-		InputStream inputFileIn = includeFile.getContents();
-		Reader inputFileInR = new InputStreamReader(inputFileIn);
-		String inputFileContent = IOUtil.readAll(inputFileInR);
-		inputFileContent = StringUtil.replaceAll(inputFileContent, replacements);
-		return inputFileContent;
+		return sourceFile.getFile(includeFilePathS).read();
 	}
 }
