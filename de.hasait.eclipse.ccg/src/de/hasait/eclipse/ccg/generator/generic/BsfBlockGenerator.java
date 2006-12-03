@@ -1,5 +1,5 @@
 /*
- * $Id: BsfBlockGenerator.java,v 1.1 2006-11-16 16:08:43 concentus Exp $
+ * $Id: BsfBlockGenerator.java,v 1.2 2006-12-03 01:07:27 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,19 +19,19 @@ package de.hasait.eclipse.ccg.generator.generic;
 
 import java.util.Map;
 
-import org.apache.bsf.BSFManager;
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.ResourceUtil;
-import de.hasait.eclipse.common.XmlUtil.XElement;
-import de.hasait.eclipse.common.bsf.ContentScriptHelper;
+import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.common.ContentBuffer;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class BsfBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -45,28 +45,16 @@ public final class BsfBlockGenerator extends AbstractCcgBlockGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public String generateBlock(IFile file, ICcgComment comment, XElement element, Map context,
-	      ICcgGeneratorLookup generatorLookup) throws Exception {
-		String bsfLanguage = element.getRequiredAttribute("language");
-		String bsfScriptFilePathS = element.getAttribute("file");
-		String bsfScript;
-		if (bsfScriptFilePathS != null) {
-			// read script from file
-			IFile bsfScriptFile = ResourceUtil.getRelativeFile(file, bsfScriptFilePathS);
-			bsfScript = ResourceUtil.readFile(bsfScriptFile);
-		} else {
-			// get script from element's body
-			bsfScript = element.getTextContent();
-		}
-		// run script
-		BSFManager manager = new BSFManager();
-		manager.declareBean("element", element, XElement.class);
-		// TODO read default-indent from configuration
-		ContentScriptHelper out = new ContentScriptHelper("\t");
+	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
+		BsfExecuter executer = new BsfExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
+		executer.declareBean("comment", comment, ICcgComment.class);
+		// TODO read default-indent from configuration or source
+		ContentBuffer out = new ContentBuffer("\t");
 		out.i();
-		manager.declareBean("content", out, ContentScriptHelper.class);
-		//
-		manager.eval(bsfLanguage, "text", 0, 0, bsfScript);
+		executer.declareBean("out", out, ContentBuffer.class);
+		executer.execute();
 		//
 		return "\n" + out.getContent().toString() + "\n";
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: BsfResourceGenerator.java,v 1.3 2006-11-27 22:48:57 concentus Exp $
+ * $Id: BsfResourceGenerator.java,v 1.4 2006-12-03 01:07:27 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,26 +17,20 @@
  */
 package de.hasait.eclipse.ccg.generator.generic;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.Map;
 
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
-import org.eclipse.core.resources.IFile;
-import org.jruby.RubyException;
-import org.jruby.exceptions.RaiseException;
+import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.common.ResourceUtil;
-import de.hasait.eclipse.common.StringUtil;
-import de.hasait.eclipse.common.XmlUtil.XElement;
-import de.hasait.eclipse.common.bsf.ResourceScriptHelper;
+import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.resource.XFolder;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -50,52 +44,11 @@ public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public void generateResources(XElement element, ICcgGeneratorLookup generatorLookup, Map context, IFile file)
-	      throws Exception {
-		String scriptFilePathS = element.getRequiredAttribute("file");
-		IFile scriptFile = ResourceUtil.getRelativeFile(file, scriptFilePathS);
-		if (!scriptFile.exists()) {
-			throw new IllegalArgumentException("Script-file does not exist: " + scriptFilePathS);
-		}
-		String scriptName = scriptFile.getLocation().toOSString();
-		String scriptLang = BSFManager.getLangFromFilename(scriptName);
-		if (scriptLang == null) {
-			throw new IllegalArgumentException("Unknown scripting language for: " + scriptFile);
-		}
-		String script = ResourceUtil.readFile(scriptFile);
-		// run script
-		BSFManager manager = new BSFManager();
-		//
-		manager.declareBean("element", element, XElement.class);
-		manager.declareBean("sourceFile", file, IFile.class);
-		manager.declareBean("scriptFile", scriptFile, IFile.class);
-		manager.declareBean("resources", new ResourceScriptHelper(), ResourceScriptHelper.class);
-		//
-		try {
-			manager.exec(scriptLang, scriptName, 0, 0, script);
-		} catch (Exception e) {
-			throw handleException(e);
-		}
-	}
-
-	private Exception handleException(Exception exception) {
-		try {
-			throw exception;
-		} catch (RaiseException re) {
-			RubyException rubyException = re.getException();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			PrintStream pos = new PrintStream(bos);
-			pos.println(StringUtil.toString(rubyException.message));
-			rubyException.printBacktrace(pos);
-			return new Exception(bos.toString(), re);
-		} catch (BSFException e) {
-			Throwable t = e.getTargetException();
-			if (t instanceof Exception) {
-				return handleException((Exception) t);
-			}
-			return e;
-		} catch (Exception e) {
-			return e;
-		}
+	public void generateResources(XElement configElement, XFile sourceFile, XFolder targetBaseFolder,
+	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+		BsfExecuter executer = new BsfExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
+		executer.declareBean("targetBaseFolder", targetBaseFolder, XFolder.class);
+		executer.declareBean("monitor", monitor, IProgressMonitor.class);
+		executer.execute();
 	}
 }
