@@ -1,7 +1,7 @@
 /*
- * $Id: ContentBuffer.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.2 2006-12-03 01:12:25 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2006 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.eclipse.common;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
+ * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
+ * @since 16.11.2006
  */
 public class ContentBuffer {
 	private StringBuffer _buffer = new StringBuffer();
@@ -33,9 +36,14 @@ public class ContentBuffer {
 
 	private String _defaultIndent;
 
-	public ContentBuffer() {
+	public ContentBuffer(String defaultIndent) {
 		super();
 		updateIndent();
+		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
+	}
+
+	public ContentBuffer() {
+		this(null);
 	}
 
 	public String getDefaultIndent() {
@@ -43,15 +51,15 @@ public class ContentBuffer {
 	}
 
 	public void setDefaultIndent(String defaultIndent) {
-		_defaultIndent = defaultIndent;
+		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
 	}
 
 	private void updateIndent() {
-		StringBuffer result = new StringBuffer();
+		StringBuffer indent = new StringBuffer();
 		for (Iterator indentsI = _indents.iterator(); indentsI.hasNext();) {
-			result.append(indentsI.next());
+			indent.append((String) indentsI.next());
 		}
-		_indent = result.toString();
+		_indent = indent.toString();
 	}
 
 	public String getIndent() {
@@ -62,6 +70,10 @@ public class ContentBuffer {
 		_indents.addLast(newIndent);
 		updateIndent();
 		return _indent;
+	}
+
+	public String i() {
+		return i(_defaultIndent);
 	}
 
 	public String u() {
