@@ -1,9 +1,9 @@
 puts("load")
-load $resources.getRelativeFile($scriptFile, "bean14.rb").location.toOSString()
+load $scriptFile.getFile("bean14.rb").location.toOSString()
 
 puts("new")
-root = Root.new($sourceFile, $element)
+root = Root.new($sourceFile, $targetBaseFolder, $configElement)
 puts("resolve")
 root.resolve()
 puts("write")
-root.write()
+root.write($monitor)
