@@ -1,5 +1,5 @@
 /*
- * $Id: XResource.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XResource.java,v 1.2 2006-12-07 17:15:26 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Path;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public abstract class XResource {
@@ -159,14 +159,14 @@ public abstract class XResource {
 	 * @see org.eclipse.core.resources.IResource#getFullPath()
 	 */
 	public IPath getFullPath() {
-		return _absoluteBaseContainer.getFullPath();
+		return _resource.getFullPath();
 	}
 
 	/**
 	 * @see org.eclipse.core.resources.IResource#getName()
 	 */
 	public String getName() {
-		return _absoluteBaseContainer.getName();
+		return _resource.getName();
 	}
 
 	public final XContainer getParent() {
