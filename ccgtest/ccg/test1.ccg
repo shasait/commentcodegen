@@ -2,7 +2,7 @@
 	<bsf file="../scripts/bean14main.rb">
 		<package name="de.tolina.uzb" clean="true">
 			<bean name="Verbund">
-				<property name="nummer" type="String" />
+				<property name="nummer" description="Die Verbundnummer." type="String" />
 				<property name="name2" type="String" />
 
 				<property name="kunde" type="Kunde" cardinality="*" backref="verbund" />
@@ -18,7 +18,7 @@
 			<bean name="Konto">
 				<property name="kunde" type="Kunde" backref="konto" />
 
-				<property name="nummer" type="String" />
+				<property name="nummer" description="Die Kontonummer." type="String" />
 		
 				<property name="abfrage" type="AbstractKontoAbfrage" backref="konto" cardinality="*">
 					<managedMap ref="ausgefuehrtAm" order="key" />
