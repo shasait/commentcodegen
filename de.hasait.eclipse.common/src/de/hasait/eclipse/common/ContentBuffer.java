@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.2 2006-12-03 01:12:25 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.3 2006-12-08 16:29:31 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,7 +24,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -36,21 +36,24 @@ public class ContentBuffer {
 
 	private String _defaultIndent;
 
+	private boolean _indentNeeded;
+
 	public ContentBuffer(String defaultIndent) {
 		super();
 		updateIndent();
 		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
+		_indentNeeded = true;
 	}
 
 	public ContentBuffer() {
 		this(null);
 	}
 
-	public String getDefaultIndent() {
+	public final String getDefaultIndent() {
 		return _defaultIndent;
 	}
 
-	public void setDefaultIndent(String defaultIndent) {
+	public final void setDefaultIndent(String defaultIndent) {
 		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
 	}
 
@@ -62,53 +65,71 @@ public class ContentBuffer {
 		_indent = indent.toString();
 	}
 
-	public String getIndent() {
+	public final String getIndent() {
 		return _indent;
 	}
 
-	public String i(String newIndent) {
+	public final String i(String newIndent) {
 		_indents.addLast(newIndent);
 		updateIndent();
 		return _indent;
 	}
 
-	public String i() {
+	public final String i() {
 		return i(_defaultIndent);
 	}
 
-	public String u() {
+	public final String u() {
 		String oldIndent = (String) _indents.removeLast();
 		updateIndent();
 		return oldIndent;
 	}
 
-	public void p(String line) {
-		_buffer.append(_indent).append(line).append("\n");
+	protected final void bi() {
+		if (_indentNeeded) {
+			_buffer.append(_indent);
+			_indentNeeded = false;
+		}
 	}
 
-	public void p() {
+	public final void a(String text) {
+		bi();
+		_buffer.append(text);
+	}
+
+	protected final void bn() {
+		_buffer.append("\n");
+		_indentNeeded = true;
+	}
+
+	public final void p(String line) {
+		a(line);
+		bn();
+	}
+
+	public final void p() {
 		p("");
 	}
 
-	public void pi(String line, String indent) {
+	public final void pi(String line, String indent) {
 		p(line);
 		i(indent);
 	}
 
-	public void pi(String line) {
+	public final void pi(String line) {
 		pi(line, _defaultIndent);
 	}
 
-	public void pu(String line) {
+	public final void pu(String line) {
 		u();
 		p(line);
 	}
 
-	public void c() {
+	public final void c() {
 		_buffer = new StringBuffer();
 	}
 
-	public String getContent() {
+	public final String getContent() {
 		return _buffer.toString();
 	}
 }
