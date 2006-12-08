@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.9 2006-12-03 21:43:18 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.10 2006-12-08 16:28:46 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -56,7 +56,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -83,7 +83,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
 	 * File extension used for resource generator scripts.
 	 */
-	public static final String RESOURCE_GENERATOR_FILE_EXTENSION = "ccg";
+	public static final String RESOURCE_GENERATOR_FILE_EXTENSION = "ccg.xml";
 
 	/**
 	 * File extension used for resource generator scripts.
