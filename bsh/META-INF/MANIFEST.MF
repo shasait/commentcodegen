@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Beanshell Plug-in
+Bundle-SymbolicName: bsh
+Bundle-Version: 2.0b4
+Bundle-ClassPath: bsh.jar
+Bundle-Localization: plugin
