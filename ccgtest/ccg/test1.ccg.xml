@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ccg>
-	<bsf file="../scripts/bean14main.rb">
+	<bsf file="../scripts/bean/CcgMain.rb">
 		<package name="de.tolina.uzb.bo.uzliste" clean="true">
 			<bean name="Liste">
 				<property name="nummer" description="Die Verbundnummer." type="String" />
@@ -38,8 +38,8 @@
 			<bean name="AbstractKontoAbfrage" abstract="true">
 				<property name="konto" type="de.tolina.uzb.bo.uzliste.Konto" backref="abfrage" />
 
-				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgeführt." />	
-				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgelöst." />	
+				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgefuehrt." />	
+				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgeloest." />	
 			</bean>
 			
 			<bean name="KontoVerfuegbarAbfrage" extends="AbstractKontoAbfrage">
