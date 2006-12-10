@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.10 2006-12-08 16:28:46 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.11 2006-12-10 13:47:17 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -56,7 +56,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -83,7 +83,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
 	 * File extension used for resource generator scripts.
 	 */
-	public static final String RESOURCE_GENERATOR_FILE_EXTENSION = "ccg.xml";
+	public static final String RESOURCE_GENERATOR_FILENAME_SUFFIX = "ccg.xml";
 
 	/**
 	 * File extension used for resource generator scripts.
@@ -142,20 +142,20 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	      final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
 			XFile file = new XFile((IFile) resource, getProject());
-			String fileExtension = file.getFileExtension();
-			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(fileExtension) || _parserLookup.containsParser(fileExtension)) {
-				executeGenerators(file, fileExtension, configuration, monitor);
+			if (file.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)
+			      || _parserLookup.containsParser(file.getFileExtension())) {
+				executeGenerators(file, configuration, monitor);
 			}
 		}
 	}
 
-	private void executeGenerators(final XFile sourceFile, final String sourceFileExtension,
-	      final CcgProjectConfiguration configuration, final IProgressMonitor monitor) {
+	private void executeGenerators(final XFile sourceFile, final CcgProjectConfiguration configuration,
+	      final IProgressMonitor monitor) {
 		try {
 			deleteMarkers(sourceFile.getRawFile());
 			// create a context to allow data-exchange between generators...
 			Map sourceFileContext = new HashMap();
-			if (RESOURCE_GENERATOR_FILE_EXTENSION.equals(sourceFileExtension)) {
+			if (sourceFile.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)) {
 				// check for valid sourceFolder
 				if (isPrefixOf(getProject(), configuration.getSourceFolderPaths(), sourceFile.getRawResource())) {
 					// our own file-format - execute generators...
@@ -163,7 +163,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				}
 			} else {
 				// foreign file - lookup comment-parser...
-				ICcgParser parser = _parserLookup.findParser(sourceFileExtension);
+				ICcgParser parser = _parserLookup.findParser(sourceFile.getFileExtension());
 				if (parser != null) {
 					// ok - found a parser - try to parse...
 					ICcgRoot root = parser.parse(sourceFile.read());
