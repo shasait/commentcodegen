@@ -16,6 +16,7 @@
       <import plugin="org.eclipse.core.resources" export="true"/>
       <import plugin="org.eclipse.ui" export="true"/>
       <import plugin="org.apache.bsf" export="true"/>
+      <import plugin="bsh" export="true"/>
    </requires>
 
 </plugin>
