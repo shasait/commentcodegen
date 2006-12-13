@@ -1,5 +1,5 @@
 /*
- * $Id: XResource.java,v 1.2 2006-12-07 17:15:26 concentus Exp $
+ * $Id: XResource.java,v 1.3 2006-12-13 21:59:54 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import org.eclipse.core.runtime.Path;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 01.12.2006
  */
 public abstract class XResource {
@@ -116,6 +116,10 @@ public abstract class XResource {
 			return _resource.equals(other._resource) && _absoluteBaseContainer.equals(other._absoluteBaseContainer);
 		}
 		return false;
+	}
+
+	public int hashCode() {
+		return _resource.hashCode();
 	}
 
 	/**
