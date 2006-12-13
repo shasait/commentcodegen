@@ -1,50 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ccg>
-	<bsf file="../scripts/bean/CcgMain.rb">
-		<package name="de.tolina.uzb.bo.uzliste" clean="true">
+	<application>
+		<model package="de.tolina.uzb.bo.uzliste" clean="true">
 			<bean name="Liste">
 				<property name="nummer" description="Die Verbundnummer." type="String" />
 
 				<property name="verbund" type="Verbund" cardinality="*" backref="liste" />
 			</bean>
-			
+
 			<bean name="Verbund">
 				<property name="liste" type="Liste" backref="verbund" />
-				
+
 				<property name="nummer" description="Die Verbundnummer." type="String" />
 
 				<property name="kunde" type="Kunde" cardinality="*" backref="verbund" />
 			</bean>
-			
+
 			<bean name="Kunde">
 				<property name="verbund" type="Verbund" backref="kunde" />
 
 				<property name="nummer" type="String" />
 				<property name="name" type="String" />
-	
+
 				<property name="konto" type="Konto" cardinality="*" backref="kunde" />
 			</bean>
-			
+
 			<bean name="Konto">
 				<property name="kunde" type="Kunde" backref="konto" />
 
 				<property name="nummer" description="Die Kontonummer." type="String" />
-		
-				<property name="abfrage" type="de.tolina.uzb.bo.abfrage.AbstractKontoAbfrage" backref="konto" cardinality="*" />
-			</bean>
-		</package>
 
-		<package name="de.tolina.uzb.bo.abfrage" clean="true">			
+				<property name="abfrage" type="de.tolina.uzb.bo.abfrage.AbstractKontoAbfrage" backref="konto"
+					cardinality="*" />
+			</bean>
+		</model>
+
+		<model package="de.tolina.uzb.bo.abfrage" clean="true">
 			<bean name="AbstractKontoAbfrage" abstract="true">
 				<property name="konto" type="de.tolina.uzb.bo.uzliste.Konto" backref="abfrage" />
 
-				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgefuehrt." />	
-				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgeloest." />	
+				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgefuehrt." />
+				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgeloest." />
 			</bean>
-			
+
 			<bean name="KontoVerfuegbarAbfrage" extends="AbstractKontoAbfrage">
-				<property name="verfuegbar" type="java.math.BigDecimal" />	
+				<property name="verfuegbar" type="java.math.BigDecimal" />
 			</bean>
-		</package>
-	</bsf>
+		</model>
+	</application>
 </ccg>
