@@ -7,7 +7,7 @@ import de.hasait.eclipse.common.StringUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 13.12.2006
  */
 public abstract class AbstractProperty {
@@ -165,7 +165,7 @@ public abstract class AbstractProperty {
 	}
 
 	public final String getJavaDocFullName() {
-		return "{@link " + _bean.getFullName() + "#" + _varName + "}";
+		return "{@link " + _bean.getFullName() + "#" + getNameConstant() + "}";
 	}
 
 	public abstract String getAdderCall(String instance, String value);
@@ -194,23 +194,20 @@ public abstract class AbstractProperty {
 		// puts("backref of #{getFullName()} is #{@backrefProperty.getFullName()}")
 	}
 
-	public void write(ContentBuffer content, IProgressMonitor monitor) {
-		content.p("//");
-		content.p("// ########## PROPERTY #{@name} follows ##########");
-		content.p("//");
-
-		//
-		// constants
-		//
-		content.pi("/**", " * ");
-		content.p("Name of property " + _name + ".");
-		content.pu(" */");
+	public void writeConstants(ContentBuffer content, IProgressMonitor monitor) {
+		content.p("/** Name of property " + getName() + ". */");
 		content.p("public static final String " + getNameConstant() + " = \"" + _name + "\";");
 
-		content.pi("/**", " * ");
-		content.p("Type of property " + _name + ".");
-		content.pu(" */");
+		content.p("/** Type of property " + getName() + ". */");
 		content.p("public static final Class " + getTypeConstant() + " = " + _type + ".class;");
 		content.p();
+	}
+
+	public void writeFields(ContentBuffer content, IProgressMonitor monitor) {
+		// nop
+	}
+
+	public void writeMethods(ContentBuffer content, IProgressMonitor monitor) {
+		// nop
 	}
 }

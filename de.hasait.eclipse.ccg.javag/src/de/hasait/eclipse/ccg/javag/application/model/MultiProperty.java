@@ -18,7 +18,7 @@ public class MultiProperty extends AbstractProperty {
 	public MultiProperty(Bean bean, String name, String description, String type, String backref,
 	      String getterVisibility, String setterVisibility) {
 		super(bean, name, description, type, backref, getterVisibility, setterVisibility);
-		
+
 		_addMethodName = "add" + getCapName();
 		_removeMethodName = "remove" + getCapName();
 	}
@@ -45,15 +45,16 @@ public class MultiProperty extends AbstractProperty {
 		return instance + "." + getRemoveMethodName() + "(" + value + ")";
 	}
 
-	public void write(ContentBuffer content, IProgressMonitor monitor) {
-		super.write(content, monitor);
+	public void writeFields(ContentBuffer content, IProgressMonitor monitor) {
+		super.writeFields(content, monitor);
 
-		//
-		// variable
-		//
 		content.p("private final java.util.List " + getVarName() + " = new java.util.ArrayList();");
 
 		content.p();
+	}
+
+	public void writeMethods(ContentBuffer content, IProgressMonitor monitor) {
+		super.writeMethods(content, monitor);
 
 		//
 		// getter

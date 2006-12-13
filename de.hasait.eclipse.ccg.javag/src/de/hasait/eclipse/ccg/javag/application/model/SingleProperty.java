@@ -49,15 +49,16 @@ public class SingleProperty extends AbstractProperty {
 		return instance + "." + getSetMethodName() + "(null)";
 	}
 
-	public void write(ContentBuffer content, IProgressMonitor monitor) {
-		super.write(content, monitor);
+	public void writeFields(ContentBuffer content, IProgressMonitor monitor) {
+		super.writeFields(content, monitor);
 
-		//
-		// variable
-		//
 		content.p("private " + getType() + " " + getVarName() + ";");
 
 		content.p();
+	}
+
+	public void writeMethods(ContentBuffer content, IProgressMonitor monitor) {
+		super.writeMethods(content, monitor);
 
 		//
 		// getter
