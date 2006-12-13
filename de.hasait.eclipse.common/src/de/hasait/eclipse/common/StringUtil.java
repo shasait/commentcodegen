@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: StringUtil.java,v 1.2 2006-12-13 22:01:23 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -58,6 +58,19 @@ public final class StringUtil {
 		return new String(chars);
 	}
 
+	public static String camelCaseToUpperCase(final String camelCase) {
+		StringBuffer result = new StringBuffer();
+		boolean lastWasLowerCase = false;
+		for (int chI = 0; chI < camelCase.length(); chI++) {
+			char ch = camelCase.charAt(chI);
+			if (Character.isUpperCase(ch) && lastWasLowerCase) {
+				result.append("_");
+			}
+			result.append(Character.toUpperCase(ch));
+		}
+		return result.toString();
+	}
+
 	public static String replaceAll(final String pInput, final Map pReplacements) {
 		if (pInput == null) {
 			return null;
@@ -67,14 +80,12 @@ public final class StringUtil {
 		String current = pInput;
 		while (replacementsI.hasNext()) {
 			replacement = (Map.Entry) replacementsI.next();
-			current = replace(current, (String) replacement.getKey(),
-					(String) replacement.getValue());
+			current = replace(current, (String) replacement.getKey(), (String) replacement.getValue());
 		}
 		return current;
 	}
 
-	public static String replace(final String pInput, final String pSearch,
-			final String pReplace) {
+	public static String replace(final String pInput, final String pSearch, final String pReplace) {
 		if (pInput == null) {
 			return null;
 		}
@@ -96,8 +107,7 @@ public final class StringUtil {
 		String current = pInput;
 		while (replacementsI.hasNext()) {
 			replacement = (Map.Entry) replacementsI.next();
-			current = current.replaceAll((String) replacement.getKey(),
-					(String) replacement.getValue());
+			current = current.replaceAll((String) replacement.getKey(), (String) replacement.getValue());
 		}
 		return current;
 	}
@@ -119,7 +129,7 @@ public final class StringUtil {
 	 * Finds args with the pattern
 	 * 
 	 * <pre>
-	 *     -argName=argValue
+	 *        -argName=argValue
 	 * </pre>.
 	 * 
 	 * @param pArgs
@@ -153,8 +163,7 @@ public final class StringUtil {
 		return toString(pObject, null);
 	}
 
-	public static String getMergedBlocks(String blockStart, String blockEnd,
-			String content) {
+	public static String getMergedBlocks(String blockStart, String blockEnd, String content) {
 		int s = content.indexOf(blockStart);
 		if (s == -1) {
 			return null;
@@ -174,8 +183,7 @@ public final class StringUtil {
 		return result.toString();
 	}
 
-	public static String setMergedBlocks(String blockStart, String blockEnd,
-			String content, String value) {
+	public static String setMergedBlocks(String blockStart, String blockEnd, String content, String value) {
 		String result = content;
 		int s = result.indexOf(blockStart);
 		if (s == -1) {
@@ -187,8 +195,7 @@ public final class StringUtil {
 		}
 		boolean set = false;
 		while (s != -1 && e != -1) {
-			result = result.substring(0, s + blockStart.length())
-					+ (set ? "" : value) + result.substring(e);
+			result = result.substring(0, s + blockStart.length()) + (set ? "" : value) + result.substring(e);
 			set = true;
 			s = content.indexOf(blockStart, e);
 			if (s != -1) {
