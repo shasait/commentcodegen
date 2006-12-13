@@ -29,6 +29,7 @@
       <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.EventSupportBlockGenerator"/>
       <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateBlockGenerator"/>
       <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.PropertyBlockGenerator"/>
+      <resourceGenerator class="de.hasait.eclipse.ccg.javag.application.ApplicationResourceGenerator"/>
    </extension>
 
 </plugin>
