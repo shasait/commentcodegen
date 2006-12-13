@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.2 2006-12-13 22:01:23 concentus Exp $
+ * $Id: StringUtil.java,v 1.3 2006-12-13 22:57:05 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,7 +22,7 @@ import java.util.Map;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -60,11 +60,15 @@ public final class StringUtil {
 
 	public static String camelCaseToUpperCase(final String camelCase) {
 		StringBuffer result = new StringBuffer();
-		boolean lastWasLowerCase = false;
+		boolean lastWasNotUpperCase = false;
 		for (int chI = 0; chI < camelCase.length(); chI++) {
 			char ch = camelCase.charAt(chI);
-			if (Character.isUpperCase(ch) && lastWasLowerCase) {
-				result.append("_");
+			if (Character.isUpperCase(ch)) {
+				if (lastWasNotUpperCase) {
+					result.append("_");
+				}
+			} else {
+				lastWasNotUpperCase = true;
 			}
 			result.append(Character.toUpperCase(ch));
 		}
@@ -129,7 +133,7 @@ public final class StringUtil {
 	 * Finds args with the pattern
 	 * 
 	 * <pre>
-	 *        -argName=argValue
+	 *          -argName=argValue
 	 * </pre>.
 	 * 
 	 * @param pArgs
