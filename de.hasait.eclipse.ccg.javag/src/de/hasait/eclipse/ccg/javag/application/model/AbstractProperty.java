@@ -2,153 +2,157 @@ package de.hasait.eclipse.ccg.javag.application.model;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.hasait.eclipse.ccg.javag.application.lowlevel.MVisibility;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public abstract class AbstractProperty {
+	private final Bean _bean;
+
+	private final String _name;
+
+	private final String _capName;
+
+	private final String _fieldName;
+
+	private final String _localVarName;
+
+	private final String _parameterVarName;
+
+	private final String _description;
+
+	private final String _type;
+
+	private final String _backref;
+
+	private AbstractProperty _backrefProperty;
+
+	private final boolean _bound;
+
+	private final MVisibility _setterVisibility;
+
+	private final MVisibility _getterVisibility;
+
 	/**
 	 * Constructor.
 	 */
-	protected AbstractProperty(final Bean bean, final String name, final String description, final String type,
-	      final String backref, final String getterVisibility, final String setterVisibility) {
+	protected AbstractProperty(final Bean pBean, final XElement pConfigElement) {
 		super();
 
-		_bean = bean;
-		_name = name;
-		_description = description;
-		_type = type;
-		_backref = backref;
-		_getterVisibility = getterVisibility;
-		_setterVisibility = setterVisibility;
+		_bean = pBean;
 
-		_varName = "_" + name;
-		_capName = StringUtil.capitalize(name);
+		_name = pConfigElement.getRequiredAttribute("name");
+		_description = pConfigElement.getAttribute("description");
+		_type = pConfigElement.getRequiredAttribute("type");
+		_backref = pConfigElement.getAttribute("backref");
+		_bound = pConfigElement.getAttributeAsBoolean("bound", false);
+		_getterVisibility = MVisibility.get(pConfigElement.getAttribute("getterVisibility", "public"));
+		_setterVisibility = MVisibility.get(pConfigElement.getAttribute("setterVisibility", "public"));
 
-		_bean.addProperty(this);
+		_capName = StringUtil.capitalize(_name);
+		_fieldName = "_" + _name;
+		_localVarName = _name;
+		_parameterVarName = "p" + _capName;
+
+		if (_bound) {
+			_bean.setPropertyChangeSupportNeeded();
+		}
 	}
 
-	/** Value of property bean. */
-	private final Bean _bean;
-
 	/**
-	 * Return the value of property bean.
-	 * 
 	 * @return The value of property bean.
 	 */
 	public final Bean getBean() {
 		return _bean;
 	}
 
-	/** Value of property name. */
-	private final String _name;
-
 	/**
-	 * Return the value of property name.
-	 * 
 	 * @return The value of property name.
 	 */
 	public final String getName() {
 		return _name;
 	}
 
-	/** Value of property varName. */
-	private final String _varName;
-
 	/**
-	 * Return the value of property varName.
-	 * 
-	 * @return The value of property varName.
-	 */
-	public final String getVarName() {
-		return _varName;
-	}
-
-	/** Value of property capName. */
-	private final String _capName;
-
-	/**
-	 * Return the value of property capName.
-	 * 
 	 * @return The value of property capName.
 	 */
 	public final String getCapName() {
 		return _capName;
 	}
 
-	/** Value of property description. */
-	private final String _description;
+	/**
+	 * @return The value of property fieldName.
+	 */
+	public final String getFieldName() {
+		return _fieldName;
+	}
 
 	/**
-	 * Return the value of property description.
-	 * 
+	 * @return the localVarName
+	 */
+	public final String getLocalVarName() {
+		return _localVarName;
+	}
+
+	/**
+	 * @return the parameterVarName
+	 */
+	public final String getParameterVarName() {
+		return _parameterVarName;
+	}
+
+	/**
 	 * @return The value of property description.
 	 */
 	public final String getDescription() {
 		return _description;
 	}
 
-	/** Value of property type. */
-	private final String _type;
-
 	/**
-	 * Return the value of property type.
-	 * 
 	 * @return The value of property type.
 	 */
 	public final String getType() {
 		return _type;
 	}
 
-	/** Value of property backref. */
-	private final String _backref;
-
 	/**
-	 * Return the value of property backref.
-	 * 
 	 * @return The value of property backref.
 	 */
 	public final String getBackref() {
 		return _backref;
 	}
 
-	/** Value of property backrefProperty. */
-	private AbstractProperty _backrefProperty;
-
 	/**
-	 * Return the value of property backrefProperty.
-	 * 
 	 * @return The value of property backrefProperty.
 	 */
 	public final AbstractProperty getBackrefProperty() {
 		return _backrefProperty;
 	}
 
-	/** Value of property getterVisibility. */
-	private final String _getterVisibility;
+	/**
+	 * @return the bound
+	 */
+	public final boolean isBound() {
+		return _bound;
+	}
 
 	/**
-	 * Return the value of property getterVisibility.
-	 * 
 	 * @return The value of property getterVisibility.
 	 */
-	public final String getGetterVisibility() {
+	public final MVisibility getGetterVisibility() {
 		return _getterVisibility;
 	}
 
-	/** Value of property setterVisibility. */
-	private final String _setterVisibility;
-
 	/**
-	 * Return the value of property setterVisibility.
-	 * 
 	 * @return The value of property setterVisibility.
 	 */
-	public final String getSetterVisibility() {
+	public final MVisibility getSetterVisibility() {
 		return _setterVisibility;
 	}
 
@@ -187,11 +191,11 @@ public abstract class AbstractProperty {
 	}
 
 	public void validate(IProgressMonitor monitor) {
-		// if (_backrefProperty != null && _backrefProperty.getBackr)
-		// if !@backrefProperty.backrefProperty.nil? and @backrefProperty.backrefProperty != self
-		// raise "Backref of backref #{@backref} is not #{@name}, but #{@backrefProperty.backrefProperty.name}"
-		// end
-		// puts("backref of #{getFullName()} is #{@backrefProperty.getFullName()}")
+		if (getBackrefProperty() != null && getBackrefProperty().getBackrefProperty() != null
+		      && getBackrefProperty().getBackrefProperty() != this) {
+			throw new IllegalArgumentException("Backref of backref " + getBackref() + " is not " + getFullName()
+			      + ", but " + getBackrefProperty().getBackrefProperty().getFullName());
+		}
 	}
 
 	public void writeConstants(ContentBuffer content, IProgressMonitor monitor) {

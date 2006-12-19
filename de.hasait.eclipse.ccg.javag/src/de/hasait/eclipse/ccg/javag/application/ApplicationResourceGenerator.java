@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationResourceGenerator.java,v 1.1 2006-12-13 21:58:08 concentus Exp $
+ * $Id: ApplicationResourceGenerator.java,v 1.2 2006-12-19 15:06:03 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,11 +24,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.ccg.javag.application.model.Application;
-import de.hasait.eclipse.ccg.javag.application.model.Bean;
-import de.hasait.eclipse.ccg.javag.application.model.Model;
-import de.hasait.eclipse.ccg.javag.application.model.MultiProperty;
-import de.hasait.eclipse.ccg.javag.application.model.SingleProperty;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.resource.XFolder;
 import de.hasait.eclipse.common.xml.XElement;
@@ -36,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 13.12.2006
  */
 public class ApplicationResourceGenerator extends AbstractCcgResourceGenerator {
@@ -51,68 +46,11 @@ public class ApplicationResourceGenerator extends AbstractCcgResourceGenerator {
 		super(DESCRIPTION, TAG_NAMES);
 	}
 
-	public void generateResources(XElement configElement, XFile sourceFile, XFolder targetBaseFolder,
-	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
-		Application application = new Application(sourceFile, targetBaseFolder);
-		XElement[] modelElements = configElement.getChildElements("model");
-		for (int modelElementsI = 0; modelElementsI < modelElements.length; modelElementsI++) {
-			XElement modelElement = modelElements[modelElementsI];
-			addModels(application, modelElement);
-		}
-		application.resolve(monitor);
-		application.validate(monitor);
-		application.write(monitor);
-	}
-
-	private void addModels(Application application, XElement configElement) {
-		String packagej = configElement.getRequiredAttribute("package");
-		Model model = new Model(application, packagej);
-		XElement[] beanElements = configElement.getChildElements("bean");
-		for (int beanElementsI = 0; beanElementsI < beanElements.length; beanElementsI++) {
-			XElement beanElement = beanElements[beanElementsI];
-			addBean(model, beanElement);
-		}
-	}
-
-	private void addBean(Model model, XElement configElement) {
-		String name = configElement.getRequiredAttribute("name");
-		String description = configElement.getAttribute("description");
-		boolean abstractj = configElement.getAttributeAsBoolean("abstract", false);
-		String extendsj = configElement.getAttribute("extends");
-		Bean bean = new Bean(model, name, description, abstractj, extendsj);
-		XElement[] propertyElements = configElement.getChildElements("property");
-		for (int propertyElementsI = 0; propertyElementsI < propertyElements.length; propertyElementsI++) {
-			XElement propertyElement = propertyElements[propertyElementsI];
-			String cardinality = propertyElement.getAttribute("cardinality");
-			if (cardinality == null || cardinality.equals("1")) {
-				addSingleProperty(bean, propertyElement);
-			} else if (cardinality.equals("*")) {
-				addMultiProperty(bean, propertyElement);
-			} else {
-				throw new IllegalArgumentException("cardinality not supported: " + cardinality);
-			}
-		}
-	}
-
-	private void addSingleProperty(Bean bean, XElement configElement) {
-		String name = configElement.getRequiredAttribute("name");
-		String description = configElement.getAttribute("description");
-		String type = configElement.getRequiredAttribute("type");
-		String backref = configElement.getAttribute("backref");
-		String getterVisibility = configElement.getAttribute("getterVisibility", "public");
-		String setterVisibility = configElement.getAttribute("setterVisibility", "public");
-		SingleProperty singleProperty = new SingleProperty(bean, name, description, type, backref, getterVisibility,
-		      setterVisibility);
-	}
-
-	private void addMultiProperty(Bean bean, XElement configElement) {
-		String name = configElement.getRequiredAttribute("name");
-		String description = configElement.getAttribute("description");
-		String type = configElement.getRequiredAttribute("type");
-		String backref = configElement.getAttribute("backref");
-		String getterVisibility = configElement.getAttribute("getterVisibility", "public");
-		String setterVisibility = configElement.getAttribute("setterVisibility", "public");
-		MultiProperty multiProperty = new MultiProperty(bean, name, description, type, backref, getterVisibility,
-		      setterVisibility);
+	public void generateResources(XElement pConfigElement, XFile pSourceFile, XFolder pTargetBaseFolder,
+	      Map pSourceFileContext, ICcgGeneratorLookup pGeneratorLookup, IProgressMonitor pMonitor) throws Exception {
+		Application vApplication = new Application(pSourceFile, pTargetBaseFolder, pConfigElement);
+		vApplication.resolve(pMonitor);
+		vApplication.validate(pMonitor);
+		vApplication.write(pMonitor);
 	}
 }

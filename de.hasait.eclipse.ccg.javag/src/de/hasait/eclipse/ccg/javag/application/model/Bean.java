@@ -1,19 +1,24 @@
 package de.hasait.eclipse.ccg.javag.application.model;
 
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.hasait.eclipse.ccg.javag.application.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public class Bean {
@@ -29,6 +34,10 @@ public class Bean {
 
 	private Bean _extendsBean;
 
+	private final String _propertyChangeSupportName;
+
+	private boolean _propertyChangeSupportNeeded;
+
 	private final XFile _targetFile;
 
 	private final java.util.List _property = new java.util.ArrayList();
@@ -40,24 +49,38 @@ public class Bean {
 	/**
 	 * Constructor.
 	 */
-	public Bean(final Model model, final String name, final String description, final boolean abstractj,
-	      final String extendsj) {
+	public Bean(final Model pModel, final XElement pConfigElement) {
 		super();
 
-		_model = model;
-		_name = name;
-		_description = description;
-		_abstract = abstractj;
-		_extends = extendsj;
+		_model = pModel;
 
+		_name = pConfigElement.getRequiredAttribute("name");
+		_description = pConfigElement.getAttribute("description");
+		_abstract = pConfigElement.getAttributeAsBoolean("abstract", false);
+		_extends = pConfigElement.getAttribute("extends");
+
+		_propertyChangeSupportName = "_propertyChangeSupport";
+		_propertyChangeSupportNeeded = false;
 		_targetFile = _model.getTargetFolder().getFile(_name + ".java");
 
-		_model.addBean(this);
+		XElement[] vPropertyElements = pConfigElement.getChildElements("property");
+		for (int vPropertyElementsI = 0; vPropertyElementsI < vPropertyElements.length; vPropertyElementsI++) {
+			XElement vPropertyElement = vPropertyElements[vPropertyElementsI];
+			String vCardinality = vPropertyElement.getAttribute("cardinality");
+			AbstractProperty vProperty;
+			if (vCardinality == null || vCardinality.equals("1")) {
+				vProperty = new SingleProperty(this, vPropertyElement);
+			} else if (vCardinality.equals("*")) {
+				vProperty = new MultiProperty(this, vPropertyElement);
+			} else {
+				throw new IllegalArgumentException("cardinality not supported: " + vCardinality);
+			}
+			_property.add(vProperty);
+			_propertyByName.put(vProperty.getName(), vProperty);
+		}
 	}
 
 	/**
-	 * Return the value of property model.
-	 * 
 	 * @return The value of property model.
 	 */
 	public final Model getModel() {
@@ -65,8 +88,6 @@ public class Bean {
 	}
 
 	/**
-	 * Return the value of property name.
-	 * 
 	 * @return The value of property name.
 	 */
 	public final String getName() {
@@ -102,6 +123,27 @@ public class Bean {
 	}
 
 	/**
+	 * @return the propertyChangeSupportName
+	 */
+	public final String getPropertyChangeSupportName() {
+		return _propertyChangeSupportName;
+	}
+
+	/**
+	 * @return the propertyChangeSupportNeeded
+	 */
+	public final boolean isPropertyChangeSupportNeeded() {
+		return _propertyChangeSupportNeeded;
+	}
+
+	/**
+	 * Set propertyChangeSupportNeeded to true.
+	 */
+	public final void setPropertyChangeSupportNeeded() {
+		_propertyChangeSupportNeeded = true;
+	}
+
+	/**
 	 * @return the targetFile
 	 */
 	public final XFile getTargetFile() {
@@ -109,20 +151,6 @@ public class Bean {
 	}
 
 	/**
-	 * The value of property property at the specified index.
-	 * 
-	 * @param index
-	 *           The index, which must be valid.
-	 * @return The value of property property at the specified index.
-	 * @see java.util.List#get(int)
-	 */
-	public final AbstractProperty getProperty(int index) {
-		return (AbstractProperty) _property.get(index);
-	}
-
-	/**
-	 * Returns an {@link java.util.Iterator} for all values of property property.
-	 * 
 	 * @return An {@link java.util.Iterator} for all values of property property.
 	 * @see java.util.List#iterator()
 	 */
@@ -131,51 +159,10 @@ public class Bean {
 	}
 
 	/**
-	 * Returns the number of values of property property.
-	 * 
-	 * @return The number of values of property property.
-	 * @see java.util.List#size()
+	 * @return the subBeans
 	 */
-	public final int propertySize() {
-		return _property.size();
-	}
-
-	/**
-	 * Add the specified value to property property. Referred from
-	 * {@link de.hasait.eclipse.ccg.javag.application.model.AbstractProperty#_bean}, which will be updated by this
-	 * method.
-	 * 
-	 * @param property
-	 *           The additional value for property property.
-	 * @see java.util.List#add(Object)
-	 */
-	final void addProperty(final AbstractProperty property) {
-		if (_property.contains(property)) {
-			return;
-		}
-		String propertyName = property.getName();
-		if (_propertyByName.containsKey(propertyName)) {
-			throw new IllegalArgumentException("Duplicate property name: " + propertyName);
-		}
-		_property.add(property);
-		_propertyByName.put(propertyName, property);
-	}
-
-	/**
-	 * Remove the specified value of property property. Referred from
-	 * {@link de.hasait.eclipse.ccg.javag.application.model.AbstractProperty#_bean}, which will be updated by this
-	 * method.
-	 * 
-	 * @param property
-	 *           The value to remove from property property.
-	 * @see java.util.List#remove(Object)
-	 */
-	final void removeProperty(final AbstractProperty property) {
-		if (!_property.contains(property)) {
-			return;
-		}
-		_property.remove(property);
-		_propertyByName.remove(property.getName());
+	public final List getSubBeans() {
+		return Collections.unmodifiableList(_subBeans);
 	}
 
 	public final String getFullName() {
@@ -186,11 +173,11 @@ public class Bean {
 		return "{@link " + getFullName() + "}";
 	}
 
-	public final AbstractProperty findProperty(String name) {
-		return (AbstractProperty) _propertyByName.get(name);
+	public final AbstractProperty findProperty(String pName) {
+		return (AbstractProperty) _propertyByName.get(pName);
 	}
 
-	public final void resolve(final IProgressMonitor monitor) {
+	public final void resolve(final IProgressMonitor pMonitor) {
 		if (_extends != null) {
 			_extendsBean = _model.findBean(_extends);
 			if (_extendsBean != null) {
@@ -199,56 +186,67 @@ public class Bean {
 		}
 		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.resolve(monitor);
+			property.resolve(pMonitor);
 		}
 	}
 
-	public final void validate(final IProgressMonitor monitor) {
-		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
+	public final void validate(final IProgressMonitor pMonitor) {
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.validate(monitor);
+			property.validate(pMonitor);
 		}
 	}
 
-	public final void write(final ContentBuffer content, final IProgressMonitor monitor) {
-		monitor.subTask("write Bean " + getFullName());
+	public final void write(final IProgressMonitor pMonitor) throws CoreException {
+		pMonitor.subTask("write Bean " + getFullName());
+		ContentBuffer content = new ContentBuffer();
+		content.p("package " + getModel().getPackage() + ";");
+		content.p();
 		content.pi("/**", " * ");
-		if (_description != null) {
-			// TODO handle multi-line descriptions
-			content.p(_description);
+		if (getDescription() != null) {
+			content.p(getDescription());
 			content.p();
 		}
-		if (!_subBeans.isEmpty()) {
+		if (!getSubBeans().isEmpty()) {
 			content.pi("Subclasses are:<ul>");
-			for (Iterator subBeansI = _subBeans.iterator(); subBeansI.hasNext();) {
+			for (Iterator subBeansI = getSubBeans().iterator(); subBeansI.hasNext();) {
 				Bean subBean = (Bean) subBeansI.next();
 				content.p("<li>" + subBean.getJavaDocFullName() + "</li>");
 			}
 			content.pu("</ul>");
 		}
-		content.p("@author CommentCodeGen " + _model.getApplication().getSourceFile().getFullPath().toString());
+		content.p("@author CommentCodeGen " + getModel().getApplication().getSourceFile().getFullPath().toString());
 		content.pu(" */");
 		content.a("public ");
-		if (_abstract) {
+		if (isAbstract()) {
 			content.a("abstract ");
 		}
-		content.a("class " + _name + " ");
-		if (_extends != null) {
-			content.a("extends " + _extends + " ");
+		content.a("class " + getName() + " ");
+		if (getExtends() != null) {
+			content.a("extends " + getExtends() + " ");
 		}
 		content.pi("{");
-		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
-			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeConstants(content, monitor);
+		if (isPropertyChangeSupportNeeded()) {
+			content.p(PropertyChangeSupport.class.getName() + " " + getPropertyChangeSupportName() + " = new "
+			      + PropertyChangeSupport.class.getName() + "(this);");
 		}
-		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeFields(content, monitor);
+			property.writeConstants(content, pMonitor);
 		}
-		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeMethods(content, monitor);
+			property.writeFields(content, pMonitor);
+		}
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
+			AbstractProperty property = (AbstractProperty) propertyI.next();
+			property.writeMethods(content, pMonitor);
+		}
+		if (isPropertyChangeSupportNeeded()) {
+			CodeUtils.writeDelegation(content, getPropertyChangeSupportName(), PropertyChangeSupport.class,
+			      "addProp.*|removeProp.*", "", true);
 		}
 		content.pu("}");
+		getTargetFile().write(content.getContent(), Boolean.TRUE, pMonitor);
 	}
 }
