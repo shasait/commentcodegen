@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.11 2006-12-10 13:47:17 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.12 2006-12-19 15:05:01 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -56,7 +56,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -100,8 +100,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			if (delta == null) {
 				fullBuild(configuration, monitor);
 			} else {
-				fullBuild(configuration, monitor);
-				// incrementalBuild(delta, monitor);
+				// fullBuild(configuration, monitor);
+				incrementalBuild(delta, configuration, monitor);
 			}
 		}
 		return null;
