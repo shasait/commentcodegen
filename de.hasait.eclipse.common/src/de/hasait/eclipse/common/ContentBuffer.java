@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.3 2006-12-08 16:29:31 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.4 2006-12-19 15:06:29 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,7 +24,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -92,9 +92,10 @@ public class ContentBuffer {
 		}
 	}
 
-	public final void a(String text) {
+	public final ContentBuffer a(String text) {
 		bi();
 		_buffer.append(text);
+		return this;
 	}
 
 	protected final void bn() {
