@@ -4,7 +4,8 @@
    id="de.hasait.eclipse.common"
    name="Common Plug-in"
    version="1.0.1"
-   provider-name="Sebastian Hasait">
+   provider-name="Sebastian Hasait"
+   class="de.hasait.eclipse.common.CommonPlugin">
 
    <runtime>
       <library name="common.jar">

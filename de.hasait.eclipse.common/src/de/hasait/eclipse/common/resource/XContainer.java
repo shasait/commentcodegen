@@ -1,5 +1,5 @@
 /*
- * $Id: XContainer.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XContainer.java,v 1.2 2006-12-30 18:30:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,13 +20,14 @@ package de.hasait.eclipse.common.resource;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public abstract class XContainer extends XResource {
@@ -38,6 +39,10 @@ public abstract class XContainer extends XResource {
 	protected XContainer(final IContainer container, final IContainer absoluteBaseContainer) {
 		super(container, absoluteBaseContainer);
 		_container = container;
+	}
+
+	protected XContainer(final IContainer container) {
+		this(container, ResourcesPlugin.getWorkspace().getRoot());
 	}
 
 	/**

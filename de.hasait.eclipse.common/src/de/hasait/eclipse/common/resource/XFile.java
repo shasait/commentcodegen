@@ -1,5 +1,5 @@
 /*
- * $Id: XFile.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XFile.java,v 1.2 2006-12-30 18:30:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,8 +29,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.xml.sax.SAXException;
 
 import de.hasait.eclipse.common.ContentBuffer;
@@ -40,7 +43,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public class XFile extends XResource {
@@ -52,6 +55,10 @@ public class XFile extends XResource {
 	public XFile(final IFile file, final IContainer absoluteBaseContainer) {
 		super(file, absoluteBaseContainer);
 		_file = file;
+	}
+
+	public XFile(final IFile file) {
+		this(file, ResourcesPlugin.getWorkspace().getRoot());
 	}
 
 	/**
@@ -73,17 +80,21 @@ public class XFile extends XResource {
 		return getFolder(_file.getParent(), path);
 	}
 
-	public final String read() throws IOException, CoreException {
+	public final String read() throws CoreException {
 		InputStream contentsIn = _file.getContents();
 		try {
-			Reader contentsReader = new InputStreamReader(contentsIn, _file.getCharset());
 			try {
-				return IOUtil.readAll(contentsReader);
+				Reader contentsReader = new InputStreamReader(contentsIn, _file.getCharset());
+				try {
+					return IOUtil.readAll(contentsReader);
+				} finally {
+					contentsReader.close();
+				}
 			} finally {
-				contentsReader.close();
+				contentsIn.close();
 			}
-		} finally {
-			contentsIn.close();
+		} catch (IOException e) {
+			throw new CoreException(new Status(IStatus.ERROR, null, IStatus.ERROR, e.getLocalizedMessage(), e));
 		}
 	}
 

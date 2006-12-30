@@ -1,5 +1,5 @@
 /*
- * $Id: XRoot.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XRoot.java,v 1.2 2006-12-30 18:30:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,11 +20,12 @@ package de.hasait.eclipse.common.resource;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public class XRoot extends XContainer {
@@ -36,6 +37,10 @@ public class XRoot extends XContainer {
 	public XRoot(final IWorkspaceRoot root, final IContainer absoluteBaseContainer) {
 		super(root, absoluteBaseContainer);
 		_root = root;
+	}
+
+	public XRoot(final IWorkspaceRoot root) {
+		this(root, ResourcesPlugin.getWorkspace().getRoot());
 	}
 
 	/**

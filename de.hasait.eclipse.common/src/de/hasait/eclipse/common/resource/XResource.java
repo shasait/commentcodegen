@@ -1,5 +1,5 @@
 /*
- * $Id: XResource.java,v 1.3 2006-12-13 21:59:54 concentus Exp $
+ * $Id: XResource.java,v 1.4 2006-12-30 18:30:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -21,9 +21,11 @@ package de.hasait.eclipse.common.resource;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -32,7 +34,7 @@ import org.eclipse.core.runtime.Path;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 01.12.2006
  */
 public abstract class XResource {
@@ -41,59 +43,63 @@ public abstract class XResource {
 	private final IContainer _absoluteBaseContainer;
 
 	/**
-	 * @param resource
-	 * @param absoluteBaseContainer
+	 * @param pResource
+	 * @param pAbsoluteBaseContainer
 	 */
-	protected XResource(final IResource resource, final IContainer absoluteBaseContainer) {
+	protected XResource(final IResource pResource, final IContainer pAbsoluteBaseContainer) {
 		super();
 		//
-		if (resource == null) {
+		if (pResource == null) {
 			throw new NullPointerException("resource == null");
 		}
-		_resource = resource;
+		_resource = pResource;
 		//
-		if (absoluteBaseContainer == null) {
+		if (pAbsoluteBaseContainer == null) {
 			throw new IllegalArgumentException("absoluteBaseContainer == null");
 		}
-		_absoluteBaseContainer = absoluteBaseContainer;
+		_absoluteBaseContainer = pAbsoluteBaseContainer;
 	}
 
-	public static XResource create(final IResource resource, final IContainer absoluteBaseContainer) {
-		switch (resource.getType()) {
+	protected XResource(final IResource pResource) {
+		this(pResource, ResourcesPlugin.getWorkspace().getRoot());
+	}
+
+	public static XResource create(final IResource pResource, final IContainer pAbsoluteBaseContainer) {
+		switch (pResource.getType()) {
 		case IResource.FILE:
-			return new XFile((IFile) resource, absoluteBaseContainer);
+			return new XFile((IFile) pResource, pAbsoluteBaseContainer);
 		case IResource.FOLDER:
-			return new XFolder((IFolder) resource, absoluteBaseContainer);
+			return new XFolder((IFolder) pResource, pAbsoluteBaseContainer);
 		case IResource.PROJECT:
-			return new XProject((IProject) resource, absoluteBaseContainer);
+			return new XProject((IProject) pResource, pAbsoluteBaseContainer);
 		case IResource.ROOT:
-			return new XRoot((IWorkspaceRoot) resource, absoluteBaseContainer);
+			return new XRoot((IWorkspaceRoot) pResource, pAbsoluteBaseContainer);
 		}
-		throw new IllegalArgumentException("resource type unknown: " + resource.getType());
+		throw new IllegalArgumentException("resource type unknown: " + pResource.getType());
 	}
 
-	protected final XResource wrapResource(final IResource resource) {
-		return create(resource, _absoluteBaseContainer);
+	protected final XResource wrapResource(final IResource pResource) {
+		return create(pResource, _absoluteBaseContainer);
 	}
 
-	protected final XContainer wrapContainer(final IContainer container) {
-		return (XContainer) create(container, _absoluteBaseContainer);
+	protected final XContainer wrapContainer(final IContainer pContainer) {
+		return (XContainer) create(pContainer, _absoluteBaseContainer);
 	}
 
-	protected final XFile wrapFile(final IFile file) {
-		return new XFile(file, _absoluteBaseContainer);
+	protected final XFile wrapFile(final IFile pFile) {
+		return new XFile(pFile, _absoluteBaseContainer);
 	}
 
-	protected final XFolder wrapFolder(final IFolder folder) {
-		return new XFolder(folder, _absoluteBaseContainer);
+	protected final XFolder wrapFolder(final IFolder pFolder) {
+		return new XFolder(pFolder, _absoluteBaseContainer);
 	}
 
-	protected final XProject wrapProject(final IProject project) {
-		return new XProject(project, _absoluteBaseContainer);
+	protected final XProject wrapProject(final IProject pProject) {
+		return new XProject(pProject, _absoluteBaseContainer);
 	}
 
-	protected final XRoot wrapRoot(final IWorkspaceRoot root) {
-		return new XRoot(root, _absoluteBaseContainer);
+	protected final XRoot wrapRoot(final IWorkspaceRoot pRoot) {
+		return new XRoot(pRoot, _absoluteBaseContainer);
 	}
 
 	/**
@@ -110,9 +116,9 @@ public abstract class XResource {
 		return _absoluteBaseContainer;
 	}
 
-	public boolean equals(Object obj) {
-		if (obj instanceof XResource) {
-			XResource other = (XResource) obj;
+	public boolean equals(final Object pOther) {
+		if (pOther instanceof XResource) {
+			XResource other = (XResource) pOther;
 			return _resource.equals(other._resource) && _absoluteBaseContainer.equals(other._absoluteBaseContainer);
 		}
 		return false;
@@ -185,21 +191,21 @@ public abstract class XResource {
 		return null;
 	}
 
-	protected final XFile getFile(IContainer relativeBaseContainer, String pathS) {
-		IPath path = new Path(pathS);
-		return wrapFile(getPathBaseContainer(relativeBaseContainer, path).getFile(path));
+	protected final XFile getFile(final IContainer pRelativeBaseContainer,final  String pPathS) {
+		IPath path = new Path(pPathS);
+		return wrapFile(getPathBaseContainer(pRelativeBaseContainer, path).getFile(path));
 	}
 
-	protected final XFolder getFolder(IContainer relativeBaseContainer, String pathS) {
-		IPath path = new Path(pathS);
-		return wrapFolder(getPathBaseContainer(relativeBaseContainer, path).getFolder(path));
+	protected final XFolder getFolder(final IContainer pRelativeBaseContainer, final String pPathS) {
+		IPath path = new Path(pPathS);
+		return wrapFolder(getPathBaseContainer(pRelativeBaseContainer, path).getFolder(path));
 	}
 
-	private IContainer getPathBaseContainer(IContainer relativeBaseContainer, IPath path) {
-		if (path.isAbsolute()) {
+	private IContainer getPathBaseContainer(IContainer pRelativeBaseContainer, IPath pPath) {
+		if (pPath.isAbsolute()) {
 			return _absoluteBaseContainer;
 		}
-		return relativeBaseContainer;
+		return pRelativeBaseContainer;
 	}
 
 	public final XProject getProject() {
@@ -209,8 +215,46 @@ public abstract class XResource {
 	/**
 	 * @see org.eclipse.core.resources.IResource#delete(boolean, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	public void delete(boolean force, IProgressMonitor monitor) throws CoreException {
-		_resource.delete(force, monitor);
+	public final void delete(final boolean pForce, final IProgressMonitor pMonitor) throws CoreException {
+		_resource.delete(pForce, pMonitor);
+	}
+
+	/**
+	 * @see org.eclipse.core.resources.IResource#createMarker(java.lang.String)
+	 */
+	public final IMarker createMarker(final String pType) throws CoreException {
+		return _resource.createMarker(pType);
+	}
+
+	/**
+	 * Create marker and set attributes.
+	 * 
+	 * @see org.eclipse.core.resources.IResource#createMarker(java.lang.String)
+	 */
+	public final IMarker createMarker(final String pType, final int pSeverity, final String pMessage,
+	      final int pLineNumber) throws CoreException {
+		IMarker marker = createMarker(pType);
+		marker.setAttribute(IMarker.SEVERITY, pSeverity);
+		marker.setAttribute(IMarker.MESSAGE, pMessage);
+		marker.setAttribute(IMarker.LINE_NUMBER, pLineNumber < 1 ? 1 : pLineNumber);
+		return marker;
+	}
+
+	/**
+	 * @see org.eclipse.core.resources.IResource#deleteMarkers(java.lang.String, boolean, int)
+	 */
+	public final void deleteMarkers(final String pType, final boolean pIncludeSubtypes, final int pDepth)
+	      throws CoreException {
+		_resource.deleteMarkers(pType, pIncludeSubtypes, pDepth);
+	}
+
+	/**
+	 * Delete markers - not subtypes and DEPTH_ZERO.
+	 * 
+	 * @see org.eclipse.core.resources.IResource#deleteMarkers(java.lang.String, boolean, int)
+	 */
+	public final void deleteMarkers(final String pType) throws CoreException {
+		deleteMarkers(pType, false, IResource.DEPTH_ZERO);
 	}
 
 	public String toString() {

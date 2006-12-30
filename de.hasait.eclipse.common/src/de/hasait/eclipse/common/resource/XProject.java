@@ -1,5 +1,5 @@
 /*
- * $Id: XProject.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XProject.java,v 1.2 2006-12-30 18:30:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,11 +20,12 @@ package de.hasait.eclipse.common.resource;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public class XProject extends XContainer {
@@ -36,6 +37,10 @@ public class XProject extends XContainer {
 	public XProject(final IProject project, final IContainer absoluteBaseContainer) {
 		super(project, absoluteBaseContainer);
 		_project = project;
+	}
+
+	public XProject(final IProject project) {
+		this(project, ResourcesPlugin.getWorkspace().getRoot());
 	}
 
 	/**
