@@ -1,5 +1,5 @@
 /*
- * $Id: CrBuilder.java,v 1.1 2006-12-30 16:50:59 concentus Exp $
+ * $Id: CrBuilder.java,v 1.2 2006-12-30 18:29:29 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -18,9 +18,7 @@
 package de.hasait.eclipse.charreplacer.builder;
 
 import java.io.BufferedReader;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +34,12 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.common.ResourceUtil;
 import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.common.resource.XFile;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CrBuilder extends IncrementalProjectBuilder {
 	public static final String BUILDER_ID = "de.hasait.eclipse.charreplacer.crBuilder";
@@ -66,7 +64,7 @@ public class CrBuilder extends IncrementalProjectBuilder {
 	};
 
 	private final IResourceVisitor _resourceVisitor = new IResourceVisitor() {
-		public boolean visit(final IResource resource) {
+		public boolean visit(final IResource resource) throws CoreException {
 			replaceCharacters(resource);
 			return true;
 		}
@@ -75,11 +73,10 @@ public class CrBuilder extends IncrementalProjectBuilder {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
-	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int, java.util.Map,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IProject[] build(final int kind, final Map args,
-			final IProgressMonitor monitor) throws CoreException {
+	protected IProject[] build(final int kind, final Map args, final IProgressMonitor monitor) throws CoreException {
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
 		} else {
@@ -93,8 +90,7 @@ public class CrBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
-	protected void fullBuild(final IProgressMonitor monitor)
-			throws CoreException {
+	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
 		try {
 			getProject().accept(_resourceVisitor);
 		} catch (CoreException e) {
@@ -102,8 +98,7 @@ public class CrBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	protected void incrementalBuild(final IResourceDelta delta,
-			IProgressMonitor monitor) throws CoreException {
+	protected void incrementalBuild(final IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 		delta.accept(_resourceDeltaVisitor);
 	}
 
@@ -124,8 +119,7 @@ public class CrBuilder extends IncrementalProjectBuilder {
 			if (content == null) {
 				return null;
 			}
-			BufferedReader contentReader = new BufferedReader(new StringReader(
-					content));
+			BufferedReader contentReader = new BufferedReader(new StringReader(content));
 			String line = contentReader.readLine();
 			String[] extensions = line.split(",");
 			Map replacements = new HashMap();
@@ -142,33 +136,29 @@ public class CrBuilder extends IncrementalProjectBuilder {
 		}
 
 		public String toString() {
-			return "extensions=" + Arrays.asList(_extensions)
-					+ " replacements=" + _replacements + " "
-					+ _replacements.keySet() + " " + _replacements.values();
+			return "extensions=" + Arrays.asList(_extensions) + " replacements=" + _replacements + " "
+			      + _replacements.keySet() + " " + _replacements.values();
 		}
 	}
 
 	private Config _config = null;
 
-	private void replaceCharacters(final IResource resource) {
+	private void replaceCharacters(final IResource resource) throws CoreException {
 		if (resource instanceof IFile) {
-			IFile file = (IFile) resource;
-			deleteMarkers(file);
+			XFile file = new XFile((IFile) resource);
+			file.deleteMarkers(MARKER_TYPE);
 			try {
-				IFile configFile = ResourceUtil.getRelativeFile(file
-						.getProject(), "charreplacer.config");
+				XFile configFile = file.getProject().getFile("charreplacer.config");
 				if (file.equals(configFile)) {
 					_config = null;
 				} else {
 					if (_config == null) {
 						if (configFile.exists()) {
-							deleteMarkers(configFile);
+							configFile.deleteMarkers(MARKER_TYPE);
 							try {
-								_config = Config.parse(ResourceUtil
-										.readFile(configFile));
+								_config = Config.parse(configFile.read());
 							} catch (Exception e) {
-								addMarker(configFile, e, -1,
-										IMarker.SEVERITY_ERROR);
+								configFile.createMarker(MARKER_TYPE, IMarker.SEVERITY_ERROR, "parse", -1);
 							}
 						} else {
 							System.out.println("configfile not found");
@@ -176,55 +166,16 @@ public class CrBuilder extends IncrementalProjectBuilder {
 					}
 					System.out.println("config=" + _config);
 					if (_config != null) {
-						if (StringUtil.equalsAny(file.getFileExtension(),
-								_config._extensions)) {
-							String fileContent = ResourceUtil.readFile(file);
-							fileContent = StringUtil.replaceAllRegex(
-									fileContent, _config._replacements);
-							ResourceUtil.writeFile(file, fileContent, null);
+						if (StringUtil.equalsAny(file.getFileExtension(), _config._extensions)) {
+							String fileContent = file.read();
+							fileContent = StringUtil.replaceAllRegex(fileContent, _config._replacements);
+							file.write(fileContent, null, null);
 						}
 					}
 				}
 			} catch (Exception e) {
-				addMarker(file, e, -1, IMarker.SEVERITY_ERROR);
+				file.createMarker(MARKER_TYPE, IMarker.SEVERITY_ERROR, "general", -1);
 			}
-		}
-	}
-
-	private void addMarker(IFile file, Exception exception, int lineNumber,
-			int severity) {
-		StringWriter messageWriter = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(messageWriter);
-		if (exception != null) {
-			printWriter.println(exception.getMessage());
-			exception.printStackTrace(printWriter);
-		} else {
-			printWriter.println("Exception is null");
-		}
-		addMarker(file, messageWriter.getBuffer().toString(), lineNumber,
-				severity);
-	}
-
-	private void addMarker(IFile file, String message, int lineNumber,
-			int severity) {
-		try {
-			IMarker marker = file.createMarker(MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			if (lineNumber < 1) {
-				lineNumber = 1;
-			}
-			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-		} catch (CoreException e) {
-			// ignore
-		}
-	}
-
-	private void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-		} catch (CoreException e) {
-			// ignore
 		}
 	}
 }
