@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="de.hasait.eclipse.depsearch.contribution1"
+            objectClass="org.eclipse.jdt.core.IJavaProject">
+         <menu
+               label="Depsearch"
+               path="additions"
+               id="de.hasait.eclipse.depsearch.menu1">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               label="Find unused resources"
+               class="de.hasait.eclipse.depsearch.popup.actions.FindUnusedResourcesAction"
+               menubarPath="de.hasait.eclipse.depsearch.menu1/group1"
+               enablesFor="+"
+               id="de.hasait.eclipse.depsearch.newAction">
+         </action>
+      </objectContribution>
+   </extension>
+
+</plugin>
