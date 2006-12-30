@@ -1,5 +1,5 @@
 /*
- * $Id: CcgPlugin.java,v 1.1 2006-11-08 20:54:50 concentus Exp $
+ * $Id: CcgPlugin.java,v 1.2 2006-12-30 18:29:00 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,19 +17,22 @@
  */
 package de.hasait.eclipse.ccg;
 
-import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class CcgPlugin extends AbstractUIPlugin {
 
-	//The shared instance.
+	// The plug-in ID
+	public static final String PLUGIN_ID = "de.hasait.eclipse.ccg";
+
+	// The shared instance.
 	private static CcgPlugin plugin;
-	
+
 	/**
 	 * The constructor.
 	 */
@@ -60,13 +63,13 @@ public class CcgPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
+	 * Returns an image descriptor for the image file at the given plug-in relative path.
+	 * 
+	 * @param path
+	 *           the path
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("de.hasait.eclipse.ccg", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 }
