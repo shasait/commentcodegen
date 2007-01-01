@@ -1,5 +1,5 @@
 /*
- * $Id: XElement.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: XElement.java,v 1.2 2007-01-01 22:12:02 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public final class XElement {
@@ -133,15 +133,43 @@ public final class XElement {
 		throw new IllegalArgumentException("attribute \"" + name + "\" required");
 	}
 
-	public XElement[] getChildElements(String tagName) {
+	/**
+	 * @param pTagName
+	 *           A tagName or tagName-Path.
+	 * @return All matching elements, maybe empty, but never <code>null</code>.
+	 */
+	public XElement[] getChildElements(String pTagName) {
 		List result = new ArrayList();
 		NodeList childNodes = _element.getChildNodes();
 		Node childNode;
+		String vTagName;
+		String vTagNameRemain;
+		if (pTagName == null) {
+			vTagName = null;
+			vTagNameRemain = null;
+		} else {
+			int vTagNameSlashI = pTagName.indexOf("/");
+			if (vTagNameSlashI > 0) {
+				vTagName = pTagName.substring(0, vTagNameSlashI);
+				vTagNameRemain = pTagName.substring(vTagNameSlashI + 1);
+			} else {
+				vTagName = pTagName;
+				vTagNameRemain = null;
+			}
+		}
 		for (int i = 0; i < childNodes.getLength(); i++) {
 			childNode = childNodes.item(i);
 			if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-				if (tagName == null || ((Element) childNode).getTagName().equals(tagName)) {
-					result.add(new XElement((Element) childNode));
+				if (vTagName == null || ((Element) childNode).getTagName().equals(vTagName)) {
+					XElement childElement = new XElement((Element) childNode);
+					if (vTagNameRemain == null) {
+						result.add(childElement);
+					} else {
+						XElement[] childChildElements = childElement.getChildElements(vTagNameRemain);
+						for (int childChildElementsI = 0; childChildElementsI < childChildElements.length; childChildElementsI++) {
+							result.add(childChildElements[childChildElementsI]);
+						}
+					}
 				}
 			}
 		}
