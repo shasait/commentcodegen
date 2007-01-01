@@ -1,3 +1,21 @@
+/*
+ * $Id: SingleProperty.java,v 1.4 2007-01-01 22:11:24 concentus Exp $
+ * 
+ * Copyright 2006 Sebastian Hasait
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.hasait.eclipse.ccg.javag.application.model;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -73,7 +91,7 @@ public class SingleProperty extends AbstractProperty {
 		content.p("@return The value of property " + getName() + ".");
 		content.pu(" */");
 
-		content.pi(getGetterVisibility() + " final " + getType() + " " + getGetMethodName() + "() {");
+		content.pi(getGetterVisibility().getId() + " final " + getType() + " " + getGetMethodName() + "() {");
 		content.p("return " + getFieldName() + ";");
 		content.pu("}");
 
@@ -96,7 +114,7 @@ public class SingleProperty extends AbstractProperty {
 		content.p("@param " + getParameterVarName() + " The new value for property " + getName() + ".");
 		content.pu(" */");
 
-		content.pi(getSetterVisibility() + " final void " + getSetMethodName() + "(final " + getType() + " "
+		content.pi(getSetterVisibility().getId() + " final void " + getSetMethodName() + "(final " + getType() + " "
 		      + getParameterVarName() + ") {");
 		if (getBackrefProperty() == null && !isBound()) {
 			content.p(getFieldName() + " = " + getParameterVarName() + ";");

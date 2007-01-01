@@ -1,5 +1,5 @@
 /*
- * $Id: MFieldDeclaration.java,v 1.1 2006-12-19 15:06:02 concentus Exp $
+ * $Id: MFieldDeclaration.java,v 1.1 2007-01-01 22:11:23 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package de.hasait.eclipse.ccg.javag.application.lowlevel;
+package de.hasait.eclipse.ccg.javag.lowlevel;
 
 /**
  * 

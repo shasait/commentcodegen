@@ -1,3 +1,21 @@
+/*
+ * $Id: MultiProperty.java,v 1.4 2007-01-01 22:11:24 concentus Exp $
+ * 
+ * Copyright 2006 Sebastian Hasait
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.hasait.eclipse.ccg.javag.application.model;
 
 import java.util.ArrayList;
@@ -97,7 +115,7 @@ public class MultiProperty extends AbstractProperty {
 		content.p("@see " + getCollectionClass().getName() + "#get(int)");
 		content.pu(" */");
 
-		content.pi(getGetterVisibility() + " final " + getType() + " get" + getCapName() + "(int index) {");
+		content.pi(getGetterVisibility().getId() + " final " + getType() + " get" + getCapName() + "(int index) {");
 		content.p("return (" + getType() + ") " + getFieldName() + ".get(index);");
 		content.pu("}");
 
@@ -111,7 +129,8 @@ public class MultiProperty extends AbstractProperty {
 		content.p("@see " + getCollectionClass().getName() + "#iterator()");
 		content.pu(" */");
 
-		content.pi(getGetterVisibility() + " final " + Iterator.class.getName() + " " + getName() + "Iterator() {");
+		content.pi(getGetterVisibility().getId() + " final " + Iterator.class.getName() + " " + getName()
+		      + "Iterator() {");
 		content.p("return " + getFieldName() + ".iterator();");
 		content.pu("}");
 
@@ -125,7 +144,7 @@ public class MultiProperty extends AbstractProperty {
 		content.p("@see " + getCollectionClass().getName() + "#size()");
 		content.pu(" */");
 
-		content.pi(getGetterVisibility() + " final int " + getName() + "Size() {");
+		content.pi(getGetterVisibility().getId() + " final int " + getName() + "Size() {");
 		content.p("return " + getFieldName() + ".size();");
 		content.pu("}");
 
@@ -149,7 +168,7 @@ public class MultiProperty extends AbstractProperty {
 		content.p("@see " + getCollectionClass().getName() + "#add(Object)");
 		content.pu(" */");
 
-		content.pi(getSetterVisibility() + " final void " + getAddMethodName() + "(final " + getType() + " "
+		content.pi(getSetterVisibility().getId() + " final void " + getAddMethodName() + "(final " + getType() + " "
 		      + getParameterVarName() + ") {");
 		if (getBackrefProperty() == null) {
 			content.p(getFieldName() + ".add(" + getParameterVarName() + ");");
@@ -185,7 +204,7 @@ public class MultiProperty extends AbstractProperty {
 		content.p("@see " + getCollectionClass().getName() + "#remove(Object)");
 		content.pu(" */");
 
-		content.pi(getSetterVisibility() + " final void " + getRemoveMethodName() + "(final " + getType() + " "
+		content.pi(getSetterVisibility().getId() + " final void " + getRemoveMethodName() + "(final " + getType() + " "
 		      + getParameterVarName() + ") {");
 		if (getBackrefProperty() == null) {
 			content.p(getFieldName() + ".remove(" + getParameterVarName() + ");");

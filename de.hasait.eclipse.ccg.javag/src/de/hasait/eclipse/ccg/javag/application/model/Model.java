@@ -1,7 +1,27 @@
+/*
+ * $Id: Model.java,v 1.3 2007-01-01 22:11:24 concentus Exp $
+ * 
+ * Copyright 2006 Sebastian Hasait
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.hasait.eclipse.ccg.javag.application.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
@@ -14,7 +34,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public class Model {
@@ -26,9 +46,9 @@ public class Model {
 
 	private final XFolder _targetFolder;
 
-	private final java.util.List _bean = new java.util.ArrayList();
+	private final List _beans = new ArrayList();
 
-	private final Map _beanByName = new HashMap();
+	private final Map _beansByName = new HashMap();
 
 	/**
 	 * Constructor.
@@ -39,8 +59,8 @@ public class Model {
 		_application = pApplication;
 
 		_name = pConfigElement.getRequiredAttribute("name");
-		_package = pConfigElement.getRequiredAttribute("package");
 
+		_package = StringUtil.merge(new String[] { _application.getPackage(), "model", _name }, ".");
 		String vPackagePath = StringUtil.replace(_package, ".", "/");
 		_targetFolder = _application.getTargetBaseFolder().getFolder(vPackagePath);
 
@@ -48,8 +68,8 @@ public class Model {
 		for (int vBeanElementsI = 0; vBeanElementsI < vBeanElements.length; vBeanElementsI++) {
 			XElement vBeanElement = vBeanElements[vBeanElementsI];
 			Bean vBean = new Bean(this, vBeanElement);
-			_bean.add(vBean);
-			_beanByName.put(vBean.getName(), vBean);
+			_beans.add(vBean);
+			_beansByName.put(vBean.getName(), vBean);
 		}
 	}
 
@@ -61,11 +81,11 @@ public class Model {
 	}
 
 	/**
-    * @return the name
-    */
-   public final String getName() {
-   	return _name;
-   }
+	 * @return the name
+	 */
+	public final String getName() {
+		return _name;
+	}
 
 	/**
 	 * @return The value of property package.
@@ -81,19 +101,15 @@ public class Model {
 		return _targetFolder;
 	}
 
-	/**
-	 * @return An {@link java.util.Iterator} for all values of property bean.
-	 * @see java.util.List#iterator()
-	 */
-	public final java.util.Iterator beanIterator() {
-		return _bean.iterator();
+	public final Iterator beanIterator() {
+		return _beans.iterator();
 	}
 
-	public final Bean findBean(final String pType) {
-		if (pType.indexOf('.') >= 0) {
-			return getApplication().findBean(pType);
+	public final Bean findBean(final String pName) {
+		if (pName.indexOf('.') >= 0) {
+			return getApplication().findBean(pName);
 		}
-		return (Bean) _beanByName.get(pType);
+		return (Bean) _beansByName.get(pName);
 	}
 
 	public final void resolve(final IProgressMonitor pMonitor) {
@@ -112,19 +128,9 @@ public class Model {
 
 	public final void write(final IProgressMonitor pMonitor) throws CoreException {
 		pMonitor.subTask("write Model " + getPackage());
-		// Set files = new HashSet();
 		for (Iterator beanI = beanIterator(); beanI.hasNext();) {
 			Bean bean = (Bean) beanI.next();
 			bean.write(pMonitor);
-			// files.add(file);
 		}
-		// monitor.subTask("clean Package " + _package);
-		// XResource[] members = _targetFolder.members();
-		// for (int membersI = 0; membersI < members.length; membersI++) {
-		// XResource member = members[membersI];
-		// if (member.isFile() && member.isDerived() && !files.contains(member)) {
-		// member.delete(false, monitor);
-		// }
-		// }
 	}
 }

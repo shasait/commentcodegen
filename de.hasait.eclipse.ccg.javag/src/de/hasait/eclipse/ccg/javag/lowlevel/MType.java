@@ -1,5 +1,5 @@
 /*
- * $Id: MMethodImplementation.java,v 1.1 2006-12-19 15:06:02 concentus Exp $
+ * $Id: MType.java,v 1.1 2007-01-01 22:11:23 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package de.hasait.eclipse.ccg.javag.application.lowlevel;
+package de.hasait.eclipse.ccg.javag.lowlevel;
 
 /**
  * 
@@ -24,21 +24,23 @@ package de.hasait.eclipse.ccg.javag.application.lowlevel;
  * @version $Revision: 1.1 $
  * @since 18.12.2006
  */
-public class MMethodImplementation {
-	private MMethodDeclaration _declaration;
+public abstract class MType {
+	private String _name;
+
+	public abstract MMethodDeclaration[] getDeclaredMethods();
 
 	/**
-	 * @return the declaration
+	 * @return the name
 	 */
-	public final MMethodDeclaration getDeclaration() {
-		return _declaration;
+	public final String getName() {
+		return _name;
 	}
 
 	/**
-	 * @param pDeclaration
-	 *           the declaration to set
+	 * @param pName
+	 *           the name to set
 	 */
-	public final void setDeclaration(MMethodDeclaration pDeclaration) {
-		_declaration = pDeclaration;
+	public final void setName(String pName) {
+		_name = pName;
 	}
 }

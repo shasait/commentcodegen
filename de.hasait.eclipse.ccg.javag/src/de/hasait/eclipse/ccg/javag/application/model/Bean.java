@@ -1,3 +1,21 @@
+/*
+ * $Id: Bean.java,v 1.4 2007-01-01 22:11:24 concentus Exp $
+ * 
+ * Copyright 2006 Sebastian Hasait
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package de.hasait.eclipse.ccg.javag.application.model;
 
 import java.beans.PropertyChangeSupport;
@@ -12,13 +30,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.javag.application.CodeUtils;
+import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 13.12.2006
  */
 public class Bean {
@@ -40,11 +59,11 @@ public class Bean {
 
 	private final XFile _targetFile;
 
-	private final java.util.List _property = new java.util.ArrayList();
+	private final List _properties = new ArrayList();
 
-	private final Map _propertyByName = new HashMap();
+	private final Map _propertiesByName = new HashMap();
 
-	private final List _subBeans = new ArrayList();
+	private final List _derivedBeans = new ArrayList();
 
 	/**
 	 * Constructor.
@@ -75,8 +94,8 @@ public class Bean {
 			} else {
 				throw new IllegalArgumentException("cardinality not supported: " + vCardinality);
 			}
-			_property.add(vProperty);
-			_propertyByName.put(vProperty.getName(), vProperty);
+			_properties.add(vProperty);
+			_propertiesByName.put(vProperty.getName(), vProperty);
 		}
 	}
 
@@ -155,14 +174,14 @@ public class Bean {
 	 * @see java.util.List#iterator()
 	 */
 	public final java.util.Iterator propertyIterator() {
-		return _property.iterator();
+		return _properties.iterator();
 	}
 
 	/**
-	 * @return the subBeans
+	 * @return the derivedBeans
 	 */
-	public final List getSubBeans() {
-		return Collections.unmodifiableList(_subBeans);
+	public final List getDerivedBeans() {
+		return Collections.unmodifiableList(_derivedBeans);
 	}
 
 	public final String getFullName() {
@@ -174,17 +193,17 @@ public class Bean {
 	}
 
 	public final AbstractProperty findProperty(String pName) {
-		return (AbstractProperty) _propertyByName.get(pName);
+		return (AbstractProperty) _propertiesByName.get(pName);
 	}
 
 	public final void resolve(final IProgressMonitor pMonitor) {
 		if (_extends != null) {
 			_extendsBean = _model.findBean(_extends);
 			if (_extendsBean != null) {
-				_extendsBean._subBeans.add(this);
+				_extendsBean._derivedBeans.add(this);
 			}
 		}
-		for (Iterator propertyI = _property.iterator(); propertyI.hasNext();) {
+		for (Iterator propertyI = _properties.iterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
 			property.resolve(pMonitor);
 		}
@@ -207,9 +226,9 @@ public class Bean {
 			content.p(getDescription());
 			content.p();
 		}
-		if (!getSubBeans().isEmpty()) {
+		if (!getDerivedBeans().isEmpty()) {
 			content.pi("Subclasses are:<ul>");
-			for (Iterator subBeansI = getSubBeans().iterator(); subBeansI.hasNext();) {
+			for (Iterator subBeansI = getDerivedBeans().iterator(); subBeansI.hasNext();) {
 				Bean subBean = (Bean) subBeansI.next();
 				content.p("<li>" + subBean.getJavaDocFullName() + "</li>");
 			}
@@ -217,7 +236,7 @@ public class Bean {
 		}
 		content.p("@author CommentCodeGen " + getModel().getApplication().getSourceFile().getFullPath().toString());
 		content.pu(" */");
-		content.a("public ");
+		content.a(MVisibility.PUBLIC.getId()).a(" ");
 		if (isAbstract()) {
 			content.a("abstract ");
 		}
