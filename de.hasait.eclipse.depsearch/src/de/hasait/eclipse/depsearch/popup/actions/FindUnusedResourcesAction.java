@@ -1,5 +1,5 @@
 /*
- * $Id: FindUnusedResourcesAction.java,v 1.3 2007-01-02 15:05:56 concentus Exp $
+ * $Id: FindUnusedResourcesAction.java,v 1.4 2007-01-02 16:19:49 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,7 +20,6 @@ package de.hasait.eclipse.depsearch.popup.actions;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -52,20 +51,19 @@ import org.eclipse.jdt.core.dom.QualifiedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IActionDelegate;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.depsearch.DepSearchPlugin;
 import de.hasait.eclipse.depsearch.properties.DepSearchPreferenceInitializer;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 20.12.2006
  */
 public class FindUnusedResourcesAction implements IObjectActionDelegate {
@@ -91,7 +89,13 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 	 * @see IActionDelegate#run(IAction)
 	 */
 	public void run(IAction action) {
+		List vCandidates = findUnusedResources();
+		DepSearchPlugin.getDefault().setUnusedResources(vCandidates);
+	}
+
+	private List findUnusedResources() {
 		// search types
+		List vResult = new ArrayList();
 		LinkedList vNeededTypes = new LinkedList();
 		Map vUsedTypesByType = new HashMap();
 		FindTypeUsagesAstVisitor vAstVisitor = new FindTypeUsagesAstVisitor(vNeededTypes, vUsedTypesByType);
@@ -101,8 +105,7 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 			try {
 				findTypeRefs(vJavaModel, vAstVisitor);
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				vResult.add(e.getMessage());
 			}
 		}
 		// search non-java resources
@@ -113,39 +116,30 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 			try {
 				vProject.accept(vResourceVisitor);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				vResult.add(e.getMessage());
 			}
 		}
 		// mark needed resources
 		Set vDeclaredTypes = vUsedTypesByType.keySet();
-		Set vResult = new HashSet();
+		Set vUsedResources = new HashSet();
 		while (!vNeededTypes.isEmpty()) {
 			String vType = (String) vNeededTypes.removeFirst();
-			if (!vResult.contains(vType) && vDeclaredTypes.contains(vType)) {
-				vResult.add(vType);
+			if (!vUsedResources.contains(vType) && vDeclaredTypes.contains(vType)) {
+				vUsedResources.add(vType);
 				Collection vUsedTypes = (Collection) vUsedTypesByType.get(vType);
 				if (vUsedTypes != null) {
 					List vTypesToEnqueue = new ArrayList(vUsedTypes);
-					vTypesToEnqueue.removeAll(vResult);
+					vTypesToEnqueue.removeAll(vUsedResources);
 					vTypesToEnqueue.removeAll(vNeededTypes);
 					vNeededTypes.addAll(vTypesToEnqueue);
 				}
 			}
 		}
 		// filter
-		vDeclaredTypes.removeAll(vResult);
+		vDeclaredTypes.removeAll(vUsedResources);
 		// output
-		System.out.println("Unused resources are:");
-		List vCandidates = new ArrayList(vUsedTypesByType.keySet());
-		Collections.sort(vCandidates);
-		for (Iterator vCandidatesI = vCandidates.iterator(); vCandidatesI.hasNext();) {
-			String vCandidate = (String) vCandidatesI.next();
-			System.out.println(vCandidate + " (uses " + vUsedTypesByType.get(vCandidate) + ")");
-		}
-		// done
-		Shell vShell = new Shell();
-		MessageDialog.openInformation(vShell, "Depsearch Plug-in", "Find unused resources was executed");
+		vResult.addAll(vUsedTypesByType.keySet());
+		return vResult;
 	}
 
 	private void findTypeRefs(IJavaElement pJavaElement, ASTVisitor pAstVisitor) throws JavaModelException {

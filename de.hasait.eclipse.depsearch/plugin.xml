@@ -32,10 +32,18 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="Java"
             class="de.hasait.eclipse.depsearch.properties.DepSearchPreferencePage"
             id="de.hasait.eclipse.depsearch.page"
             name="DepSearch"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            category="org.eclipse.jdt.ui.java"
+            class="de.hasait.eclipse.depsearch.views.UnusedResourcesView"
+            icon="icons/sample.gif"
+            id="de.hasait.eclipse.depsearch.views.UnusedResourcesView"
+            name="Unused Resources View"/>
    </extension>
 
 </plugin>
