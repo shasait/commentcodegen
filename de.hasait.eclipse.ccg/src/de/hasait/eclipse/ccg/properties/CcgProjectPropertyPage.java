@@ -1,5 +1,5 @@
 /*
- * $Id: CcgProjectPropertyPage.java,v 1.1 2006-12-03 21:43:18 concentus Exp $
+ * $Id: CcgProjectPropertyPage.java,v 1.2 2007-01-02 16:21:07 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -36,7 +36,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 03.12.2006
  */
 public class CcgProjectPropertyPage extends PropertyPage {
@@ -87,6 +87,7 @@ public class CcgProjectPropertyPage extends PropertyPage {
 			FieldEditor fieldEditor = (FieldEditor) fieldEditorsI.next();
 			fieldEditor.loadDefault();
 		}
+		super.performDefaults();
 	}
 
 	public boolean performOk() {
@@ -99,6 +100,6 @@ public class CcgProjectPropertyPage extends PropertyPage {
 		} catch (IOException e) {
 			return false;
 		}
-		return true;
+		return super.performOk();
 	}
 }

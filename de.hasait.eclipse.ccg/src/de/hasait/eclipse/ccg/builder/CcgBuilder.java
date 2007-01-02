@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.12 2006-12-19 15:05:01 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.13 2007-01-02 16:21:46 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -56,7 +56,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -141,10 +141,12 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	protected final void executeGenerators(final IResource resource, final CcgProjectConfiguration configuration,
 	      final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
-			XFile file = new XFile((IFile) resource, getProject());
-			if (file.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)
-			      || _parserLookup.containsParser(file.getFileExtension())) {
-				executeGenerators(file, configuration, monitor);
+			if (resource.exists()) {
+				XFile file = new XFile((IFile) resource, getProject());
+				if (file.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)
+				      || _parserLookup.containsParser(file.getFileExtension())) {
+					executeGenerators(file, configuration, monitor);
+				}
 			}
 		}
 	}
