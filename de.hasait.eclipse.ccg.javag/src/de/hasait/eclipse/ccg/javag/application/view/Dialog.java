@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.1 2007-01-01 22:11:24 concentus Exp $
+ * $Id: Dialog.java,v 1.2 2007-01-02 18:54:56 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -33,34 +33,34 @@ import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
- * <pre>
- *                                                                     Parameters
- *                                                                     - Konto konto
- *                                                                     - String foo
- *                                                                     
- *                                                                     State
- *                                                                     predefined: boolean valid
- *                                                                     
- *                                                                     Actions
- *                                                                     predefined: commit, revert
- *                                                                     - bla
- *                                                                     
- *                                                                     Components
- *                                                                     - label
- *                                                                     - textfield
- *                                                                     - textarea
- *                                                                     - datefield
- *                                                                     - numberfield
- *                                                                     - button
- *                                                                     
- *                                                                     Constructor:
- *                                                                     - each parameter as argument
- *                                                                     - controller with action-methods (if user-defined actions)
- *                                                                       controller is an abstract class defined inside dialog 
- * </pre>
+ * <code>
+ * Parameters:
+ * - Konto konto
+ * - String foo
+ * 
+ * State:
+ * predefined: boolean valid
+ * 
+ * Actions:
+ * predefined: commit, revert
+ * - bla
+ * 
+ * Components:
+ * - label
+ * - textfield
+ * - textarea
+ * - datefield
+ * - numberfield
+ * - button
+ * 
+ * Constructor:
+ * - each parameter as argument
+ * - controller with action-methods (if user-defined actions)
+ *   controller is an abstract class defined inside dialog 
+ * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 13.12.2006
  */
 public class Dialog {
