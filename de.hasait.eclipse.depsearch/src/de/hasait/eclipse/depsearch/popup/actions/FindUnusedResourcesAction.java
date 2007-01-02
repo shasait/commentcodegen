@@ -1,5 +1,5 @@
 /*
- * $Id: FindUnusedResourcesAction.java,v 1.1 2006-12-30 16:56:10 concentus Exp $
+ * $Id: FindUnusedResourcesAction.java,v 1.2 2007-01-02 13:56:26 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -61,10 +61,11 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import de.hasait.eclipse.common.resource.XFile;
+import de.hasait.eclipse.depsearch.properties.DepSearchPreferenceInitializer;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 20.12.2006
  */
 public class FindUnusedResourcesAction implements IObjectActionDelegate {
@@ -140,7 +141,7 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 		Collections.sort(vCandidates);
 		for (Iterator vCandidatesI = vCandidates.iterator(); vCandidatesI.hasNext();) {
 			String vCandidate = (String) vCandidatesI.next();
-			System.out.println(vCandidate + " uses " + vUsedTypesByType.get(vCandidate));
+			System.out.println(vCandidate + " (uses " + vUsedTypesByType.get(vCandidate) + ")");
 		}
 		// done
 		Shell vShell = new Shell();
@@ -208,22 +209,38 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 		}
 
 		public boolean visit(ArrayType pNode) {
-			visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			try {
+				visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			} catch (NullPointerException e) {
+				// nop
+			}
 			return true;
 		}
 
 		public boolean visit(ParameterizedType pNode) {
-			visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			try {
+				visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			} catch (NullPointerException e) {
+				// nop
+			}
 			return true;
 		}
 
 		public boolean visit(QualifiedType pNode) {
-			visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			try {
+				visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			} catch (NullPointerException e) {
+				// nop
+			}
 			return true;
 		}
 
 		public boolean visit(SimpleType pNode) {
-			visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			try {
+				visitTypeQualifiedName(pNode.resolveBinding().getQualifiedName());
+			} catch (NullPointerException e) {
+				// nop
+			}
 			return true;
 		}
 
@@ -250,17 +267,20 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 			if (pResource.getType() == IResource.FILE) {
 				IFile vResourceAsFile = (IFile) pResource;
 				String vFileExtension = vResourceAsFile.getFileExtension();
-				if ("xml".equalsIgnoreCase(vFileExtension)) {
-					XFile vFile = new XFile(vResourceAsFile, vResourceAsFile.getParent());
-					String vResource = vFile.getFullPath().toString();
-					_neededTypes.add(vResource);
-					Set vUsedTypes = new HashSet();
-					_usedTypesByType.put(vResource, vUsedTypes);
-					String vFileContent = vFile.read();
-					for (Iterator declaredTypesI = _usedTypesByType.keySet().iterator(); declaredTypesI.hasNext();) {
-						String vDeclaredType = (String) declaredTypesI.next();
-						if (vFileContent.contains(vDeclaredType)) {
-							vUsedTypes.add(vDeclaredType);
+				String[] vFileExtensionsFull = DepSearchPreferenceInitializer.getFileExtensionsFull();
+				for (int vFileExtensionsFullI = 0; vFileExtensionsFullI < vFileExtensionsFull.length; vFileExtensionsFullI++) {
+					if (vFileExtensionsFull[vFileExtensionsFullI].equalsIgnoreCase(vFileExtension)) {
+						XFile vFile = new XFile(vResourceAsFile, vResourceAsFile.getParent());
+						String vResource = vFile.getFullPath().toString();
+						_neededTypes.add(vResource);
+						Set vUsedTypes = new HashSet();
+						_usedTypesByType.put(vResource, vUsedTypes);
+						String vFileContent = vFile.read();
+						for (Iterator declaredTypesI = _usedTypesByType.keySet().iterator(); declaredTypesI.hasNext();) {
+							String vDeclaredType = (String) declaredTypesI.next();
+							if (vFileContent.contains(vDeclaredType)) {
+								vUsedTypes.add(vDeclaredType);
+							}
 						}
 					}
 				}

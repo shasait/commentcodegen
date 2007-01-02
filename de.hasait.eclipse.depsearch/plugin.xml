@@ -25,5 +25,17 @@
          </action>
       </objectContribution>
    </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer class="de.hasait.eclipse.depsearch.properties.DepSearchPreferenceInitializer"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="Java"
+            class="de.hasait.eclipse.depsearch.properties.DepSearchPreferencePage"
+            id="de.hasait.eclipse.depsearch.page"
+            name="DepSearch"/>
+   </extension>
 
 </plugin>

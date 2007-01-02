@@ -10,7 +10,7 @@
    </description>
 
    <copyright>
-      Copyright 2005 Sebastian Hasait
+      Copyright 2006 Sebastian Hasait
    </copyright>
 
    <license url="http://www.apache.org/licenses/LICENSE-2.0">
@@ -35,12 +35,14 @@ and limitations under the License.
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.apache.bsf"/>
+      <import plugin="bsh"/>
    </requires>
 
    <plugin
-         id="de.hasait.eclipse.common"
+         id="de.hasait.eclipse.depsearch"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
 </feature>
