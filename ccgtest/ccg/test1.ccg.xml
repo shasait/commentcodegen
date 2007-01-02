@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ccg>
-	<application>
-		<model package="de.tolina.uzb.bo.uzliste" clean="true">
+	<application package="de.tolina.uzb">
+		<model name="uzliste" clean="true">
 			<bean name="Liste">
 				<property name="nummer" description="Die Verbundnummer." type="String" />
 
@@ -30,14 +30,14 @@
 
 				<property name="nummer" description="Die Kontonummer." type="String" />
 
-				<property name="abfrage" type="de.tolina.uzb.bo.abfrage.AbstractKontoAbfrage" backref="konto"
+				<property name="abfrage" type="de.tolina.uzb.model.abfrage.AbstractKontoAbfrage" backref="konto"
 					cardinality="*" />
 			</bean>
 		</model>
 
-		<model package="de.tolina.uzb.bo.abfrage" clean="true">
+		<model name="abfrage" clean="true">
 			<bean name="AbstractKontoAbfrage" abstract="true">
-				<property name="konto" type="de.tolina.uzb.bo.uzliste.Konto" backref="abfrage" />
+				<property name="konto" type="de.tolina.uzb.model.uzliste.Konto" backref="abfrage" />
 
 				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgefuehrt." />
 				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgeloest." />
@@ -47,5 +47,19 @@
 				<property name="verfuegbar" type="java.math.BigDecimal" />
 			</bean>
 		</model>
+
+		<view name="konto">
+			<dialog name="KontoEditieren">
+				<parameters>
+					<parameter name="konto" type="de.tolina.uzb.model.uzliste.Konto" />
+				</parameters>
+				<states>
+					<state name="foo" type="boolean" value="false" />
+				</states>
+				<actions>
+					<action name="sort" />
+				</actions>
+			</dialog>
+		</view>
 	</application>
 </ccg>
