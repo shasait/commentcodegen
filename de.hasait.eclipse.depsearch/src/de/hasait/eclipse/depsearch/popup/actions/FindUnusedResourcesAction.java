@@ -1,5 +1,5 @@
 /*
- * $Id: FindUnusedResourcesAction.java,v 1.2 2007-01-02 13:56:26 concentus Exp $
+ * $Id: FindUnusedResourcesAction.java,v 1.3 2007-01-02 15:05:56 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -65,7 +65,7 @@ import de.hasait.eclipse.depsearch.properties.DepSearchPreferenceInitializer;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 20.12.2006
  */
 public class FindUnusedResourcesAction implements IObjectActionDelegate {
@@ -171,7 +171,9 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 
 		private final Map _usedTypesByType;
 
-		private final LinkedList _usedTypesStack = new LinkedList();
+		private final LinkedList _enclosingTypeStack = new LinkedList();
+
+		private String _enclosingType;
 
 		private Set _usedTypes;
 
@@ -185,16 +187,17 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 		}
 
 		public boolean visit(TypeDeclaration pNode) {
-			String vFullyQualifiedName = pNode.resolveBinding().getQualifiedName();
+			_enclosingType = pNode.resolveBinding().getQualifiedName();
+			_enclosingTypeStack.addFirst(_enclosingType);
 			_usedTypes = new HashSet();
-			_usedTypesByType.put(vFullyQualifiedName, _usedTypes);
-			_usedTypesStack.addFirst(_usedTypes);
+			_usedTypesByType.put(_enclosingType, _usedTypes);
 			return true;
 		}
 
 		public void endVisit(TypeDeclaration pNode) {
-			_usedTypesStack.removeFirst();
-			_usedTypes = _usedTypesStack.isEmpty() ? null : (Set) _usedTypesStack.getFirst();
+			_enclosingTypeStack.removeFirst();
+			_enclosingType = _enclosingTypeStack.isEmpty() ? null : (String) _enclosingTypeStack.getFirst();
+			_usedTypes = _enclosingType == null ? null : (Set) _usedTypesByType.get(_enclosingType);
 		}
 
 		public boolean visit(MethodDeclaration pNode) {
@@ -202,7 +205,7 @@ public class FindUnusedResourcesAction implements IObjectActionDelegate {
 				int vModifiers = pNode.getModifiers();
 				if (Modifier.isPublic(vModifiers) && Modifier.isStatic(vModifiers)) {
 					// TODO maybe check returntype and parametertype...
-					_neededTypes.add(_usedTypes);
+					_neededTypes.add(_enclosingType);
 				}
 			}
 			return true;
