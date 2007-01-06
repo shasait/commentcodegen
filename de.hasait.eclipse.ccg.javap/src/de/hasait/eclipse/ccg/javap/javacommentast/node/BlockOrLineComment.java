@@ -1,5 +1,5 @@
 /*
- * $Id: BlockOrLineComment.java,v 1.1 2006-11-08 22:17:23 concentus Exp $
+ * $Id: BlockOrLineComment.java,v 1.2 2007-01-06 00:43:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,88 +23,95 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public abstract class BlockOrLineComment extends SourceNode implements
-        ICcgComment {
-    public BlockOrLineComment(int id) {
-        super(id);
-    }
+public abstract class BlockOrLineComment extends SourceNode implements ICcgComment {
+	public BlockOrLineComment(final int pId) {
+		super(pId);
+	}
 
-    public BlockOrLineComment(JavaCommentParser p, int id) {
-        super(p, id);
-    }
+	public BlockOrLineComment(final JavaCommentParser pParser, final int pId) {
+		super(pParser, pId);
+	}
 
-    public ICcgComment getComment() {
-        Node child;
-        for (int i = 0; i < jjtGetNumChildren(); i++) {
-            child = jjtGetChild(i);
-            if (child instanceof ICcgComment) {
-                return (ICcgComment) child;
-            }
-        }
-        return null;
-    }
+	public ICcgComment getComment() {
+		Node vChild;
+		for (int vChildI = 0; vChildI < jjtGetNumChildren(); vChildI++) {
+			vChild = jjtGetChild(vChildI);
+			if (vChild instanceof ICcgComment) {
+				return (ICcgComment) vChild;
+			}
+		}
+		return null;
+	}
 
-    public ICcgComment getCommentOrCreate() {
-        ICcgComment comment = getComment();
-        if (comment == null) {
-            comment = insertComment();
-        }
-        return comment;
-    }
+	public ICcgComment getCommentOrCreate() {
+		ICcgComment vComment = getComment();
+		if (vComment == null) {
+			vComment = insertComment();
+		}
+		return vComment;
+	}
 
-    protected abstract ICcgComment insertComment();
+	protected abstract ICcgComment insertComment();
 
-    public String getCommand() {
-        ICcgComment comment = getComment();
-        return comment == null ? null : comment.getCommand();
-    }
+	public String getCommand() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? null : vComment.getCommand();
+	}
 
-    public void setCommand(String command) {
-        getCommentOrCreate().setCommand(command);
-    }
+	public void setCommand(final String pCommand) {
+		getCommentOrCreate().setCommand(pCommand);
+	}
 
-    public String getBlockStart() {
-        ICcgComment comment = getComment();
-        return comment == null ? null : comment.getBlockStart();
-    }
+	public String getBlockStart() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? null : vComment.getBlockStart();
+	}
 
-    public void setBlockStart(String blockStart) {
-        getCommentOrCreate().setBlockStart(blockStart);
-    }
+	public void setBlockStart(final String pBlockStart) {
+		getCommentOrCreate().setBlockStart(pBlockStart);
+	}
 
-    public String getBlockEnd() {
-        ICcgComment comment = getComment();
-        return comment == null ? null : comment.getBlockEnd();
-    }
+	public String getBlockEnd() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? null : vComment.getBlockEnd();
+	}
 
-    public void setBlockEnd(String blockEnd) {
-        getCommentOrCreate().setBlockEnd(blockEnd);
-    }
+	public void setBlockEnd(final String pBlockEnd) {
+		getCommentOrCreate().setBlockEnd(pBlockEnd);
+	}
 
-    public String toString() {
-        return super.toString() + " c=" + getCommand() + " bs="
-                + getBlockStart() + " be=" + getBlockEnd();
-    }
+	public String getCommentText() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? null : vComment.getCommentText();
+	}
 
-    public int getBeginColumn() {
-        ICcgComment comment = getComment();
-        return comment == null ? -1 : comment.getBeginColumn();
-    }
+	public void setCommentText(final String pCommentText) {
+		getCommentOrCreate().setCommentText(pCommentText);
+	}
 
-    public int getBeginLine() {
-        ICcgComment comment = getComment();
-        return comment == null ? -1 : comment.getBeginLine();
-    }
+	public String toString() {
+		return super.toString() + " c=" + getCommand() + " bs=" + getBlockStart() + " be=" + getBlockEnd();
+	}
 
-    public int getEndColumn() {
-        ICcgComment comment = getComment();
-        return comment == null ? -1 : comment.getEndColumn();
-    }
+	public int getBeginColumn() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? -1 : vComment.getBeginColumn();
+	}
 
-    public int getEndLine() {
-        ICcgComment comment = getComment();
-        return comment == null ? -1 : comment.getEndLine();
-    }
+	public int getBeginLine() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? -1 : vComment.getBeginLine();
+	}
+
+	public int getEndColumn() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? -1 : vComment.getEndColumn();
+	}
+
+	public int getEndLine() {
+		ICcgComment vComment = getComment();
+		return vComment == null ? -1 : vComment.getEndLine();
+	}
 }

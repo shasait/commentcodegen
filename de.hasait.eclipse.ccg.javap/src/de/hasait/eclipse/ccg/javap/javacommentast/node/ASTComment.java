@@ -1,5 +1,5 @@
 /*
- * $Id: ASTComment.java,v 1.2 2006-11-10 14:07:52 concentus Exp $
+ * $Id: ASTComment.java,v 1.3 2007-01-06 00:43:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,7 +24,7 @@ import de.hasait.eclipse.common.StringUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ASTComment extends SourceLeaf implements ICcgComment {
 	public static final String C_START = "[c]";
@@ -39,12 +39,12 @@ public class ASTComment extends SourceLeaf implements ICcgComment {
 
 	public static final String BE_END = "[/be]";
 
-	public ASTComment(int id) {
-		super(id);
+	public ASTComment(final int pId) {
+		super(pId);
 	}
 
-	public ASTComment(JavaCommentParser p, int id) {
-		super(p, id);
+	public ASTComment(final JavaCommentParser pParser, final int pId) {
+		super(pParser, pId);
 	}
 
 	public static ASTComment create() {
@@ -56,24 +56,32 @@ public class ASTComment extends SourceLeaf implements ICcgComment {
 		return StringUtil.getMergedBlocks(C_START, C_END, getSource());
 	}
 
-	public void setCommand(String command) {
-		setSource(StringUtil.setMergedBlocks(C_START, C_END, getSource(), command));
+	public void setCommand(final String pCommand) {
+		setCommentText(StringUtil.setMergedBlocks(C_START, C_END, getCommentText(), pCommand));
 	}
 
 	public String getBlockStart() {
-		return StringUtil.getMergedBlocks(BS_START, BS_END, getSource());
+		return StringUtil.getMergedBlocks(BS_START, BS_END, getCommentText());
 	}
 
-	public void setBlockStart(String blockStart) {
-		setSource(StringUtil.setMergedBlocks(BS_START, BS_END, getSource(), blockStart));
+	public void setBlockStart(final String pBlockStart) {
+		setCommentText(StringUtil.setMergedBlocks(BS_START, BS_END, getCommentText(), pBlockStart));
 	}
 
 	public String getBlockEnd() {
-		return StringUtil.getMergedBlocks(BE_START, BE_END, getSource());
+		return StringUtil.getMergedBlocks(BE_START, BE_END, getCommentText());
 	}
 
-	public void setBlockEnd(String blockEnd) {
-		setSource(StringUtil.setMergedBlocks(BE_START, BE_END, getSource(), blockEnd));
+	public void setBlockEnd(final String pBlockEnd) {
+		setCommentText(StringUtil.setMergedBlocks(BE_START, BE_END, getCommentText(), pBlockEnd));
+	}
+
+	public final String getCommentText() {
+		return getSource();
+	}
+
+	public final void setCommentText(final String pCommentText) {
+		setSource(pCommentText);
 	}
 
 	public String toString() {

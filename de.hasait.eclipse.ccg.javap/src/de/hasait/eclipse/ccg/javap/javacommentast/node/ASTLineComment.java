@@ -1,5 +1,5 @@
 /*
- * $Id: ASTLineComment.java,v 1.1 2006-11-08 22:17:23 concentus Exp $
+ * $Id: ASTLineComment.java,v 1.2 2007-01-06 00:43:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,34 +17,74 @@
  */
 package de.hasait.eclipse.ccg.javap.javacommentast.node;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import de.hasait.eclipse.ccg.javap.javacommentast.gen.JavaCommentParser;
 import de.hasait.eclipse.ccg.javap.javacommentast.gen.JavaCommentParserTreeConstants;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ASTLineComment extends BlockOrLineComment {
-    public ASTLineComment(int id) {
-        super(id);
-    }
+	private String _linePrefix;
 
-    public ASTLineComment(JavaCommentParser p, int id) {
-        super(p, id);
-    }
+	public ASTLineComment(int id) {
+		super(id);
+	}
 
-    protected ICcgComment insertComment() {
-        ASTComment comment = ASTComment.create();
-        jjtInsertChild(comment, 1);
-        return comment;
-    }
+	public ASTLineComment(JavaCommentParser p, int id) {
+		super(p, id);
+	}
 
-    public static ASTLineComment create() {
-        ASTLineComment lineComment = new ASTLineComment(
-                JavaCommentParserTreeConstants.JJTLINECOMMENT);
-        lineComment.jjtAddChild(ASTLineCommentStart.create(), 0);
-        lineComment.jjtAddChild(ASTLineCommentEnd.create(), 1);
-        return lineComment;
-    }
+	protected ICcgComment insertComment() {
+		ASTComment comment = ASTComment.create();
+		jjtInsertChild(comment, 1);
+		return comment;
+	}
+
+	public static ASTLineComment create() {
+		ASTLineComment lineComment = new ASTLineComment(JavaCommentParserTreeConstants.JJTLINECOMMENT);
+		lineComment.jjtAddChild(ASTLineCommentStart.create(), 0);
+		lineComment.jjtAddChild(ASTLineCommentEnd.create(), 1);
+		return lineComment;
+	}
+
+	/**
+	 * @return the linePrefix
+	 */
+	public final String getLinePrefix() {
+		return _linePrefix;
+	}
+
+	/**
+	 * @param pLinePrefix
+	 *           the linePrefix to set
+	 */
+	public final void setLinePrefix(final String pLinePrefix) {
+		_linePrefix = pLinePrefix;
+	}
+
+	public String getSource() {
+		if (_linePrefix != null) {
+			BufferedReader vReader = new BufferedReader(new StringReader(getCommentText()));
+			StringWriter vResult = new StringWriter();
+			PrintWriter vWriter = new PrintWriter(vResult);
+			try {
+				String vLine;
+				while ((vLine = vReader.readLine()) != null) {
+					vWriter.append(_linePrefix).append("//").println(vLine);
+				}
+			} catch (IOException e) {
+				// cannot happen
+			}
+			return vResult.getBuffer().toString();
+		}
+		return super.getSource();
+	}
 }
