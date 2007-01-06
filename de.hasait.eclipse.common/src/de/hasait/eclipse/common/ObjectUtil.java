@@ -1,5 +1,5 @@
 /*
- * $Id: Util.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: ObjectUtil.java,v 1.1 2007-01-06 00:45:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,8 +21,8 @@ package de.hasait.eclipse.common;
  * @author Sebastian Hasait (hasait at web.de)
  * @version $Revision: 1.1 $
  */
-public final class Util {
-    private Util() {
+public final class ObjectUtil {
+    private ObjectUtil() {
         super();
     }
 
