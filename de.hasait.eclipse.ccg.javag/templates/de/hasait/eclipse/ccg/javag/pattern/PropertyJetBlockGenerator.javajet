@@ -9,15 +9,17 @@ String type = configElement.getRequiredAttribute("type");
 String name = configElement.getRequiredAttribute("name");
 String capName = StringUtil.capitalize(name);
 String oldName = "old" + capName;
-boolean many = configElement.getAttributeAsBoolean("many", false);
+String cardinality = configElement.getAttribute("cardinality");
+boolean many = !(cardinality == null || cardinality.equals("1"));
 boolean bound = configElement.getAttributeAsBoolean("bound", false);
 boolean afterSet = configElement.getAttributeAsBoolean("afterset", false);
 boolean beforeSet = configElement.getAttributeAsBoolean("beforeset", false);
 boolean hooked = configElement.getAttributeAsBoolean("hooked", false);
-boolean threadsafe = configElement.getAttributeAsBoolean("threadsafe", false);
-boolean readonly = configElement.getAttributeAsBoolean("readonly", false);
-String otherend = configElement.getAttribute("otherend");
-boolean otherendmany = configElement.getAttributeAsBoolean("otherendmany", false);
+boolean vSynchronized = configElement.getAttributeAsBoolean("synchronized", false);
+boolean readonly = configElement.getAttributeAsBoolean("final", false);
+String backref = configElement.getAttribute("backref");
+String vBackrefCardinality = configElement.getAttribute("backrefcardinality");
+boolean backrefMany = !(vBackrefCardinality == null || vBackrefCardinality.equals("1"));
 
 String setterVisibility = null;
 if (readonly) {
@@ -25,9 +27,9 @@ if (readonly) {
 } else {
 	setterVisibility = "public";
 }
-String capOtherend = null;;
-if (otherend != null) {
-	capOtherend = StringUtil.capitalize(otherend);
+String capBackref = null;;
+if (backref != null) {
+	capBackref = StringUtil.capitalize(backref);
 }
 String mName = "_" + name;
 String pName = name;
@@ -51,10 +53,10 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns the <%= name %>.
 	 */
 	public final <%= type %> <%= getterPrefix %><%= capName %>() {
-<% if (threadsafe) {	%>
+<% if (vSynchronized) {	%>
 		synchronized (this) {<% } %>
 			return <%= mName %>;
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -63,10 +65,10 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Sets the <%= name %>.
 	 */
 	<%= setterVisibility %> final void set<%= capName %>(final <%= type %> <%= pName %>) {
-<% if (bound || hooked || (otherend != null)) { %>
+<% if (bound || hooked || (backref != null)) { %>
 		<%= type %> <%= oldName %>;
 <% } %>
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 <% if (beforeSet) { %>
@@ -74,20 +76,20 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 				return;
 			}
 <% } %>
-<% if (bound || hooked || (otherend != null)) { %>
+<% if (bound || hooked || (backref != null)) { %>
 			if (<%= mName %> == <%= pName %>) {
 				return;
 			}
 			<%= oldName %> = <%= mName %>;
 <% } %>
-<% if (hooked || (otherend != null)) { %>
+<% if (hooked || (backref != null)) { %>
 			if (<%= mName %> != null) {
 				<%= mName %> = null;
-<% if (otherend != null) { %>
-<% if (otherendmany) { %>
-				<%= oldName %>.remove<%= capOtherend %>(this);
+<% if (backref != null) { %>
+<% if (backrefMany) { %>
+				<%= oldName %>.remove<%= capBackref %>(this);
 <% } else { %>
-				<%= oldName %>.set<%= capOtherend %>(null);
+				<%= oldName %>.set<%= capBackref %>(null);
 <% } %>
 <% } %>
 <% if (hooked) { %>
@@ -96,13 +98,13 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 			}
 <% } %>
 			<%= mName %> = <%= pName %>;
-<% if (hooked || (otherend != null)) { %>
+<% if (hooked || (backref != null)) { %>
 			if (<%= mName %> != null) {
-<% if (otherend != null) { %>
-<% if (otherendmany) { %>
-				<%= pName %>.add<%= capOtherend %>(this);
+<% if (backref != null) { %>
+<% if (backrefMany) { %>
+				<%= pName %>.add<%= capBackref %>(this);
 <% } else { %>
-				<%= pName %>.set<%= capOtherend %>(this);
+				<%= pName %>.set<%= capBackref %>(this);
 <% } %>
 <% } %>
 <% if (hooked) { %>
@@ -110,7 +112,7 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 <% } %>
 			}
 <% } %>
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 <% if (bound) { %>
@@ -128,11 +130,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns the array of all <%= name %>s.
 	 */
 	public final <%= type %>[] get<%= capName %>s() {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return (<%= type %>[])<%= mName %>.toArray(new <%= type %>[<%= mName %>.size()]);
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -141,11 +143,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns the <%= name %> at the specified index.
 	 */
 	public final <%= type %> get<%= capName %>(final int index) {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return (<%= type %>)<%= mName %>.get(index);
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -154,11 +156,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns if the specified <%= name %> is contained.
 	 */
 	public final boolean contains<%= capName %>(final <%= type %> <%= pName %>) {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return <%= mName %>.contains(<%= pName %>);
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -167,11 +169,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns how many <%= name %>s are contained.
 	 */
 	public final int <%= name %>Size() {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return <%= mName %>.size();
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -180,11 +182,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns if <%= name %> is empty.
 	 */
 	public final boolean is<%= capName %>Empty() {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return <%= mName %>.isEmpty();
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -193,11 +195,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Returns an {@link Iterator} for all <%= name %>s.
 	 */
 	public final java.util.Iterator <%= name %>Iterator() {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			return <%= mName %>.iterator();
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 	}
@@ -206,31 +208,31 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Adds the specified <%= name %>.
 	 */
 	<%= setterVisibility %> final void add<%= capName %>(final <%= type %> <%= pName %>) {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			if (<%= mName %>.contains(<%= pName %>)) {
 				return;
 			}
-<% if (otherend != null) { %>
-<% if (otherendmany) { %>
-			<%= pName %>.remove<%= capOtherend %>(this);
+<% if (backref != null) { %>
+<% if (backrefMany) { %>
+			<%= pName %>.remove<%= capBackref %>(this);
 <% } else { %>
-			<%= pName %>.set<%= capOtherend %>(null);
+			<%= pName %>.set<%= capBackref %>(null);
 <% } %>
 <% } %>
 			<%= mName %>.add(<%= pName %>);
-<% if (otherend != null) { %>
-<% if (otherendmany) { %>
-			<%= pName %>.add<%= capOtherend %>(this);
+<% if (backref != null) { %>
+<% if (backrefMany) { %>
+			<%= pName %>.add<%= capBackref %>(this);
 <% } else { %>
-			<%= pName %>.set<%= capOtherend %>(this);
+			<%= pName %>.set<%= capBackref %>(this);
 <% } %>
 <% } %>
 <% if (hooked) { %>
 			new<%= capName %>(<%= pName %>);
 <% } %>
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 <% if (bound) { %>
@@ -242,24 +244,24 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 * Removes the specified <%= name %>.
 	 */
 	<%= setterVisibility %> final void remove<%= capName %>(final <%= type %> <%= pName %>) {
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			if (!<%= mName %>.contains(<%= pName %>)) {
 				return;
 			}
 			<%= mName %>.remove(<%= pName %>);
-<% if (otherend != null) { %>
-<% if (otherendmany) { %>
-			<%= pName %>.remove<%= capOtherend %>(this);
+<% if (backref != null) { %>
+<% if (backrefMany) { %>
+			<%= pName %>.remove<%= capBackref %>(this);
 <% } else { %>
-			<%= pName %>.set<%= capOtherend %>(null);
+			<%= pName %>.set<%= capBackref %>(null);
 <% } %>
 <% } %>
 <% if (hooked) { %>
 			old<%= capName %>(<%= pName %>);
 <% } %>
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 <% if (bound) { %>
@@ -272,11 +274,11 @@ String getterPrefix = (type.equals("boolean") || type.equals("Boolean")
 	 */
 	<%= setterVisibility %> final void removeAll<%= capName %>s() {
 		<%= type %>[] <%= name %>s;
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		synchronized (this) {
 <% } %>
 			<%= name %>s = get<%= capName %>s();
-<% if (threadsafe) { %>
+<% if (vSynchronized) { %>
 		}
 <% } %>
 		for (int i=0; i<<%= name %>s.length; i++) {
