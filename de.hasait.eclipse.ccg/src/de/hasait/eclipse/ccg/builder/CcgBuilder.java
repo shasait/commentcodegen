@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.13 2007-01-02 16:21:46 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.14 2007-01-06 00:36:58 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -47,8 +47,8 @@ import de.hasait.eclipse.ccg.parser.ICcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgRoot;
 import de.hasait.eclipse.ccg.parser.ICcgTreeChild;
 import de.hasait.eclipse.ccg.properties.CcgProjectConfiguration;
+import de.hasait.eclipse.common.ObjectUtil;
 import de.hasait.eclipse.common.OidGenerator;
-import de.hasait.eclipse.common.Util;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.resource.XFolder;
 import de.hasait.eclipse.common.resource.XProject;
@@ -56,7 +56,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -141,7 +141,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	protected final void executeGenerators(final IResource resource, final CcgProjectConfiguration configuration,
 	      final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
-			if (resource.exists()) {
+			if (resource.exists() && !resource.isDerived()) {
 				XFile file = new XFile((IFile) resource, getProject());
 				if (file.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)
 				      || _parserLookup.containsParser(file.getFileExtension())) {
@@ -226,21 +226,29 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				ICcgComment blockStartComment = (ICcgComment) child;
 				String command = blockStartComment.getCommand();
 				if (command != null) {
-					String block;
-					XElement configElement = XElement.parse(command);
-					ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getTagName());
-					if (generator == null) {
-						throw new IllegalArgumentException("Unknown generator: " + configElement.getTagName());
+					String block = "";
+					XElement mconfigElement = XElement.parse("<ccg>" + command + "</ccg>");
+					XElement[] configChildElements = mconfigElement.getChildElements();
+					if (configChildElements.length == 0) {
+						return false;
 					}
-					block = generator.generateBlock(configElement, blockStartComment, sourceFile, sourceFileContext,
-					      _generatorLookup, monitor);
+					for (int configChildElementsI = 0; configChildElementsI < configChildElements.length; configChildElementsI++) {
+						XElement configElement = configChildElements[configChildElementsI];
+						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getTagName());
+						if (generator == null) {
+							throw new IllegalArgumentException("Unknown generator: " + configElement.getTagName());
+						}
+						block += generator.generateBlock(configElement, blockStartComment, sourceFile, sourceFileContext,
+						      _generatorLookup, monitor);
+					}
 					String blockId = blockStartComment.getBlockStart();
 					ICcgComment blockEndComment = null;
 					if (blockId != null) {
 						int a = 1;
 						while (index + a < root.childNodesSize() && blockEndComment == null) {
 							child = root.getChildNode(index + a);
-							if (child instanceof ICcgComment && Util.equals(((ICcgComment) child).getBlockEnd(), blockId)) {
+							if (child instanceof ICcgComment
+							      && ObjectUtil.equals(((ICcgComment) child).getBlockEnd(), blockId)) {
 								blockEndComment = (ICcgComment) child;
 							} else {
 								root.removeChildNode(index + a);
