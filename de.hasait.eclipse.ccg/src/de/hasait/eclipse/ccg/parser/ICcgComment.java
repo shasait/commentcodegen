@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgComment.java,v 1.1 2006-11-08 20:54:47 concentus Exp $
+ * $Id: ICcgComment.java,v 1.2 2007-01-06 00:37:18 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,18 +19,22 @@ package de.hasait.eclipse.ccg.parser;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface ICcgComment extends ICcgPositionRead, ICcgTreeChild {
-    String getCommand();
+	String getCommand();
 
-    void setCommand(String command);
+	void setCommand(String pCommand);
 
-    String getBlockStart();
+	String getBlockStart();
 
-    void setBlockStart(String blockStart);
+	void setBlockStart(String pBlockStart);
 
-    String getBlockEnd();
+	String getBlockEnd();
 
-    void setBlockEnd(String blockEnd);
+	void setBlockEnd(String pBlockEnd);
+
+	String getCommentText();
+
+	void setCommentText(String pCommentText);
 }
