@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.4 2006-12-19 15:06:29 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.5 2007-01-06 00:43:41 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,7 +24,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -124,6 +124,11 @@ public class ContentBuffer {
 	public final void pu(String line) {
 		u();
 		p(line);
+	}
+
+	public final void pui(String line) {
+		u();
+		pi(line);
 	}
 
 	public final void c() {
