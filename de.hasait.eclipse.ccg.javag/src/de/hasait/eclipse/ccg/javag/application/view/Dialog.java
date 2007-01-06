@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.2 2007-01-02 18:54:56 concentus Exp $
+ * $Id: Dialog.java,v 1.3 2007-01-06 00:39:00 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -27,8 +27,11 @@ import javax.swing.JPanel;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.hasait.eclipse.ccg.javag.application.AbstractCompilationUnit;
+import de.hasait.eclipse.ccg.javag.lowlevel.AbstractMProperty;
+import de.hasait.eclipse.ccg.javag.lowlevel.MSingleProperty;
+import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
 import de.hasait.eclipse.common.ContentBuffer;
-import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
@@ -38,11 +41,11 @@ import de.hasait.eclipse.common.xml.XElement;
  * - Konto konto
  * - String foo
  * 
- * State:
- * predefined: boolean valid
+ * PresentationModel:
+ * - boolean fooEnabled
  * 
- * Actions:
- * predefined: commit, revert
+ * Actions (landen im PresentationModel):
+ * - commit, revert
  * - bla
  * 
  * Components:
@@ -60,23 +63,15 @@ import de.hasait.eclipse.common.xml.XElement;
  * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
-public class Dialog {
+public class Dialog extends AbstractCompilationUnit {
 	private final View _view;
 
-	private final String _name;
+	private final List _presentationModelProperties = new ArrayList();
 
-	private final String _description;
-
-	private final XFile _targetFile;
-
-	private final List _parameters = new ArrayList();
-
-	private final List _states = new ArrayList();
-
-	private final List _actions = new ArrayList();
+	private final List _presentationModelActions = new ArrayList();
 
 	private final List _components = new ArrayList();
 
@@ -84,40 +79,30 @@ public class Dialog {
 	 * Constructor.
 	 */
 	public Dialog(final View pView, final XElement pConfigElement) {
-		super();
+		super(pView, pConfigElement, "Dialog");
 
 		_view = pView;
 
-		_name = pConfigElement.getRequiredAttribute("name") + "Dialog";
-		_description = pConfigElement.getAttribute("description");
-
-		_targetFile = _view.getTargetFolder().getFile(_name + ".java");
-
-		XElement[] vParameterElements = pConfigElement.getChildElements("parameters/parameter");
-		for (int vParameterElementsI = 0; vParameterElementsI < vParameterElements.length; vParameterElementsI++) {
-			XElement vParameterElement = vParameterElements[vParameterElementsI];
-			String vParameterType = vParameterElement.getRequiredAttribute("type");
-			String vParameterName = vParameterElement.getRequiredAttribute("name");
-			Parameter vParameter = new Parameter(vParameterType, vParameterName);
-			_parameters.add(vParameter);
+		XElement[] vPresentationModelPropertyElements = pConfigElement.getChildElements("presentationmodel/property");
+		for (int vPresentationModelPropertyElementsI = 0; vPresentationModelPropertyElementsI < vPresentationModelPropertyElements.length; vPresentationModelPropertyElementsI++) {
+			XElement vPresentationModelPropertyElement = vPresentationModelPropertyElements[vPresentationModelPropertyElementsI];
+			MSingleProperty vPresentationModelProperty = new MSingleProperty();
+			vPresentationModelProperty.setFinal(vPresentationModelPropertyElement.getAttributeAsBoolean("final", false));
+			vPresentationModelProperty.setRequired(vPresentationModelPropertyElement.getAttributeAsBoolean("required",
+			      false));
+			vPresentationModelProperty.setType(vPresentationModelPropertyElement.getRequiredAttribute("type"));
+			vPresentationModelProperty.setName(vPresentationModelPropertyElement.getRequiredAttribute("name"));
+			vPresentationModelProperty.setInitialValue(vPresentationModelPropertyElement.getAttribute("value"));
+			vPresentationModelProperty.setBound(true);
+			_presentationModelProperties.add(vPresentationModelProperty);
 		}
 
-		XElement[] vStateElements = pConfigElement.getChildElements("states/state");
-		for (int vStateElementsI = 0; vStateElementsI < vStateElements.length; vStateElementsI++) {
-			XElement vStateElement = vStateElements[vStateElementsI];
-			String vStateType = vStateElement.getRequiredAttribute("type");
-			String vStateName = vStateElement.getRequiredAttribute("name");
-			String vStateValue = vStateElement.getRequiredAttribute("value");
-			State vState = new State(vStateType, vStateName, vStateValue);
-			_states.add(vState);
-		}
-
-		XElement[] vActionElements = pConfigElement.getChildElements("actions/action");
-		for (int vActionElementsI = 0; vActionElementsI < vActionElements.length; vActionElementsI++) {
-			XElement vActionElement = vActionElements[vActionElementsI];
-			String vActionName = vActionElement.getRequiredAttribute("name");
-			Action vAction = new Action(vActionName);
-			_actions.add(vAction);
+		XElement[] vPresentationModelActionElements = pConfigElement.getChildElements("presentationmodel/action");
+		for (int vPresentationModelActionElementsI = 0; vPresentationModelActionElementsI < vPresentationModelActionElements.length; vPresentationModelActionElementsI++) {
+			XElement vPresentationModelActionElement = vPresentationModelActionElements[vPresentationModelActionElementsI];
+			String vActionName = vPresentationModelActionElement.getRequiredAttribute("name");
+			PresentationModelAction vAction = new PresentationModelAction(vActionName);
+			_presentationModelActions.add(vAction);
 		}
 	}
 
@@ -128,291 +113,104 @@ public class Dialog {
 		return _view;
 	}
 
-	/**
-	 * @return The value of property name.
-	 */
-	public final String getName() {
-		return _name;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public final String getDescription() {
-		return _description;
-	}
-
-	public final String getFullName() {
-		return _view.getPackage() + "." + _name;
-	}
-
-	/**
-	 * @return the targetFile
-	 */
-	public final XFile getTargetFile() {
-		return _targetFile;
-	}
-
-	public final void resolve(final IProgressMonitor pMonitor) {
-	}
-
-	public final void validate(final IProgressMonitor pMonitor) {
-	}
-
-	public final void write(final IProgressMonitor pMonitor) throws CoreException {
-		pMonitor.subTask("write Dialog " + getName());
-		pMonitor.subTask("write Bean " + getFullName());
-		ContentBuffer content = new ContentBuffer();
-		content.p("package " + getView().getPackage() + ";");
-		content.p();
-		content.pi("/**", " * ");
-		if (getDescription() != null) {
-			content.p(getDescription());
-			content.p();
-		}
-		content.p("@author CommentCodeGen " + getView().getApplication().getSourceFile().getFullPath().toString());
-		content.pu(" */");
-		content.a("public ");
-		content.a("class " + getName() + " ");
-		content.a("extends " + JPanel.class.getName() + " ");
-		content.pi("{");
-		// parameter fields
-		content.p("// parameter fields");
-		for (Iterator vParametersI = _parameters.iterator(); vParametersI.hasNext();) {
-			Parameter vParameter = (Parameter) vParametersI.next();
-			content.a("private final ");
-			content.a(vParameter.getType()).a(" ");
-			content.a(vParameter.getFieldName());
-			content.p(";");
-		}
-		// state fields
-		content.p("// state fields");
-		for (Iterator vStatesI = _states.iterator(); vStatesI.hasNext();) {
-			State vState = (State) vStatesI.next();
-			content.a("private final ");
-			content.a(vState.getType()).a(" ");
-			content.a(vState.getFieldName());
-			content.p(";");
-		}
-		// controller field
-		content.p("// controller fields");
-		if (_actions.isEmpty()) {
-			content.p("private final Controller _controller = new Controller();");
-		} else {
-			content.p("private final Controller _controller;");
-		}
-		content.p();
+	protected void writeCompilationUnits(ContentBuffer pContent, String pUserContent, IProgressMonitor pMonitor) {
+		pContent.a("public ");
+		pContent.a("class " + getName() + " ");
+		pContent.a("extends " + JPanel.class.getName() + " ");
+		pContent.pi("{");
+		// presentation model field
+		pContent.p("// presentation model field");
+		pContent.p("private final PresentationModel _presentationModel;");
+		pContent.p();
 		// constructor
-		content.a("public ").a(getName()).a("(");
-		for (Iterator vParametersI = _parameters.iterator(); vParametersI.hasNext();) {
-			Parameter vParameter = (Parameter) vParametersI.next();
-			content.a("final ");
-			content.a(vParameter.getType()).a(" ");
-			content.a(vParameter.getParameterVarName());
-			if (vParametersI.hasNext()) {
-				content.a(", ");
-			}
-		}
-		if (!_actions.isEmpty()) {
-			if (!_parameters.isEmpty()) {
-				content.a(", ");
-			}
-			content.a("final Controller pController");
-		}
-		content.pi(") {");
+		pContent.a("public ").a(getName()).a("(");
+		pContent.a("final PresentationModel pPresentationModel");
+		pContent.pi(") {");
 		// constructor body
-		content.p("super();");
-		content.p("// store parameters");
-		for (Iterator vParametersI = _parameters.iterator(); vParametersI.hasNext();) {
-			Parameter vParameter = (Parameter) vParametersI.next();
-			content.a(vParameter.getFieldName());
-			content.a(" = ");
-			content.a(vParameter.getParameterVarName());
-			content.p(";");
-		}
-		if (!_actions.isEmpty()) {
-			content.p("_controller = pController;");
-		}
-		content.p("// init states");
-		for (Iterator vStatesI = _states.iterator(); vStatesI.hasNext();) {
-			State vState = (State) vStatesI.next();
-			content.a(vState.getFieldName());
-			content.a(" = ");
-			content.a(vState.getValue());
-			content.p(";");
-		}
-		content.pu("}");
-		content.p();
+		pContent.p("super();");
+		pContent.p("_presentationModel = pPresentationModel;");
+		pContent.pu("}");
+		pContent.p();
 		// modelToUi
-		content.pi("public final void modelToUi() {");
-		content.pu("}");
-		content.p();
+		pContent.pi("public final void presentationModelToUi() {");
+		pContent.pu("}");
+		pContent.p();
 		// uiToModel
-		content.pi("public final void uiToModel() {");
-		content.pu("}");
-		content.p();
-		// write [abstract] controller class
-		content.a("public ");
-		if (!_actions.isEmpty()) {
-			content.a("abstract ");
+		pContent.pi("public final void uiToPresentationModel() {");
+		pContent.pu("}");
+		pContent.p();
+		// write abstract presentation model class
+		pContent.a("public ");
+		pContent.a("abstract ");
+		pContent.pi("static class PresentationModel {");
+		// presentation model constants
+		pContent.p("// presentation model fields");
+		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
+		      .hasNext();) {
+			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
+			vPresentationModelProperty.writeConstants(pContent, pMonitor);
 		}
-		content.pi("static class Controller {");
-		content.pi("public final void commit(final " + getName() + " pDialog) {");
-		content.p("pDialog.uiToModel();");
-		content.pu("}");
-		content.p();
-		content.pi("public final void revert(final " + getName() + " pDialog) {");
-		content.p("pDialog.modelToUi();");
-		content.pu("}");
-		content.p();
-		for (Iterator vActionsI = _actions.iterator(); vActionsI.hasNext();) {
-			Action vAction = (Action) vActionsI.next();
-			content.p("public abstract void " + vAction.getName() + "(final " + getName() + " pDialog);");
-			content.p();
+		pContent.p();
+		// presentation model fields
+		pContent.p("// presentation model fields");
+		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
+		      .hasNext();) {
+			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
+			vPresentationModelProperty.writeFields(pContent, pMonitor);
 		}
-		content.pu("}");
+		pContent.p();
+		// presentation model constructor
+		pContent.a(MVisibility.PUBLIC.getId()).a(" ").a("PresentationModel").a("(");
+		boolean vFirstConstructorArgument = true;
+		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
+		      .hasNext();) {
+			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
+			String vConstructorArguments = vPresentationModelProperty.getConstructorArguments();
+			if (vConstructorArguments != null) {
+				if (vFirstConstructorArgument) {
+					vFirstConstructorArgument = false;
+				} else {
+					pContent.a(", ");
+				}
+				pContent.a(vConstructorArguments);
+			}
+		}
+		pContent.pi(") {");
+		pContent.p("super();");
+		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
+		      .hasNext();) {
+			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
+			vPresentationModelProperty.writeConstructorBody(pContent);
+		}
+		pContent.pu("}");
+		pContent.p();
+		// presentation model field accessors
+		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
+		      .hasNext();) {
+			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
+			vPresentationModelProperty.writeMethods(pContent, pMonitor);
+		}
+		pContent.p();
+		// presentation model actions
+		for (Iterator vPresentationModelActionsI = _presentationModelActions.iterator(); vPresentationModelActionsI
+		      .hasNext();) {
+			PresentationModelAction vPresentationModelAction = (PresentationModelAction) vPresentationModelActionsI.next();
+			pContent.p("public abstract void " + vPresentationModelAction.getName() + "();");
+			pContent.p();
+		}
+		pContent.pu("}");
 		//
-		content.pu("}");
-		getTargetFile().write(content.getContent(), Boolean.TRUE, pMonitor);
+		writeUserContent(pContent, pUserContent);
+		pContent.pu("}");
 	}
 
-	private static class Parameter {
-		private final String _type;
-
-		private final String _name;
-
-		private final String _capName;
-
-		private final String _fieldName;
-
-		private final String _parameterVarName;
-
-		/**
-		 * @param pType
-		 * @param pName
-		 */
-		public Parameter(final String pType, final String pName) {
-			super();
-			_type = pType;
-			_name = pName;
-			_capName = StringUtil.capitalize(_name);
-			_fieldName = "_" + _name;
-			_parameterVarName = "p" + _capName;
-		}
-
-		/**
-		 * @return the type
-		 */
-		public final String getType() {
-			return _type;
-		}
-
-		/**
-		 * @return the name
-		 */
-		public final String getName() {
-			return _name;
-		}
-
-		/**
-		 * @return the capName
-		 */
-		public final String getCapName() {
-			return _capName;
-		}
-
-		/**
-		 * @return the fieldName
-		 */
-		public final String getFieldName() {
-			return _fieldName;
-		}
-
-		/**
-		 * @return the parameterVarName
-		 */
-		public final String getParameterVarName() {
-			return _parameterVarName;
-		}
-	}
-
-	private static class State {
-		private final String _type;
-
-		private final String _name;
-
-		private final String _value;
-
-		private final String _capName;
-
-		private final String _fieldName;
-
-		private final String _parameterVarName;
-
-		/**
-		 * @param pType
-		 * @param pName
-		 */
-		public State(final String pType, final String pName, final String pValue) {
-			super();
-			_type = pType;
-			_name = pName;
-			_value = pValue;
-			_capName = StringUtil.capitalize(_name);
-			_fieldName = "_" + _name;
-			_parameterVarName = "p" + _capName;
-		}
-
-		/**
-		 * @return the type
-		 */
-		public final String getType() {
-			return _type;
-		}
-
-		/**
-		 * @return the name
-		 */
-		public final String getName() {
-			return _name;
-		}
-
-		/**
-		 * @return the value
-		 */
-		public final String getValue() {
-			return _value;
-		}
-
-		/**
-		 * @return the capName
-		 */
-		public final String getCapName() {
-			return _capName;
-		}
-
-		/**
-		 * @return the fieldName
-		 */
-		public final String getFieldName() {
-			return _fieldName;
-		}
-
-		/**
-		 * @return the parameterVarName
-		 */
-		public final String getParameterVarName() {
-			return _parameterVarName;
-		}
-	}
-
-	private static class Action {
+	private static class PresentationModelAction {
 		private final String _name;
 
 		/**
 		 * @param pName
 		 */
-		public Action(final String pName) {
+		public PresentationModelAction(final String pName) {
 			super();
 			_name = pName;
 		}

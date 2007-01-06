@@ -1,5 +1,5 @@
 /*
- * $Id: MClass.java,v 1.1 2007-01-01 22:11:23 concentus Exp $
+ * $Id: MClass.java,v 1.2 2007-01-06 00:39:00 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 18.12.2006
  */
 public class MClass extends MType {
@@ -94,6 +94,10 @@ public class MClass extends MType {
 
 	public void addAbstractMethod(final MMethodDeclaration pAbstractMethod) {
 		_members.add(pAbstractMethod);
+	}
+
+	public void addProperty(final AbstractMProperty pProperty) {
+		_members.add(pProperty);
 	}
 
 	public MMethodDeclaration[] getDeclaredMethods() {

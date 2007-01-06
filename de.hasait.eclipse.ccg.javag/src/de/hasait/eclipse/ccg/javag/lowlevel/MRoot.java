@@ -1,5 +1,5 @@
 /*
- * $Id: MRoot.java,v 1.1 2007-01-01 22:11:23 concentus Exp $
+ * $Id: MRoot.java,v 1.2 2007-01-06 00:39:00 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -18,9 +18,7 @@
 
 package de.hasait.eclipse.ccg.javag.lowlevel;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,23 +28,24 @@ import de.hasait.eclipse.common.resource.XFolder;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 18.12.2006
  */
 public class MRoot {
 	private final XFolder _baseFolder;
-
-	private final List _members = new ArrayList();
+	
+	private final String _packageName;
 
 	/**
 	 * @param pBaseFolder
 	 */
-	public MRoot(final XFolder pBaseFolder) {
+	public MRoot(final XFolder pBaseFolder, final String pPackageName) {
 		super();
 		if (pBaseFolder == null) {
 			throw new IllegalArgumentException("baseFolder == null");
 		}
 		_baseFolder = pBaseFolder;
+		_packageName = 
 	}
 
 	/**
@@ -56,14 +55,13 @@ public class MRoot {
 		return _baseFolder;
 	}
 
-	public final void addPackage(final MPackage pPackage) {
-		_members.add(pPackage);
+	public final void resolve(final IProgressMonitor pMonitor) throws CoreException {
+	}
+
+	public final void validate(final IProgressMonitor pMonitor) throws CoreException {
 	}
 
 	public final void write(final IProgressMonitor pMonitor) throws CoreException {
-		for (Iterator membersI = _members.iterator(); membersI.hasNext();) {
-			MPackage vPackage = (MPackage) membersI.next();
-			vPackage.write(_baseFolder, pMonitor);
-		}
+		write(_baseFolder, pMonitor);
 	}
 }

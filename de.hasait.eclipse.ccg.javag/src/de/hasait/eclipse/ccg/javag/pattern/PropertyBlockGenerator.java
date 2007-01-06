@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyBlockGenerator.java,v 1.1 2006-11-16 16:08:40 concentus Exp $
+ * $Id: PropertyBlockGenerator.java,v 1.2 2007-01-06 00:39:04 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,12 +21,12 @@ import de.hasait.eclipse.ccg.generator.CcgBlockGeneratorDelegate;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class PropertyBlockGenerator extends CcgBlockGeneratorDelegate {
 	private static final String DESCRIPTION = "Bean Property";
 
-	private static final String[] TAG_NAMES = new String[] { "beanproperty" };
+	private static final String[] TAG_NAMES = new String[] { "property" };
 
 	/**
 	 * Constructor.

@@ -1,5 +1,5 @@
 /*
- * $Id: Bean.java,v 1.4 2007-01-01 22:11:24 concentus Exp $
+ * $Id: Bean.java,v 1.5 2007-01-06 00:39:04 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,27 +20,32 @@ package de.hasait.eclipse.ccg.javag.application.model;
 
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.ccg.javag.application.CodeUtils;
+import de.hasait.eclipse.ccg.javag.application.AbstractCompilationUnit;
 import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
+import de.hasait.eclipse.common.MapUtil;
+import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
-public class Bean {
+public class Bean extends AbstractCompilationUnit {
 	private final Model _model;
 
 	private final String _name;
@@ -65,11 +70,15 @@ public class Bean {
 
 	private final List _derivedBeans = new ArrayList();
 
+	private final List _validators = new ArrayList();
+
+	private final Map _validatorsByBinding = new HashMap();
+
 	/**
 	 * Constructor.
 	 */
 	public Bean(final Model pModel, final XElement pConfigElement) {
-		super();
+		super(pModel, pConfigElement, null);
 
 		_model = pModel;
 
@@ -95,7 +104,18 @@ public class Bean {
 				throw new IllegalArgumentException("cardinality not supported: " + vCardinality);
 			}
 			_properties.add(vProperty);
-			_propertiesByName.put(vProperty.getName(), vProperty);
+			_propertiesByName.put(vProperty.getProperty().getName(), vProperty);
+		}
+
+		XElement[] vValidatorElements = pConfigElement.getChildElements("validator");
+		for (int vValidatorElementsI = 0; vValidatorElementsI < vValidatorElements.length; vValidatorElementsI++) {
+			XElement vValidatorElement = vValidatorElements[vValidatorElementsI];
+			String vValidatorExpression = vValidatorElement.getTextContent();
+			String vValidatorDescription = vValidatorElement.getRequiredAttribute("description");
+			String[] vValidatorBindings = vValidatorElement.getRequiredAttribute("bound").split(";");
+			Validator vValidator = new Validator("v" + vValidatorElementsI, vValidatorExpression, vValidatorDescription,
+			      vValidatorBindings);
+			addValidator(vValidator);
 		}
 	}
 
@@ -104,20 +124,6 @@ public class Bean {
 	 */
 	public final Model getModel() {
 		return _model;
-	}
-
-	/**
-	 * @return The value of property name.
-	 */
-	public final String getName() {
-		return _name;
-	}
-
-	/**
-	 * @return the description
-	 */
-	public final String getDescription() {
-		return _description;
 	}
 
 	/**
@@ -163,13 +169,6 @@ public class Bean {
 	}
 
 	/**
-	 * @return the targetFile
-	 */
-	public final XFile getTargetFile() {
-		return _targetFile;
-	}
-
-	/**
 	 * @return An {@link java.util.Iterator} for all values of property property.
 	 * @see java.util.List#iterator()
 	 */
@@ -196,9 +195,93 @@ public class Bean {
 		return (AbstractProperty) _propertiesByName.get(pName);
 	}
 
+	public final void addValidator(final Validator pValidator) {
+		_validators.add(pValidator);
+		String[] vValidatorBindings = pValidator.getBindings();
+		for (int vValidatorBindingsI = 0; vValidatorBindingsI < vValidatorBindings.length; vValidatorBindingsI++) {
+			String vValidatorBinding = vValidatorBindings[vValidatorBindingsI];
+			MapUtil.mapListAdd(_validatorsByBinding, vValidatorBinding, pValidator);
+		}
+	}
+
+	public final Validator[] getValidators(final String pValidatorBinding) {
+		Collection vCollection = (Collection) _validatorsByBinding.get(pValidatorBinding);
+		return vCollection == null ? null : (Validator[]) vCollection.toArray(new Validator[vCollection.size()]);
+	}
+
+	public final Iterator validatorIterator() {
+		return _validators.iterator();
+	}
+
+	public final Iterator validatorBindingIterator() {
+		return _validatorsByBinding.keySet().iterator();
+	}
+
+	static class Validator {
+		private final String _name;
+
+		private final String _messageConstantName;
+
+		private final String _expression;
+
+		private final String _description;
+
+		private final String[] _bindings;
+
+		/**
+		 * @param pExpression
+		 * @param pBindings
+		 */
+		public Validator(final String pName, final String pExpression, final String pDescription, final String[] pBindings) {
+			super();
+			_name = pName;
+			_expression = pExpression;
+			_description = pDescription;
+			_bindings = pBindings;
+
+			_messageConstantName = "VALIDATION_MESSAGE_" + StringUtil.camelCaseToUpperCase(_name);
+		}
+
+		/**
+		 * @return the name
+		 */
+		public final String getName() {
+			return _name;
+		}
+
+		/**
+		 * @return the messageConstantName
+		 */
+		public final String getMessageConstantName() {
+			return _messageConstantName;
+		}
+
+		/**
+		 * @return the expression
+		 */
+		public final String getExpression() {
+			return _expression;
+		}
+
+		/**
+		 * @return the description
+		 */
+		public final String getDescription() {
+			return _description;
+		}
+
+		/**
+		 * @return the bindings
+		 */
+		public final String[] getBindings() {
+			return _bindings;
+		}
+	}
+
 	public final void resolve(final IProgressMonitor pMonitor) {
+		super.resolve(pMonitor);
 		if (_extends != null) {
-			_extendsBean = _model.findBean(_extends);
+			_extendsBean = (Bean) _model.findCompilationUnitByName(_extends);
 			if (_extendsBean != null) {
 				_extendsBean._derivedBeans.add(this);
 			}
@@ -207,65 +290,132 @@ public class Bean {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
 			property.resolve(pMonitor);
 		}
+		for (Iterator vValidatorI = validatorIterator(); vValidatorI.hasNext();) {
+			Validator vValidator = (Validator) vValidatorI.next();
+			String[] vValidatorBindings = vValidator.getBindings();
+			for (int vValidatorBindingI = 0; vValidatorBindingI < vValidatorBindings.length; vValidatorBindingI++) {
+				String vValidatorBinding = vValidatorBindings[vValidatorBindingI];
+				AbstractProperty vValidatorBindingProperty = findProperty(vValidatorBinding);
+				if (vValidatorBindingProperty == null) {
+					throw new IllegalArgumentException("invalid validatorBinding " + vValidatorBinding + " for "
+					      + vValidator.getDescription());
+				}
+				vValidatorBindingProperty.getProperty().addAfterChangeCode("//TODO validator");
+			}
+		}
 	}
 
 	public final void validate(final IProgressMonitor pMonitor) {
+		super.validate(pMonitor);
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
 			property.validate(pMonitor);
 		}
 	}
 
-	public final void write(final IProgressMonitor pMonitor) throws CoreException {
-		pMonitor.subTask("write Bean " + getFullName());
-		ContentBuffer content = new ContentBuffer();
-		content.p("package " + getModel().getPackage() + ";");
-		content.p();
-		content.pi("/**", " * ");
-		if (getDescription() != null) {
-			content.p(getDescription());
-			content.p();
-		}
+	protected void writeAdditionalCuComment(ContentBuffer pContent, IProgressMonitor pMonitor) {
+		super.writeAdditionalCuComment(pContent, pMonitor);
 		if (!getDerivedBeans().isEmpty()) {
-			content.pi("Subclasses are:<ul>");
+			pContent.pi("Subclasses are:<ul>");
 			for (Iterator subBeansI = getDerivedBeans().iterator(); subBeansI.hasNext();) {
 				Bean subBean = (Bean) subBeansI.next();
-				content.p("<li>" + subBean.getJavaDocFullName() + "</li>");
+				pContent.p("<li>" + subBean.getJavaDocFullName() + "</li>");
 			}
-			content.pu("</ul>");
+			pContent.pu("</ul>");
 		}
-		content.p("@author CommentCodeGen " + getModel().getApplication().getSourceFile().getFullPath().toString());
-		content.pu(" */");
-		content.a(MVisibility.PUBLIC.getId()).a(" ");
+	}
+
+	protected void writeCompilationUnits(final ContentBuffer pContent, final String pUserContent,
+	      final IProgressMonitor pMonitor) {
+		pContent.a(MVisibility.PUBLIC.getId()).a(" ");
 		if (isAbstract()) {
-			content.a("abstract ");
+			pContent.a("abstract ");
 		}
-		content.a("class " + getName() + " ");
+		pContent.a("class " + getName() + " ");
 		if (getExtends() != null) {
-			content.a("extends " + getExtends() + " ");
+			pContent.a("extends " + getExtends() + " ");
 		}
-		content.pi("{");
+		pContent.pi("{");
+		// property constants
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
+			AbstractProperty property = (AbstractProperty) propertyI.next();
+			property.writeConstants(pContent, pMonitor);
+		}
+		// validation message constants
+		for (Iterator vValidatorI = validatorIterator(); vValidatorI.hasNext();) {
+			Validator vValidator = (Validator) vValidatorI.next();
+			pContent.a("public static final String ").a(vValidator.getMessageConstantName()).a(" = ").a("\"").a(
+			      vValidator.getDescription()).a("\"").p(";");
+		}
+		pContent.p();
+		// property change support field
 		if (isPropertyChangeSupportNeeded()) {
-			content.p(PropertyChangeSupport.class.getName() + " " + getPropertyChangeSupportName() + " = new "
+			pContent.p(PropertyChangeSupport.class.getName() + " " + getPropertyChangeSupportName() + " = new "
 			      + PropertyChangeSupport.class.getName() + "(this);");
 		}
+		// validation field
+		pContent.p("private final " + Set.class.getName() + " _validationMessages = new " + HashSet.class.getName()
+		      + "();");
+		// property fields
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeConstants(content, pMonitor);
+			property.writeFields(pContent, pMonitor);
 		}
+		// constructor
+		pContent.a(MVisibility.PUBLIC.getId()).a(" ").a(getName()).a("(");
+		boolean vFirstConstructorArgument = true;
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeFields(content, pMonitor);
+			String vConstructorArguments = property.getProperty().getConstructorArguments();
+			if (vConstructorArguments != null) {
+				if (vFirstConstructorArgument) {
+					vFirstConstructorArgument = false;
+				} else {
+					pContent.a(", ");
+				}
+				pContent.a(vConstructorArguments);
+			}
 		}
+		pContent.pi(") {");
+		pContent.p("super();");
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractProperty property = (AbstractProperty) propertyI.next();
-			property.writeMethods(content, pMonitor);
+			property.getProperty().writeConstructorBody(pContent);
 		}
+		for (Iterator vValidatorBindingI = validatorBindingIterator(); vValidatorBindingI.hasNext();) {
+			String vValidatorBinding = (String) vValidatorBindingI.next();
+			pContent.a("validate").a(vValidatorBinding).a("()").p(";");
+		}
+		pContent.pu("}");
+		pContent.p();
+		// property methods
+		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
+			AbstractProperty property = (AbstractProperty) propertyI.next();
+			property.writeMethods(pContent, pMonitor);
+		}
+		// property change support
 		if (isPropertyChangeSupportNeeded()) {
-			CodeUtils.writeDelegation(content, getPropertyChangeSupportName(), PropertyChangeSupport.class,
+			CodeUtils.writeDelegation(pContent, getPropertyChangeSupportName(), PropertyChangeSupport.class,
 			      "addProp.*|removeProp.*", "", true);
 		}
-		content.pu("}");
-		getTargetFile().write(content.getContent(), Boolean.TRUE, pMonitor);
+		// validator methods
+		for (Iterator vValidatorBindingI = validatorBindingIterator(); vValidatorBindingI.hasNext();) {
+			String vValidatorBinding = (String) vValidatorBindingI.next();
+			pContent.a("public final boolean ").a("validate").a(vValidatorBinding).a("()").pi(" {");
+			Validator[] vValidators = getValidators(vValidatorBinding);
+			for (int vValidatorI = 0; vValidatorI < vValidators.length; vValidatorI++) {
+				Validator vValidator = vValidators[vValidatorI];
+				pContent.a("if (").a(vValidator.getExpression()).pi(") {");
+				pContent.a("_validationMessages.remove(").a(vValidator.getMessageConstantName()).p(");");
+				pContent.pui("} else {");
+				pContent.a("_validationMessages.add(").a(vValidator.getMessageConstantName()).p(");");
+				pContent.pu("}");
+			}
+			pContent.p("return _validationMessages.isEmpty();");
+			pContent.pu("}");
+			pContent.p();
+		}
+		writeUserContent(pContent, pUserContent);
+		pContent.pu("}");
 	}
 }

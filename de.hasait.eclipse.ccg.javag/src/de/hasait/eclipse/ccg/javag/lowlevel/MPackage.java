@@ -1,5 +1,5 @@
 /*
- * $Id: MPackage.java,v 1.1 2007-01-01 22:11:23 concentus Exp $
+ * $Id: MPackage.java,v 1.2 2007-01-06 00:39:00 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,25 +31,33 @@ import de.hasait.eclipse.common.resource.XFolder;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 18.12.2006
  */
 public class MPackage {
+	private final MPackage _parentPackage;
+
 	private final String _name;
 
 	private final String _packagePath;
+	
+	private final XFolder _packageFolder;
 
 	private final List _members = new ArrayList();
 
 	/**
 	 * @param pName
 	 */
-	public MPackage(final String pName) {
+	public MPackage(final MPackage pParentPackage, final String pName) {
 		super();
+		
+		_parentPackage = pParentPackage;
+		
 		if (pName == null) {
 			throw new IllegalArgumentException("name == null");
 		}
 		_name = pName;
+		
 		_packagePath = StringUtil.replace(_name, ".", "/");
 	}
 
