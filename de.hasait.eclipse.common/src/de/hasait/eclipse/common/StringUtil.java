@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.3 2006-12-13 22:57:05 concentus Exp $
+ * $Id: StringUtil.java,v 1.4 2007-01-06 00:45:31 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -22,11 +22,15 @@ import java.util.Map;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class StringUtil {
 	private StringUtil() {
 		super();
+	}
+
+	public static boolean isEmpty(final String pInput) {
+		return pInput == null || pInput.length() == 0;
 	}
 
 	public static boolean equalsAny(final String pInput, final String[] pAnyOf) {
@@ -133,7 +137,7 @@ public final class StringUtil {
 	 * Finds args with the pattern
 	 * 
 	 * <pre>
-	 *          -argName=argValue
+	 *                -argName=argValue
 	 * </pre>.
 	 * 
 	 * @param pArgs
@@ -207,5 +211,19 @@ public final class StringUtil {
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * @param pInnerNonCommentSource
+	 * @param pString
+	 * @return
+	 */
+	public static boolean containsOnlyTheseChars(String pInnerNonCommentSource, String pChars) {
+		for (int vCharI = 0; vCharI < pInnerNonCommentSource.length(); vCharI++) {
+			if (pChars.indexOf(pInnerNonCommentSource.charAt(vCharI)) < 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
