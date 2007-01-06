@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ccg>
+	<application package="de.hasait.eclipse.ccg.javag">
+		<model name="lowlevel">
+			<bean name="MRoot">
+				<property name="baseFolder" type="de.hasait.eclipse.common.resource.XFolder" final="true" required="true" />
+				<property name="packageName" type="String" />
+				
+				<property name="package" type="MPackage" cardinality="*" backref="root" />
+			</bean>
+			<bean name="MPackage">
+				<property name="root" type="MRoot" backref="package" />
+				
+				<property name="packageName" type="String" />
+
+				<property name="compilationUnit" type="MCompilationUnit" cardinality="*" backref="package" />
+			</bean>
+			<bean name="MCompilationUnit">
+				<property name="package" type="MPackage" backref="compilationUnit" />
+				
+				<property name="packageName" type="String" />
+
+				<property name="import" type="AbstractMType" cardinality="*" backref="imported" />
+				<property name="type" type="AbstractMType" cardinality="*" backref="compilationUnit" />
+			</bean>
+			<bean name="AbstractMType">
+				<property name="compilationUnit" type="MCompilationUnit" backref="type" />
+				<property name="imported" type="MCompilationUnit" backref="import" />
+				
+				<property name="name" type="String" />
+
+				<property name="abstractMethod" type="MMethodDeclaration" cardinality="*" backref="type" />
+				<property name="staticField" type="MFieldDeclaration" cardinality="*" backref="staticContainer" />
+			</bean>
+			<bean name="MClass" extends="AbstractMType">
+				<property name="method" type="MMethodImplementation" cardinality="*" backref="clazz" />
+				<property name="extends" type="MClass" backref="derived" />
+				<property name="derived" type="MClass" cardinality="*" backref="extends" />
+				<property name="implements" type="MInterface" cardinality="*" backref="implementor" />
+				<property name="instanceField" type="MFieldDeclaration" cardinality="*" backref="instanceContainer" />
+			</bean>
+			<bean name="MInterface" extends="AbstractMType">
+				<property name="implementor" type="MClass" cardinality="*" backref="implements" />
+			</bean>
+			<bean name="MMethodDeclaration">
+				<property name="type" type="AbstractMType" cardinality="*" backref="abstractMethod" />
+				<property name="implementation" type="MMethodImplementation" cardinality="*" backref="declaration" />
+
+				<property name="name" type="String" />
+				<property name="resultType" type="AbstractMType" />
+				<property name="parameterType" type="AbstractMType" cardinality="*" />
+			</bean>
+			<bean name="MMethodImplementation">
+				<property name="clazz" type="MClass" backref="method" />
+				<property name="declaration" type="MMethodDeclaration" backref="implementation" final="true" />
+				
+				<property name="parameterName" type="String" cardinality="*" />
+				<property name="parameterFinal" type="Boolean" cardinality="*" />
+				<property name="code" type="String" cardinality="*" />
+			</bean>
+			<bean name="MFieldDeclaration">
+				<property name="staticContainer" type="AbstractMType" backref="staticField" />
+				<property name="instanceContainer" type="MClass" backref="instanceField" />
+				
+				<property name="type" type="AbstractMType" />
+				<property name="name" type="String" />
+				<property name="final" type="boolean" />
+				<property name="visibility" type="String" />
+				<property name="value" type="String" />
+			</bean>
+			<bean name="A">
+				<property name="b" type="B" cardinality="*" backref="a" final="true" />
+			</bean>
+			<bean name="B">
+				<property name="a" type="A" backref="b" />
+			</bean>
+		</model>
+	</application>
+</ccg>

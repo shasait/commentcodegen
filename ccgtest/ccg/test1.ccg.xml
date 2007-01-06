@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ccg>
 	<application package="de.tolina.uzb">
-		<model name="uzliste" clean="true">
+		<model name="uzliste">
 			<bean name="Liste">
 				<property name="nummer" description="Die Verbundnummer." type="String" />
 
@@ -35,7 +35,7 @@
 			</bean>
 		</model>
 
-		<model name="abfrage" clean="true">
+		<model name="abfrage">
 			<bean name="AbstractKontoAbfrage" abstract="true">
 				<property name="konto" type="de.tolina.uzb.model.uzliste.Konto" backref="abfrage" />
 
@@ -48,17 +48,30 @@
 			</bean>
 		</model>
 
+		<model name="ui">
+			<bean name="KontoEditierenPresentationModel">
+				<property name="konto" type="de.tolina.uzb.model.uzliste.Konto" final="true" required="true" />
+				<property name="kontoNummerText" type="String" bound="true" />
+				<validator description="Kontonummer darf nicht leer sein" bound="kontoNummerText"><![CDATA[getKontoNummerText() != null && getKontoNummerText().length() > 0]]></validator>
+			</bean>
+			<bean name="KontoEditierenPanel" extends="javax.swing.JPanel">
+				<property name="kontoNummerField" type="javax.swing.JTextField" final="true" value="new javax.swing.JTextField()" />
+			</bean>
+		</model>
+
 		<view name="konto">
 			<dialog name="KontoEditieren">
-				<parameters>
-					<parameter name="konto" type="de.tolina.uzb.model.uzliste.Konto" />
-				</parameters>
-				<states>
-					<state name="foo" type="boolean" value="false" />
-				</states>
-				<actions>
-					<action name="sort" />
-				</actions>
+				<presentationmodel>
+					<property required="true" name="konto" type="de.tolina.uzb.model.uzliste.Konto" />
+					<property final="true" name="foo" type="boolean" />
+					<property name="nummerText" type="String" />
+					<action name="ok" />
+					<action name="cancel" />
+				</presentationmodel>
+				<components>
+				</components>
+				<binding>
+				</binding>
 			</dialog>
 		</view>
 	</application>
