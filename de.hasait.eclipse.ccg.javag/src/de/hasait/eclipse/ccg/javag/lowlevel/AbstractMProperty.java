@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractMProperty.java,v 1.1 2007-01-06 00:39:00 concentus Exp $
+ * $Id: AbstractMProperty.java,v 1.2 2007-01-09 17:05:17 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 04.01.2007
  */
 public abstract class AbstractMProperty {
@@ -325,11 +325,11 @@ public abstract class AbstractMProperty {
 
 	public abstract String getRemoverCall(String instance, String value);
 
+   public abstract String getContainsCall(String pThisVarName, String pContainsVarName);
+
 	public abstract String getConstructorArguments();
 
 	public abstract void writeConstructorBody(ContentBuffer pContent);
-
-   public abstract String getContainsCall(String pThisVarName, String pContainsVarName);
 
 	public final String getFullName() {
 		return getBeanName() + "." + _name;

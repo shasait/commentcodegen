@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.1 2007-01-06 00:39:05 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.2 2007-01-09 17:05:18 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,6 +18,9 @@
 
 package de.hasait.eclipse.ccg.javag.application;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -29,15 +32,17 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
-	private static final String USERBLOCK_START = "// <userblock>";
+	private static final String USERBLOCK_START = "// @ccg.userblock.start ";
 
-	private static final String USERBLOCK_END = "// </userblock>";
+	private static final String USERBLOCK_END = "// @ccg.userblock.end";
 
 	private final AbstractCuContainer _cuContainer;
+
+	private final String _namePrefix;
 
 	private final String _nameSuffix;
 
@@ -49,12 +54,16 @@ public abstract class AbstractCompilationUnit {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param pNamePrefix
+	 *           TODO
 	 */
 	public AbstractCompilationUnit(final AbstractCuContainer pCuContainer, final XElement pConfigElement,
-	      final String pNameSuffix) {
+	      final String pNamePrefix, final String pNameSuffix) {
 		super();
 
 		_cuContainer = pCuContainer;
+		_namePrefix = pNamePrefix;
 		_nameSuffix = pNameSuffix;
 
 		_name = buildName(pConfigElement.getRequiredAttribute("name"));
@@ -71,6 +80,13 @@ public abstract class AbstractCompilationUnit {
 	}
 
 	/**
+	 * @return the namePrefix
+	 */
+	public final String getNamePrefix() {
+		return _namePrefix;
+	}
+
+	/**
 	 * @return the nameSuffix
 	 */
 	public final String getNameSuffix() {
@@ -78,10 +94,10 @@ public abstract class AbstractCompilationUnit {
 	}
 
 	/**
-	 * @return Concatination of NameWithoutSuffix and NameSuffix.
+	 * @return Concatination of NamePrefix, pPlainName and NameSuffix.
 	 */
-	public final String buildName(final String pNameWithoutSuffix) {
-		return pNameWithoutSuffix + (_nameSuffix == null ? "" : _nameSuffix);
+	public final String buildName(final String pPlainName) {
+		return (_namePrefix == null ? "" : _namePrefix) + pPlainName + (_nameSuffix == null ? "" : _nameSuffix);
 	}
 
 	/**
@@ -123,14 +139,15 @@ public abstract class AbstractCompilationUnit {
 
 	public final void write(final IProgressMonitor pMonitor) throws CoreException {
 		pMonitor.subTask("write " + getName());
-		String vUserContent = null;
+		Map vUserBlockByName = new HashMap();
 		if (getTargetFile().exists()) {
 			String vTargetFileContent = getTargetFile().read();
-			vUserContent = StringUtil.getMergedBlocks(USERBLOCK_START, USERBLOCK_END, vTargetFileContent);
-			vUserContent = vUserContent == null ? null : vUserContent.trim();
-		}
-		if (vUserContent == null) {
-			vUserContent = "";
+			String[] vUserBlocks = StringUtil.getBlocks(USERBLOCK_START, USERBLOCK_END, vTargetFileContent);
+			for (int vUserBlocksI = 0; vUserBlocksI < vUserBlocks.length; vUserBlocksI++) {
+				String vUserBlock = vUserBlocks[vUserBlocksI];
+				String vUserBlockName = StringUtil.firstCharacters(vUserBlock);
+				vUserBlockByName.put(vUserBlockName, vUserBlock.substring(vUserBlockName.length()).trim());
+			}
 		}
 		ContentBuffer vContent = new ContentBuffer();
 		vContent.p("package " + getCuContainer().getPackage() + ";");
@@ -143,7 +160,7 @@ public abstract class AbstractCompilationUnit {
 		writeAdditionalCuComment(vContent, pMonitor);
 		vContent.p("@author CCG " + getCuContainer().getApplication().getSourceFile().getFullPath().toString());
 		vContent.pu(" */");
-		writeCompilationUnits(vContent, vUserContent, pMonitor);
+		writeCompilationUnits(vContent, vUserBlockByName, pMonitor);
 		getTargetFile().write(vContent.getContent(), Boolean.TRUE, pMonitor);
 	}
 
@@ -151,12 +168,16 @@ public abstract class AbstractCompilationUnit {
 		// nop
 	}
 
-	protected abstract void writeCompilationUnits(final ContentBuffer pContent, final String pUserContent,
+	protected abstract void writeCompilationUnits(final ContentBuffer pContent, final Map pUserBlockByName,
 	      final IProgressMonitor pMonitor);
 
-	protected final void writeUserContent(final ContentBuffer pContent, final String pUserContent) {
-		pContent.p(USERBLOCK_START);
-		pContent.p(pUserContent);
+	protected final void writeUserContent(final ContentBuffer pContent, final Map pUserBlockByName,
+	      final String pBlockName) {
+		pContent.a(USERBLOCK_START).p(pBlockName);
+		String vUserBlock = (String) pUserBlockByName.get(pBlockName);
+		if (vUserBlock != null) {
+			pContent.p(vUserBlock);
+		}
 		pContent.p(USERBLOCK_END);
 	}
 }

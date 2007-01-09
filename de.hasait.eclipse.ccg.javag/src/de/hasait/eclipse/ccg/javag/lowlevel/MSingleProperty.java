@@ -1,5 +1,5 @@
 /*
- * $Id: MSingleProperty.java,v 1.1 2007-01-06 00:39:00 concentus Exp $
+ * $Id: MSingleProperty.java,v 1.2 2007-01-09 17:05:17 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 04.01.2007
  */
 public class MSingleProperty extends AbstractMProperty {
@@ -127,7 +127,73 @@ public class MSingleProperty extends AbstractMProperty {
 
 	public void writeMethods(ContentBuffer pContent, IProgressMonitor pMonitor) {
 		super.writeMethods(pContent, pMonitor);
+		writeSingleGetter(pContent);
+		if (!isFinal()) {
+			writeSingleSetter(pContent);
+		}
+		pContent.p();
+	}
 
+	/**
+	 * @param pContent
+	 */
+	private void writeSingleSetter(ContentBuffer pContent) {
+		//
+		// setter
+		//
+		pContent.pi("/**", " * ");
+		pContent.p("Set the value of property " + getName() + " to the specified value.");
+		if (getBackrefProperty() != null) {
+			pContent.p("Referred from " + getBackrefProperty().getJavaDocFullName()
+			      + ", which will be updated by this method.");
+		}
+		if (getDescription() != null) {
+			pContent.p();
+			pContent.p(getDescription());
+		}
+		pContent.p();
+		pContent.p("@param " + getParameterVarName() + " The new value for property " + getName() + ".");
+		pContent.pu(" */");
+
+		pContent.pi(getSetterVisibility().getId() + " final void " + getSetMethodName() + "(final " + getType() + " "
+		      + getParameterVarName() + ") {");
+		if (isRequired()) {
+			writeRequiredCheck(pContent, getParameterVarName());
+		}
+		pContent.pi("if (" + getFieldName() + " == " + getParameterVarName() + ") {");
+		pContent.p("return;");
+		pContent.pu("}");
+		if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
+			pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
+			pContent.p("throw new IllegalArgumentException(\"backref != this\");");
+			pContent.pu("}");
+		}
+		if (isBound() || (getBackrefProperty() != null && !getBackrefProperty().isFinal())) {
+			pContent.p(getType() + " " + getLocalVarName() + " = " + getFieldName() + ";");
+		}
+		pContent.p(getFieldName() + " = " + getParameterVarName() + ";");
+		if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
+			pContent.pi("if (" + getLocalVarName() + " != null) {");
+			pContent.pi("if (" + getBackrefProperty().getContainsCall(getLocalVarName(), "this") + ") {");
+			pContent.p(getBackrefProperty().getRemoverCall(getLocalVarName(), "this") + ";");
+			pContent.pu("}");
+			pContent.pu("}");
+			pContent.pi("if (" + getParameterVarName() + " != null) {");
+			pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
+			pContent.pu("}");
+		}
+		if (isBound()) {
+			pContent.p("// fire change event");
+			pContent.p(getPropertyChangeSupportName() + ".firePropertyChange(" + getNameConstantName() + ", "
+			      + getLocalVarName() + ", " + getParameterVarName() + ");");
+		}
+		pContent.pu("}");
+	}
+
+	/**
+	 * @param pContent
+	 */
+	private void writeSingleGetter(ContentBuffer pContent) {
 		//
 		// getter
 		//
@@ -144,62 +210,6 @@ public class MSingleProperty extends AbstractMProperty {
 		pContent.pi(getGetterVisibility().getId() + " final " + getType() + " " + getGetMethodName() + "() {");
 		pContent.p("return " + getFieldName() + ";");
 		pContent.pu("}");
-
-		pContent.p();
-
-		if (!isFinal()) {
-			//
-			// setter
-			//
-			pContent.pi("/**", " * ");
-			pContent.p("Set the value of property " + getName() + " to the specified value.");
-			if (getBackrefProperty() != null) {
-				pContent.p("Referred from " + getBackrefProperty().getJavaDocFullName()
-				      + ", which will be updated by this method.");
-			}
-			if (getDescription() != null) {
-				pContent.p();
-				pContent.p(getDescription());
-			}
-			pContent.p();
-			pContent.p("@param " + getParameterVarName() + " The new value for property " + getName() + ".");
-			pContent.pu(" */");
-
-			pContent.pi(getSetterVisibility().getId() + " final void " + getSetMethodName() + "(final " + getType() + " "
-			      + getParameterVarName() + ") {");
-			if (isRequired()) {
-				writeRequiredCheck(pContent, getParameterVarName());
-			}
-			pContent.pi("if (" + getFieldName() + " == " + getParameterVarName() + ") {");
-			pContent.p("return;");
-			pContent.pu("}");
-			if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
-				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
-				pContent.p("throw new IllegalArgumentException(\"backref != this\");");
-				pContent.pu("}");
-			}
-			if (isBound() || (getBackrefProperty() != null && !getBackrefProperty().isFinal())) {
-				pContent.p(getType() + " " + getLocalVarName() + " = " + getFieldName() + ";");
-			}
-			if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
-				pContent.pi("if (" + getFieldName() + " != null) {");
-				pContent.p("" + getFieldName() + " = null;");
-				pContent.p(getBackrefProperty().getRemoverCall(getLocalVarName(), "this") + ";");
-				pContent.pu("}");
-			}
-			pContent.p(getFieldName() + " = " + getParameterVarName() + ";");
-			if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
-				pContent.pi("if (" + getFieldName() + " != null) {");
-				pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
-				pContent.pu("}");
-			}
-			if (isBound()) {
-				pContent.p("// fire change event");
-				pContent.p(getPropertyChangeSupportName() + ".firePropertyChange(" + getNameConstantName() + ", "
-				      + getLocalVarName() + ", " + getParameterVarName() + ");");
-			}
-			pContent.pu("}");
-		}
 
 		pContent.p();
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: SingleProperty.java,v 1.5 2007-01-06 00:39:04 concentus Exp $
+ * $Id: SingleProperty.java,v 1.6 2007-01-09 17:05:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -28,7 +28,7 @@ public class SingleProperty extends AbstractProperty {
 	/**
 	 * Constructor.
 	 */
-	public SingleProperty(final Bean pBean, final XElement pConfigElement) {
+	public SingleProperty(final AClass pBean, final XElement pConfigElement) {
 		super(pBean, new MSingleProperty(), pConfigElement);
 	}
 

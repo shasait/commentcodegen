@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractProperty.java,v 1.5 2007-01-06 00:39:04 concentus Exp $
+ * $Id: AbstractProperty.java,v 1.6 2007-01-09 17:05:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -27,11 +27,11 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 13.12.2006
  */
 public abstract class AbstractProperty {
-	private final Bean _bean;
+	private final AClass _bean;
 
 	private final AbstractMProperty _property;
 
@@ -40,7 +40,7 @@ public abstract class AbstractProperty {
 	/**
 	 * Constructor.
 	 */
-	protected AbstractProperty(final Bean pBean, final AbstractMProperty pProperty, final XElement pConfigElement) {
+	protected AbstractProperty(final AClass pBean, final AbstractMProperty pProperty, final XElement pConfigElement) {
 		super();
 
 		_bean = pBean;
@@ -68,7 +68,7 @@ public abstract class AbstractProperty {
 	/**
 	 * @return The value of property bean.
 	 */
-	public final Bean getBean() {
+	public final AClass getBean() {
 		return _bean;
 	}
 
@@ -81,7 +81,7 @@ public abstract class AbstractProperty {
 
 	public void resolve(IProgressMonitor monitor) {
 		if (_backref != null) {
-			Bean typeBean = (Bean) getBean().getModel().findCompilationUnitByName(getProperty().getType());
+			AClass typeBean = (AClass) getBean().getModel().findCompilationUnitByName(getProperty().getType());
 			if (typeBean == null) {
 				throw new IllegalArgumentException(getProperty().getFullName() + "#backref: Cannot find bean "
 				      + getProperty().getType());

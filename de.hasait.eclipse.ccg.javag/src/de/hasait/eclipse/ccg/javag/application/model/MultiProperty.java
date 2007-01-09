@@ -1,5 +1,5 @@
 /*
- * $Id: MultiProperty.java,v 1.5 2007-01-06 00:39:04 concentus Exp $
+ * $Id: MultiProperty.java,v 1.6 2007-01-09 17:05:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ public class MultiProperty extends AbstractProperty {
 	/**
 	 * Constructor.
 	 */
-	public MultiProperty(final Bean pBean, final XElement pConfigElement) {
+	public MultiProperty(final AClass pBean, final XElement pConfigElement) {
 		super(pBean, new MMultiProperty(), pConfigElement);
 		getMultiProperty().setCollectionClass(List.class);
 		getMultiProperty().setCollectionImplClass(ArrayList.class);

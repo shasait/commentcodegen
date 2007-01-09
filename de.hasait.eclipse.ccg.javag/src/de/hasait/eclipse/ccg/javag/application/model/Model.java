@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.4 2007-01-06 00:39:04 concentus Exp $
+ * $Id: Model.java,v 1.5 2007-01-09 17:05:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,18 +24,25 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
 public class Model extends AbstractCuContainer {
 	public Model(final Application pApplication, final XElement pConfigElement) {
 		super(pApplication, pConfigElement, "model");
 
-		XElement[] vBeanElements = pConfigElement.getChildElements("bean");
-		for (int vBeanElementsI = 0; vBeanElementsI < vBeanElements.length; vBeanElementsI++) {
-			XElement vBeanElement = vBeanElements[vBeanElementsI];
-			Bean vBean = new Bean(this, vBeanElement);
-			addCompilationUnit(vBean);
+		XElement[] vClassElements = pConfigElement.getChildElements("class");
+		for (int vClassElementsI = 0; vClassElementsI < vClassElements.length; vClassElementsI++) {
+			XElement vClassElement = vClassElements[vClassElementsI];
+			AClass vClass = new AClass(this, vClassElement);
+			addCompilationUnit(vClass);
+		}
+
+		XElement[] vInterfaceElements = pConfigElement.getChildElements("interface");
+		for (int vInterfaceElementsI = 0; vInterfaceElementsI < vInterfaceElements.length; vInterfaceElementsI++) {
+			XElement vInterfaceElement = vInterfaceElements[vInterfaceElementsI];
+			AInterface vInterface = new AInterface(this, vInterfaceElement);
+			addCompilationUnit(vInterface);
 		}
 	}
 }
