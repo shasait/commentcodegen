@@ -2,61 +2,63 @@
 <ccg>
 	<application package="de.tolina.uzb">
 		<model name="uzliste">
-			<bean name="Liste">
-				<property name="nummer" description="Die Verbundnummer." type="String" />
+			<class name="Liste">
+				<property name="nummer123" description="Die Verbundnummer." type="String" />
 
 				<property name="verbund" type="Verbund" cardinality="*" backref="liste" />
-			</bean>
+			</class>
 
-			<bean name="Verbund">
+			<class name="Verbund">
 				<property name="liste" type="Liste" backref="verbund" />
 
 				<property name="nummer" description="Die Verbundnummer." type="String" />
 
 				<property name="kunde" type="Kunde" cardinality="*" backref="verbund" />
-			</bean>
+			</class>
 
-			<bean name="Kunde">
+			<class name="Kunde">
 				<property name="verbund" type="Verbund" backref="kunde" />
 
 				<property name="nummer" type="String" />
 				<property name="name" type="String" />
 
 				<property name="konto" type="Konto" cardinality="*" backref="kunde" />
-			</bean>
+			</class>
 
-			<bean name="Konto">
+			<class name="Konto">
 				<property name="kunde" type="Kunde" backref="konto" />
 
 				<property name="nummer" description="Die Kontonummer." type="String" />
 
 				<property name="abfrage" type="de.tolina.uzb.model.abfrage.AbstractKontoAbfrage" backref="konto"
 					cardinality="*" />
-			</bean>
+			</class>
 		</model>
 
 		<model name="abfrage">
-			<bean name="AbstractKontoAbfrage" abstract="true">
+			<class name="AbstractKontoAbfrage" abstract="true">
 				<property name="konto" type="de.tolina.uzb.model.uzliste.Konto" backref="abfrage" />
 
 				<property name="ausgefuehrtAm" type="java.util.Date" description="Wann wurde die Abfrage ausgefuehrt." />
 				<property name="ausgefuehrtDurch" type="String" description="Wer hat die Abfrage ausgeloest." />
-			</bean>
+			</class>
 
-			<bean name="KontoVerfuegbarAbfrage" extends="AbstractKontoAbfrage">
+			<class name="KontoVerfuegbarAbfrage" extends="AbstractKontoAbfrage">
 				<property name="verfuegbar" type="java.math.BigDecimal" />
-			</bean>
+			</class>
 		</model>
 
 		<model name="ui">
-			<bean name="KontoEditierenPresentationModel">
+			<class name="KontoEditierenPresentationModel">
 				<property name="konto" type="de.tolina.uzb.model.uzliste.Konto" final="true" required="true" />
 				<property name="kontoNummerText" type="String" bound="true" />
 				<validator description="Kontonummer darf nicht leer sein" bound="kontoNummerText"><![CDATA[getKontoNummerText() != null && getKontoNummerText().length() > 0]]></validator>
-			</bean>
-			<bean name="KontoEditierenPanel" extends="javax.swing.JPanel">
+			</class>
+			<class name="KontoEditierenPanel" extends="javax.swing.JPanel">
+				<property name="presentationModel" type="KontoEditierenPresentationModel" final="true" required="true" />
 				<property name="kontoNummerField" type="javax.swing.JTextField" final="true" value="new javax.swing.JTextField()" />
-			</bean>
+				<property name="validationMessages" type="javax.swing.JList" final="true" value="new javax.swing.JList()" />
+			</class>
 		</model>
 
 		<view name="konto">
