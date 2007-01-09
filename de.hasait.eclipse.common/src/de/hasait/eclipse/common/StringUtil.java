@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.4 2007-01-06 00:45:31 concentus Exp $
+ * $Id: StringUtil.java,v 1.5 2007-01-09 17:06:14 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,12 +17,16 @@
  */
 package de.hasait.eclipse.common;
 
+import java.text.CharacterIterator;
+import java.text.StringCharacterIterator;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -137,7 +141,7 @@ public final class StringUtil {
 	 * Finds args with the pattern
 	 * 
 	 * <pre>
-	 *                -argName=argValue
+	 *                             -argName=argValue
 	 * </pre>.
 	 * 
 	 * @param pArgs
@@ -169,6 +173,18 @@ public final class StringUtil {
 
 	public static String toString(final Object pObject) {
 		return toString(pObject, null);
+	}
+
+	public static String[] getBlocks(final String pBlockStart, final String pBlockEnd, final String pContent) {
+		List vBlocks = new ArrayList();
+		int vBlockStartIndex = pContent.indexOf(pBlockStart);
+		int vBlockEndIndex = vBlockStartIndex == -1 ? -1 : pContent.indexOf(pBlockEnd, vBlockStartIndex);
+		while (vBlockStartIndex != -1 && vBlockEndIndex != -1) {
+			vBlocks.add(pContent.substring(vBlockStartIndex + pBlockStart.length(), vBlockEndIndex));
+			vBlockStartIndex = pContent.indexOf(pBlockStart, vBlockEndIndex);
+			vBlockEndIndex = vBlockStartIndex == -1 ? -1 : pContent.indexOf(pBlockEnd, vBlockStartIndex);
+		}
+		return (String[]) vBlocks.toArray(new String[vBlocks.size()]);
 	}
 
 	public static String getMergedBlocks(String blockStart, String blockEnd, String content) {
@@ -225,5 +241,18 @@ public final class StringUtil {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * @param pUserBlock
+	 * @return
+	 */
+	public static String firstCharacters(final String pUserBlock) {
+		StringBuffer vResult = new StringBuffer();
+		CharacterIterator vUserBlockI = new StringCharacterIterator(pUserBlock);
+		for (char vChar = vUserBlockI.first(); vChar != CharacterIterator.DONE && Character.isLetter(vChar); vChar = vUserBlockI.next()) {
+			vResult.append(vChar);
+		}
+		return vResult.toString();
 	}
 }
