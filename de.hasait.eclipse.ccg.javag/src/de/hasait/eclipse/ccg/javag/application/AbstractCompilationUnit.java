@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.2 2007-01-09 17:05:18 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,28 +18,27 @@
 
 package de.hasait.eclipse.ccg.javag.application;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
-import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
-	private static final String USERBLOCK_START = "// @ccg.userblock.start ";
-
-	private static final String USERBLOCK_END = "// @ccg.userblock.end";
-
 	private final AbstractCuContainer _cuContainer;
 
 	private final String _namePrefix;
@@ -52,6 +51,8 @@ public abstract class AbstractCompilationUnit {
 
 	private final XFile _targetFile;
 
+	private final List _imports = new ArrayList();
+
 	/**
 	 * Constructor.
 	 * 
@@ -60,14 +61,26 @@ public abstract class AbstractCompilationUnit {
 	 */
 	public AbstractCompilationUnit(final AbstractCuContainer pCuContainer, final XElement pConfigElement,
 	      final String pNamePrefix, final String pNameSuffix) {
+		this(pCuContainer, pNamePrefix, pConfigElement.getRequiredAttribute("name"), pNameSuffix, pConfigElement
+		      .getAttribute("description"));
+		XElement[] vImportElements = pConfigElement.getChildElements("import");
+		for (int vImportElementsI = 0; vImportElementsI < vImportElements.length; vImportElementsI++) {
+			XElement vImportElement = vImportElements[vImportElementsI];
+			String vImportType = vImportElement.getRequiredAttribute("type");
+			_imports.add(vImportType);
+		}
+	}
+
+	public AbstractCompilationUnit(final AbstractCuContainer pCuContainer, final String pNamePrefix, final String pName,
+	      final String pNameSuffix, final String pDescription) {
 		super();
 
 		_cuContainer = pCuContainer;
 		_namePrefix = pNamePrefix;
 		_nameSuffix = pNameSuffix;
 
-		_name = buildName(pConfigElement.getRequiredAttribute("name"));
-		_description = pConfigElement.getAttribute("description");
+		_name = buildName(pName);
+		_description = pDescription;
 
 		_targetFile = _cuContainer.getTargetFolder().getFile(_name + ".java");
 	}
@@ -139,18 +152,20 @@ public abstract class AbstractCompilationUnit {
 
 	public final void write(final IProgressMonitor pMonitor) throws CoreException {
 		pMonitor.subTask("write " + getName());
-		Map vUserBlockByName = new HashMap();
+		Map vUserBlockContentByName;
 		if (getTargetFile().exists()) {
 			String vTargetFileContent = getTargetFile().read();
-			String[] vUserBlocks = StringUtil.getBlocks(USERBLOCK_START, USERBLOCK_END, vTargetFileContent);
-			for (int vUserBlocksI = 0; vUserBlocksI < vUserBlocks.length; vUserBlocksI++) {
-				String vUserBlock = vUserBlocks[vUserBlocksI];
-				String vUserBlockName = StringUtil.firstCharacters(vUserBlock);
-				vUserBlockByName.put(vUserBlockName, vUserBlock.substring(vUserBlockName.length()).trim());
-			}
+			vUserBlockContentByName = CodeUtils.parseUserBlockContentByBlockName(vTargetFileContent);
+		} else {
+			vUserBlockContentByName = new HashMap();
 		}
 		ContentBuffer vContent = new ContentBuffer();
 		vContent.p("package " + getCuContainer().getPackage() + ";");
+		vContent.p();
+		for (Iterator vImportI = _imports.iterator(); vImportI.hasNext();) {
+			String vImportType = (String) vImportI.next();
+			vContent.p("import " + vImportType + ";");
+		}
 		vContent.p();
 		vContent.pi("/**", " * ");
 		if (getDescription() != null) {
@@ -160,7 +175,7 @@ public abstract class AbstractCompilationUnit {
 		writeAdditionalCuComment(vContent, pMonitor);
 		vContent.p("@author CCG " + getCuContainer().getApplication().getSourceFile().getFullPath().toString());
 		vContent.pu(" */");
-		writeCompilationUnits(vContent, vUserBlockByName, pMonitor);
+		writeTypes(vContent, vUserBlockContentByName, pMonitor);
 		getTargetFile().write(vContent.getContent(), Boolean.TRUE, pMonitor);
 	}
 
@@ -168,16 +183,6 @@ public abstract class AbstractCompilationUnit {
 		// nop
 	}
 
-	protected abstract void writeCompilationUnits(final ContentBuffer pContent, final Map pUserBlockByName,
-	      final IProgressMonitor pMonitor);
-
-	protected final void writeUserContent(final ContentBuffer pContent, final Map pUserBlockByName,
-	      final String pBlockName) {
-		pContent.a(USERBLOCK_START).p(pBlockName);
-		String vUserBlock = (String) pUserBlockByName.get(pBlockName);
-		if (vUserBlock != null) {
-			pContent.p(vUserBlock);
-		}
-		pContent.p(USERBLOCK_END);
-	}
+	protected abstract void writeTypes(final ContentBuffer pContent, final Map pUserBlockContentByName,
+	      final IProgressMonitor pMonitor) throws CoreException;
 }

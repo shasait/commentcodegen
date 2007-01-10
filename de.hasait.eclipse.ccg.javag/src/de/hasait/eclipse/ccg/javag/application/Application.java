@@ -1,5 +1,9 @@
 package de.hasait.eclipse.ccg.javag.application;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -8,16 +12,20 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 
-import de.hasait.eclipse.ccg.javag.application.model.Model;
+import de.hasait.eclipse.ccg.javag.application.model.AModel;
 import de.hasait.eclipse.ccg.javag.application.view.View;
+import de.hasait.eclipse.common.ContentBuffer;
+import de.hasait.eclipse.common.IOUtil;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.resource.XFolder;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 13.12.2006
  */
 public class Application {
@@ -31,6 +39,12 @@ public class Application {
 
 	private final Map _cuContainersByPackage = new HashMap();
 
+	public final AbstractCuContainer _appGlobalCuContainer;
+
+	public final AbstractCompilationUnit _applicationContextCu;
+
+	public final AbstractCompilationUnit _modelEventDispatcherCu;
+
 	/**
 	 * Constructor.
 	 */
@@ -42,10 +56,49 @@ public class Application {
 
 		_package = pConfigElement.getRequiredAttribute("package");
 
+		_appGlobalCuContainer = new AbstractCuContainer(this, "app", "global");
+		addCuContainer(_appGlobalCuContainer);
+
+		_applicationContextCu = new AbstractCompilationUnit(_appGlobalCuContainer, null, "ApplicationContext", null, null) {
+			protected void writeTypes(ContentBuffer pContent, Map pUserBlockContentByName, IProgressMonitor pMonitor) {
+				pContent.pi("public final class ApplicationContext {");
+				pContent.pi("private ApplicationContext() {");
+				pContent.p("super();");
+				pContent.pu("}");
+				pContent.p();
+				pContent.p("public static final ApplicationContext DEFAULT = new ApplicationContext();");
+				pContent.p();
+				pContent.p("public final ModelEventDispatcher ED = new ModelEventDispatcher();");
+				pContent.p();
+				pContent.p();
+				pContent.pu("}");
+			}
+		};
+		_appGlobalCuContainer.addCompilationUnit(_applicationContextCu);
+
+		_modelEventDispatcherCu = new AbstractCompilationUnit(_appGlobalCuContainer, null, "ModelEventDispatcher", null,
+		      null) {
+			protected void writeTypes(ContentBuffer pContent, Map pUserBlockContentByName, IProgressMonitor pMonitor) throws CoreException {
+				InputStream vSourceIn = Application.class.getResourceAsStream("ModelEventDispatcher.javainc");
+				if (vSourceIn != null) {
+					Reader vSourceReader = new InputStreamReader(vSourceIn);
+					String vSource;
+					try {
+						vSource = IOUtil.readAll(vSourceReader);
+						vSourceReader.close();
+					} catch (IOException e) {
+						throw new CoreException(new Status(IStatus.ERROR, null, IStatus.ERROR, e.getLocalizedMessage(), e));
+					}
+					pContent.p(vSource);
+				}
+			}
+		};
+		_appGlobalCuContainer.addCompilationUnit(_modelEventDispatcherCu);
+
 		XElement[] vModelElements = pConfigElement.getChildElements("model");
 		for (int vModelElementsI = 0; vModelElementsI < vModelElements.length; vModelElementsI++) {
 			XElement vModelElement = vModelElements[vModelElementsI];
-			Model vModel = new Model(this, vModelElement);
+			AModel vModel = new AModel(this, vModelElement);
 			addCuContainer(vModel);
 		}
 

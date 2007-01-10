@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCuContainer.java,v 1.1 2007-01-06 00:39:05 concentus Exp $
+ * $Id: AbstractCuContainer.java,v 1.2 2007-01-10 18:04:16 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 05.01.2007
  */
 public class AbstractCuContainer {
@@ -56,12 +56,16 @@ public class AbstractCuContainer {
 	 * Constructor.
 	 */
 	public AbstractCuContainer(final Application pApplication, final XElement pConfigElement, final String pPackageInfix) {
+		this(pApplication, pPackageInfix, pConfigElement.getRequiredAttribute("name"));
+	}
+
+	public AbstractCuContainer(final Application pApplication, final String pPackageInfix, final String pName) {
 		super();
 
 		_application = pApplication;
 		_packageInfix = pPackageInfix;
 
-		_name = pConfigElement.getRequiredAttribute("name");
+		_name = pName;
 
 		_package = buildPackage(_name);
 		String vPackagePath = StringUtil.replace(_package, ".", "/");

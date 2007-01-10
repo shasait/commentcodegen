@@ -1,5 +1,5 @@
 /*
- * $Id: Model.java,v 1.5 2007-01-09 17:05:18 concentus Exp $
+ * $Id: AModel.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,11 +24,11 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  * @since 13.12.2006
  */
-public class Model extends AbstractCuContainer {
-	public Model(final Application pApplication, final XElement pConfigElement) {
+public class AModel extends AbstractCuContainer {
+	public AModel(final Application pApplication, final XElement pConfigElement) {
 		super(pApplication, pConfigElement, "model");
 
 		XElement[] vClassElements = pConfigElement.getChildElements("class");

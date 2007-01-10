@@ -1,5 +1,5 @@
 /*
- * $Id: MSingleProperty.java,v 1.2 2007-01-09 17:05:17 concentus Exp $
+ * $Id: MSingleProperty.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,6 +18,8 @@
 
 package de.hasait.eclipse.ccg.javag.lowlevel;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.common.ContentBuffer;
@@ -27,7 +29,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 04.01.2007
  */
 public class MSingleProperty extends AbstractMProperty {
@@ -125,13 +127,12 @@ public class MSingleProperty extends AbstractMProperty {
 		pContent.p();
 	}
 
-	public void writeMethods(ContentBuffer pContent, IProgressMonitor pMonitor) {
-		super.writeMethods(pContent, pMonitor);
+	public void writeMethods(ContentBuffer pContent, Map pUserBlockContentByName, IProgressMonitor pMonitor) {
+		super.writeMethods(pContent, pUserBlockContentByName, pMonitor);
 		writeSingleGetter(pContent);
 		if (!isFinal()) {
 			writeSingleSetter(pContent);
 		}
-		pContent.p();
 	}
 
 	/**
@@ -154,8 +155,7 @@ public class MSingleProperty extends AbstractMProperty {
 		pContent.p();
 		pContent.p("@param " + getParameterVarName() + " The new value for property " + getName() + ".");
 		pContent.pu(" */");
-
-		pContent.pi(getSetterVisibility().getId() + " final void " + getSetMethodName() + "(final " + getType() + " "
+		pContent.pi(getWriteVisibility().getId() + " final void " + getSetMethodName() + "(final " + getType() + " "
 		      + getParameterVarName() + ") {");
 		if (isRequired()) {
 			writeRequiredCheck(pContent, getParameterVarName());
@@ -172,6 +172,10 @@ public class MSingleProperty extends AbstractMProperty {
 			pContent.p(getType() + " " + getLocalVarName() + " = " + getFieldName() + ";");
 		}
 		pContent.p(getFieldName() + " = " + getParameterVarName() + ";");
+		if (isBound()) {
+			pContent.p(getAddSingleChangeCall("this", getLocalVarName(), getParameterVarName()) + ";");
+		}
+		writeAfterChangeCode(pContent);
 		if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
 			pContent.pi("if (" + getLocalVarName() + " != null) {");
 			pContent.pi("if (" + getBackrefProperty().getContainsCall(getLocalVarName(), "this") + ") {");
@@ -182,12 +186,9 @@ public class MSingleProperty extends AbstractMProperty {
 			pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
 			pContent.pu("}");
 		}
-		if (isBound()) {
-			pContent.p("// fire change event");
-			pContent.p(getPropertyChangeSupportName() + ".firePropertyChange(" + getNameConstantName() + ", "
-			      + getLocalVarName() + ", " + getParameterVarName() + ");");
-		}
 		pContent.pu("}");
+		
+		pContent.p();
 	}
 
 	/**
@@ -207,7 +208,7 @@ public class MSingleProperty extends AbstractMProperty {
 		pContent.p("@return The value of property " + getName() + ".");
 		pContent.pu(" */");
 
-		pContent.pi(getGetterVisibility().getId() + " final " + getType() + " " + getGetMethodName() + "() {");
+		pContent.pi(getReadVisibility().getId() + " final " + getType() + " " + getGetMethodName() + "() {");
 		pContent.p("return " + getFieldName() + ";");
 		pContent.pu("}");
 

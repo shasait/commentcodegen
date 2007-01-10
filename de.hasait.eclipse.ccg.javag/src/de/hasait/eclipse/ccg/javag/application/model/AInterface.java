@@ -1,5 +1,5 @@
 /*
- * $Id: AInterface.java,v 1.1 2007-01-09 17:05:18 concentus Exp $
+ * $Id: AInterface.java,v 1.2 2007-01-10 18:04:16 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -25,13 +25,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import de.hasait.eclipse.ccg.javag.application.AbstractCompilationUnit;
 import de.hasait.eclipse.ccg.javag.application.AbstractCuContainer;
 import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 09.01.2007
  */
 public class AInterface extends AbstractCompilationUnit {
@@ -58,7 +59,8 @@ public class AInterface extends AbstractCompilationUnit {
 		return _extends;
 	}
 
-	protected void writeCompilationUnits(final ContentBuffer pContent, final Map pUserBlockByName, IProgressMonitor pMonitor) {
+	protected void writeTypes(final ContentBuffer pContent, final Map pUserBlockContentByName,
+	      IProgressMonitor pMonitor) {
 		pContent.a(MVisibility.PUBLIC.getId()).a(" ");
 		pContent.a("interface ").a(getName()).a(" ");
 		String[] vExtends = getExtends();
@@ -73,9 +75,9 @@ public class AInterface extends AbstractCompilationUnit {
 			pContent.a(" ");
 		}
 		pContent.pi("{");
-		writeUserContent(pContent, pUserBlockByName, "InterfaceBegin");
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceBegin");
 		pContent.p(_code);
-		writeUserContent(pContent, pUserBlockByName, "InterfaceEnd");
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceEnd");
 		pContent.pu("}");
 	}
 }

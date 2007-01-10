@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractProperty.java,v 1.6 2007-01-09 17:05:18 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -18,6 +18,8 @@
 
 package de.hasait.eclipse.ccg.javag.application.model;
 
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.javag.lowlevel.AbstractMProperty;
@@ -27,10 +29,10 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.1 $
  * @since 13.12.2006
  */
-public abstract class AbstractProperty {
+public abstract class AbstractAProperty {
 	private final AClass _bean;
 
 	private final AbstractMProperty _property;
@@ -40,14 +42,13 @@ public abstract class AbstractProperty {
 	/**
 	 * Constructor.
 	 */
-	protected AbstractProperty(final AClass pBean, final AbstractMProperty pProperty, final XElement pConfigElement) {
+	protected AbstractAProperty(final AClass pBean, final AbstractMProperty pProperty, final XElement pConfigElement) {
 		super();
 
 		_bean = pBean;
 		_property = pProperty;
 
 		pProperty.setBeanName(_bean.getFullName());
-		pProperty.setPropertyChangeSupportName(_bean.getPropertyChangeSupportName());
 
 		pProperty.setName(pConfigElement.getRequiredAttribute("name"));
 		pProperty.setDescription(pConfigElement.getAttribute("description"));
@@ -57,12 +58,8 @@ public abstract class AbstractProperty {
 		pProperty.setFinal(pConfigElement.getAttributeAsBoolean("final", false));
 		pProperty.setRequired(pConfigElement.getAttributeAsBoolean("required", false));
 		pProperty.setInitialValue(pConfigElement.getAttribute("value"));
-		pProperty.setGetterVisibility(MVisibility.get(pConfigElement.getAttribute("getterVisibility", "public")));
-		pProperty.setSetterVisibility(MVisibility.get(pConfigElement.getAttribute("setterVisibility", "public")));
-
-		if (pProperty.isBound()) {
-			_bean.setPropertyChangeSupportNeeded();
-		}
+		pProperty.setReadVisibility(MVisibility.get(pConfigElement.getAttribute("readvisibility", "public")));
+		pProperty.setWriteVisibility(MVisibility.get(pConfigElement.getAttribute("writevisibility", "public")));
 	}
 
 	/**
@@ -86,7 +83,7 @@ public abstract class AbstractProperty {
 				throw new IllegalArgumentException(getProperty().getFullName() + "#backref: Cannot find bean "
 				      + getProperty().getType());
 			}
-			AbstractProperty property = typeBean.findProperty(_backref);
+			AbstractAProperty property = typeBean.findProperty(_backref);
 			if (property == null) {
 				throw new IllegalArgumentException(getProperty().getFullName() + "#backref: No property " + _backref
 				      + " in bean " + typeBean.getFullName());
@@ -111,7 +108,8 @@ public abstract class AbstractProperty {
 		getProperty().writeFields(content, monitor);
 	}
 
-	public final void writeMethods(ContentBuffer content, IProgressMonitor monitor) {
-		getProperty().writeMethods(content, monitor);
+	public final void writeMethods(final ContentBuffer content, final Map pUserBlockContentByName,
+	      final IProgressMonitor monitor) {
+		getProperty().writeMethods(content, pUserBlockContentByName, monitor);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.4 2007-01-09 17:05:19 concentus Exp $
+ * $Id: Dialog.java,v 1.5 2007-01-10 18:04:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,6 +31,7 @@ import de.hasait.eclipse.ccg.javag.application.AbstractCompilationUnit;
 import de.hasait.eclipse.ccg.javag.lowlevel.AbstractMProperty;
 import de.hasait.eclipse.ccg.javag.lowlevel.MSingleProperty;
 import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.xml.XElement;
 
@@ -62,7 +63,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
 public class Dialog extends AbstractCompilationUnit {
@@ -112,14 +113,14 @@ public class Dialog extends AbstractCompilationUnit {
 		return _view;
 	}
 
-	protected void writeCompilationUnits(final ContentBuffer pContent, final Map pUserBlockByName,
+	protected void writeTypes(final ContentBuffer pContent, final Map pUserBlockContentByName,
 	      final IProgressMonitor pMonitor) {
 		pContent.a("public ");
 		pContent.a("class " + getName() + " ");
 		pContent.a("extends " + JPanel.class.getName() + " ");
 		pContent.pi("{");
 		//
-		writeUserContent(pContent, pUserBlockByName, "DialogBegin");
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "DialogBegin");
 		// presentation model field
 		pContent.p("// presentation model field");
 		pContent.p("private final PresentationModel _presentationModel;");
@@ -190,7 +191,7 @@ public class Dialog extends AbstractCompilationUnit {
 		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
 		      .hasNext();) {
 			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
-			vPresentationModelProperty.writeMethods(pContent, pMonitor);
+			vPresentationModelProperty.writeMethods(pContent, pUserBlockContentByName, pMonitor);
 		}
 		pContent.p();
 		// presentation model actions
@@ -202,7 +203,7 @@ public class Dialog extends AbstractCompilationUnit {
 		}
 		pContent.pu("}");
 		//
-		writeUserContent(pContent, pUserBlockByName, "DialogEnd");
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "DialogEnd");
 		pContent.pu("}");
 	}
 

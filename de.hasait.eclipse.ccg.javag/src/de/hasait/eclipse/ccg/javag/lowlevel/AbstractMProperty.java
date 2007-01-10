@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractMProperty.java,v 1.2 2007-01-09 17:05:17 concentus Exp $
+ * $Id: AbstractMProperty.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -21,6 +21,7 @@ package de.hasait.eclipse.ccg.javag.lowlevel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -30,7 +31,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 04.01.2007
  */
 public abstract class AbstractMProperty {
@@ -56,11 +57,9 @@ public abstract class AbstractMProperty {
 
 	private boolean _bound;
 
-	private MVisibility _setterVisibility;
+	private MVisibility _writeVisibility;
 
-	private MVisibility _getterVisibility;
-
-	private String _propertyChangeSupportName;
+	private MVisibility _readVisibility;
 
 	private String _beanName;
 
@@ -72,13 +71,15 @@ public abstract class AbstractMProperty {
 
 	private final List _afterChangeCode = new ArrayList();
 
+	private String _staticEventDispatcherName;
+
 	/**
 	 * 
 	 */
 	public AbstractMProperty() {
 		super();
-		_getterVisibility = MVisibility.PUBLIC;
-		_setterVisibility = MVisibility.PUBLIC;
+		_readVisibility = MVisibility.PUBLIC;
+		_writeVisibility = MVisibility.PUBLIC;
 	}
 
 	/**
@@ -188,16 +189,16 @@ public abstract class AbstractMProperty {
 	/**
 	 * @return the getterVisibility
 	 */
-	public final MVisibility getGetterVisibility() {
-		return _getterVisibility;
+	public final MVisibility getReadVisibility() {
+		return _readVisibility;
 	}
 
 	/**
-	 * @param pGetterVisibility
+	 * @param pReadVisibility
 	 *           the getterVisibility to set
 	 */
-	public void setGetterVisibility(MVisibility pGetterVisibility) {
-		_getterVisibility = pGetterVisibility;
+	public void setReadVisibility(MVisibility pReadVisibility) {
+		_readVisibility = pReadVisibility;
 	}
 
 	/**
@@ -229,6 +230,37 @@ public abstract class AbstractMProperty {
 	}
 
 	/**
+	 * @return the staticEventDispatcherName
+	 */
+	public final String getStaticEventDispatcherName() {
+		return _staticEventDispatcherName;
+	}
+
+	/**
+	 * @param pStaticEventDispatcherName
+	 *           the staticEventDispatcherName to set
+	 */
+	public final void setStaticEventDispatcherName(String pStaticEventDispatcherName) {
+		_staticEventDispatcherName = pStaticEventDispatcherName;
+	}
+
+	public final String getAddSingleChangeCall(final String pModificationSourceExpr, final String pOldValueExpr,
+	      final String pNewValueExpr) {
+		return getStaticEventDispatcherName() + ".addSingleChange(" + pModificationSourceExpr + ", "
+		      + getNameConstantName() + ", " + pOldValueExpr + ", " + pNewValueExpr + ")";
+	}
+
+	public final String getAddMultiAddChangeCall(final String pModificationSourceExpr, final String pNewValueExpr) {
+		return getStaticEventDispatcherName() + ".addMultiAddChange(" + pModificationSourceExpr + ", "
+		      + getNameConstantName() + ", " + pNewValueExpr + ")";
+	}
+
+	public final String getAddMultiRemoveChangeCall(final String pModificationSourceExpr, final String pOldValueExpr) {
+		return getStaticEventDispatcherName() + ".addMultiRemoveChange(" + pModificationSourceExpr + ", "
+		      + getNameConstantName() + ", " + pOldValueExpr + ")";
+	}
+
+	/**
 	 * @return the parameterVarName
 	 */
 	public final String getParameterVarName() {
@@ -252,16 +284,16 @@ public abstract class AbstractMProperty {
 	/**
 	 * @return the setterVisibility
 	 */
-	public final MVisibility getSetterVisibility() {
-		return _setterVisibility;
+	public final MVisibility getWriteVisibility() {
+		return _writeVisibility;
 	}
 
 	/**
-	 * @param pSetterVisibility
+	 * @param pWriteVisibility
 	 *           the setterVisibility to set
 	 */
-	public void setSetterVisibility(MVisibility pSetterVisibility) {
-		_setterVisibility = pSetterVisibility;
+	public void setWriteVisibility(MVisibility pWriteVisibility) {
+		_writeVisibility = pWriteVisibility;
 	}
 
 	/**
@@ -280,21 +312,6 @@ public abstract class AbstractMProperty {
 	}
 
 	/**
-	 * @return the propertyChangeSupportName
-	 */
-	public final String getPropertyChangeSupportName() {
-		return _propertyChangeSupportName;
-	}
-
-	/**
-	 * @param pPropertyChangeSupportName
-	 *           the propertyChangeSupportName to set
-	 */
-	public final void setPropertyChangeSupportName(String pPropertyChangeSupportName) {
-		_propertyChangeSupportName = pPropertyChangeSupportName;
-	}
-
-	/**
 	 * @return the beanName
 	 */
 	public final String getBeanName() {
@@ -309,15 +326,15 @@ public abstract class AbstractMProperty {
 		_beanName = pBeanName;
 	}
 
-	public final void addAfterChangeCode(String pAfterChangeCode) {
+	public final void addAfterChangeCode(final String pAfterChangeCode) {
 		_afterChangeCode.add(pAfterChangeCode);
 	}
 
-	public final Iterator afterChangeCodeIterator() {
+	private final Iterator afterChangeCodeIterator() {
 		return _afterChangeCode.iterator();
 	}
 
-	public final boolean isAfterChangeCodeEmpty() {
+	private final boolean isAfterChangeCodeEmpty() {
 		return _afterChangeCode.isEmpty();
 	}
 
@@ -325,7 +342,7 @@ public abstract class AbstractMProperty {
 
 	public abstract String getRemoverCall(String instance, String value);
 
-   public abstract String getContainsCall(String pThisVarName, String pContainsVarName);
+	public abstract String getContainsCall(String pThisVarName, String pContainsVarName);
 
 	public abstract String getConstructorArguments();
 
@@ -356,7 +373,15 @@ public abstract class AbstractMProperty {
 		// nop
 	}
 
-	public void writeMethods(ContentBuffer content, IProgressMonitor monitor) {
+	public void writeMethods(final ContentBuffer pContent, final Map pUserBlockContentByName,
+	      final IProgressMonitor pMonitor) {
 		// nop
+	}
+
+	public final void writeAfterChangeCode(final ContentBuffer pContent) {
+		for (Iterator vAfterChangeCodeI = afterChangeCodeIterator(); vAfterChangeCodeI.hasNext();) {
+			String vAfterChangeCode = (String) vAfterChangeCodeI.next();
+			pContent.p(vAfterChangeCode);
+		}
 	}
 }

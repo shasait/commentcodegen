@@ -1,5 +1,5 @@
 /*
- * $Id: CodeUtils.java,v 1.1 2007-01-06 00:39:05 concentus Exp $
+ * $Id: CodeUtils.java,v 1.2 2007-01-10 18:04:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -21,14 +21,17 @@ package de.hasait.eclipse.ccg.javag.util;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hasait.eclipse.common.ContentBuffer;
+import de.hasait.eclipse.common.StringUtil;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 18.12.2006
  */
 public final class CodeUtils {
@@ -145,5 +148,31 @@ public final class CodeUtils {
 				}
 			}
 		}
+	}
+
+	private static final String USERBLOCK_START = "// @ccg.userblock.start ";
+
+	private static final String USERBLOCK_END = "// @ccg.userblock.end";
+
+	public static Map parseUserBlockContentByBlockName(final String pContent) {
+		Map vUserBlockContentByName = new HashMap();
+		String[] vUserBlocks = StringUtil.getBlocks(USERBLOCK_START, USERBLOCK_END, pContent);
+		for (int vUserBlocksI = 0; vUserBlocksI < vUserBlocks.length; vUserBlocksI++) {
+			String vUserBlock = vUserBlocks[vUserBlocksI];
+			String vUserBlockName = StringUtil.firstCharacters(vUserBlock);
+			String vUserBlockContent = vUserBlock.substring(vUserBlockName.length()).trim();
+			vUserBlockContentByName.put(vUserBlockName, vUserBlockContent);
+		}
+		return vUserBlockContentByName;
+	}
+
+	public static void writeUserBlock(final ContentBuffer pContent, final Map pUserBlockContentByName,
+	      final String pUserBlockName) {
+		pContent.a(USERBLOCK_START).p(pUserBlockName);
+		String vUserBlockContent = (String) pUserBlockContentByName.get(pUserBlockName);
+		if (vUserBlockContent != null) {
+			pContent.p(vUserBlockContent);
+		}
+		pContent.p(USERBLOCK_END);
 	}
 }
