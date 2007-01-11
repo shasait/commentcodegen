@@ -2,78 +2,214 @@
 <ccg>
 	<application package="de.hasait.eclipse.ccg.javag">
 		<model name="lowlevel">
-			<bean name="MRoot">
-				<property name="baseFolder" type="de.hasait.eclipse.common.resource.XFolder" final="true" required="true" />
-				<property name="packageName" type="String" />
-				
-				<property name="package" type="MPackage" cardinality="*" backref="root" />
-			</bean>
-			<bean name="MPackage">
-				<property name="root" type="MRoot" backref="package" />
-				
-				<property name="packageName" type="String" />
-
-				<property name="compilationUnit" type="MCompilationUnit" cardinality="*" backref="package" />
-			</bean>
-			<bean name="MCompilationUnit">
-				<property name="package" type="MPackage" backref="compilationUnit" />
-				
-				<property name="packageName" type="String" />
-
-				<property name="import" type="AbstractMType" cardinality="*" backref="imported" />
-				<property name="type" type="AbstractMType" cardinality="*" backref="compilationUnit" />
-			</bean>
-			<bean name="AbstractMType">
-				<property name="compilationUnit" type="MCompilationUnit" backref="type" />
-				<property name="imported" type="MCompilationUnit" backref="import" />
-				
+		
+			<class name="MRoot">
+				<import type="de.hasait.eclipse.common.StringUtil" />
+				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<property name="baseFolder" type="XFolder" />
 				<property name="name" type="String" />
+				<property name="folder" type="XFolder" writevisibility="private" />
+				<updater name="folder" listento="baseFolder,name"><![CDATA[
+					XFolder vBaseFolder = getBaseFolder();
+					String vName = getName();
+					String vPath = vName == null ? null : StringUtil.replace(vName, ".", "/");
+					setFolder(vBaseFolder == null || vPath == null ? null : vBaseFolder.getFolder(vPath));
+				]]></updater>
+				<property name="package" type="MPackage" cardinality="*" backref="root" />
+				<usermethod name="write" />
+			</class>
+			
+			<class name="MPackage">
+				<import type="de.hasait.eclipse.common.StringUtil" />
+				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<property name="root" type="MRoot" backref="package" bound="true">
+					<sync from="name" to="rootName" />
+					<sync from="folder" to="rootFolder" />
+				</property>
+				<property name="name" type="String" />
+				<property name="fullQualifiedName" type="String" writevisibility="private" />
+				<updater name="fullQualifiedName" listento="rootName,name"><![CDATA[
+					String vRootName = getRootName();
+					String vName = getName();
+					setFullQualifiedName(vRootName == null || vName == null ? null : vRootName + "." + vName);
+				]]></updater>
+				<property name="folder" type="XFolder" writevisibility="private" />
+				<updater name="folder" listento="rootFolder,name"><![CDATA[
+					XFolder vRootFolder = getRootFolder();
+					String vName = getName();
+					String vPath = vName == null ? null : StringUtil.replace(vName, ".", "/");
+					setFolder(vRootFolder == null || vPath == null ? null : vRootFolder.getFolder(vPath));
+				]]></updater>
+				<property name="compilationUnit" type="MCompilationUnit" cardinality="*" backref="package" />
+			</class>
 
-				<property name="abstractMethod" type="MMethodDeclaration" cardinality="*" backref="type" />
-				<property name="staticField" type="MFieldDeclaration" cardinality="*" backref="staticContainer" />
-			</bean>
-			<bean name="MClass" extends="AbstractMType">
-				<property name="method" type="MMethodImplementation" cardinality="*" backref="clazz" />
-				<property name="extends" type="MClass" backref="derived" />
+			<class name="AbstractMTypeContainer" abstract="true">
+				<property name="type" type="AbstractMType" cardinality="*" backref="container" />
+				<property name="package" type="MPackage" bound="true" abstract="true" writevisibility="private" />
+			</class>
+			
+			<class name="MCompilationUnit" extends="AbstractMTypeContainer">
+				<import type="de.hasait.eclipse.common.resource.XFile" />
+				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<property name="package" type="MPackage" backref="compilationUnit" bound="true">
+					<sync from="folder" to="packageFolder" />
+				</property>
+				<property name="firstType" type="AbstractMType" writevisibility="private">
+					<sync from="name" to="firstTypeName" />
+				</property>
+				<updater name="firstType" listento="type"><![CDATA[
+					setFirstType(isTypeEmpty() ? null : getType(0));
+				]]></updater>
+				<property name="targetFile" type="XFile" writevisibility="private" />
+				<updater name="targetFile" listento="packageFolder,firstTypeName"><![CDATA[
+					XFolder vPackageFolder = getPackageFolder();
+					String vTypeName = getFirstTypeName();
+					setTargetFile(vPackageFolder == null || vTypeName == null ? null : vPackageFolder.getFile(vTypeName));
+				]]></updater>
+				<property name="import" type="AbstractMType" cardinality="*" backref="imported" />
+			</class>
+			
+			<class name="AbstractMType" extends="AbstractMTypeContainer" abstract="true">
+				<property name="container" type="AbstractMTypeContainer" backref="type">
+					<sync from="package" to="package" bound="true" />
+				</property>
+				<property name="imported" type="MCompilationUnit" backref="import" />
+				<property name="name" type="String" />
+				<property name="fullQualifiedName" type="String" writevisibility="protected" />
+				<property name="abstractMethod" type="MMethodDeclaration" cardinality="*" backref="owner" />
+				<property name="staticField" type="MStaticFieldDeclaration" cardinality="*" backref="owner" />
+				<property name="visibility" type="String" />
+			</class>
+			
+			<class name="MClass" extends="AbstractMType">
+				<property name="abstract" type="boolean" />
+				<property name="final" type="boolean" />
+				<property name="extends" type="MClass" backref="derived" final="true" />
 				<property name="derived" type="MClass" cardinality="*" backref="extends" />
 				<property name="implements" type="MInterface" cardinality="*" backref="implementor" />
-				<property name="instanceField" type="MFieldDeclaration" cardinality="*" backref="instanceContainer" />
-			</bean>
-			<bean name="MInterface" extends="AbstractMType">
+				<property name="constructor" type="MConstructorImplementation" cardinality="*" backref="owner" />
+				<property name="instanceField" type="MInstanceFieldDeclaration" cardinality="*" backref="owner" />
+				<property name="method" type="MMethodImplementation" cardinality="*" backref="owner" />
+				<property name="pattern" type="AbstractMClassPattern" cardinality="*" backref="owner" />
+			</class>
+			
+			<class name="MInterface" extends="AbstractMType">
 				<property name="implementor" type="MClass" cardinality="*" backref="implements" />
-			</bean>
-			<bean name="MMethodDeclaration">
-				<property name="type" type="AbstractMType" cardinality="*" backref="abstractMethod" />
+			</class>
+			
+			<class name="MMethodDeclaration">
+				<property name="owner" type="AbstractMType" cardinality="*" backref="abstractMethod" final="true" required="true" />
 				<property name="implementation" type="MMethodImplementation" cardinality="*" backref="declaration" />
-
 				<property name="name" type="String" />
 				<property name="resultType" type="AbstractMType" />
 				<property name="parameterType" type="AbstractMType" cardinality="*" />
-			</bean>
-			<bean name="MMethodImplementation">
-				<property name="clazz" type="MClass" backref="method" />
+			</class>
+			
+			<class name="MMethodImplementation">
+				<property name="owner" type="MClass" backref="method" final="true" required="true" />
 				<property name="declaration" type="MMethodDeclaration" backref="implementation" final="true" />
-				
-				<property name="parameterName" type="String" cardinality="*" />
 				<property name="parameterFinal" type="Boolean" cardinality="*" />
-				<property name="code" type="String" cardinality="*" />
-			</bean>
-			<bean name="MFieldDeclaration">
-				<property name="staticContainer" type="AbstractMType" backref="staticField" />
-				<property name="instanceContainer" type="MClass" backref="instanceField" />
-				
+				<property name="parameterName" type="String" cardinality="*" />
+				<property name="code" type="MCodeBuffer" final="true" value="new MCodeBuffer()" />
+			</class>
+			
+			<class name="MConstructorImplementation">
+				<property name="owner" type="MClass" backref="constructor" final="true" required="true" />
+				<property name="name" type="String" />
+				<property name="parameterFinal" type="Boolean" cardinality="*" />
+				<property name="parameterType" type="AbstractMType" cardinality="*" />
+				<property name="parameterName" type="String" cardinality="*" />
+				<property name="code" type="MCodeBuffer" final="true" value="new MCodeBuffer()" />
+			</class>
+			
+			<class name="AbstractMFieldDeclaration" abstract="true">
 				<property name="type" type="AbstractMType" />
 				<property name="name" type="String" />
-				<property name="final" type="boolean" />
 				<property name="visibility" type="String" />
+				<property name="final" type="boolean" />
 				<property name="value" type="String" />
-			</bean>
-			<bean name="A">
-				<property name="b" type="B" cardinality="*" backref="a" final="true" />
-			</bean>
-			<bean name="B">
-				<property name="a" type="A" backref="b" />
-			</bean>
+			</class>
+			
+			<class name="MStaticFieldDeclaration" extends="AbstractMFieldDeclaration">
+				<property name="owner" type="AbstractMType" backref="staticField" final="true" required="true" />
+			</class>
+			
+			<class name="MInstanceFieldDeclaration" extends="AbstractMFieldDeclaration">
+				<property name="owner" type="MClass" backref="instanceField" final="true" required="true" />
+			</class>
+
+			<!-- CodeLevel  -->
+
+			<class name="MCodeBuffer">
+				<property name="statement" type="AbstractMCodeStatement" cardinality="*" />
+			</class>
+			
+			<class name="AbstractMCodeStatement" abstract="true">
+			</class>
+			
+			<class name="MTextCodeStatement" extends="AbstractMCodeStatement">
+				<property name="statementText" type="String" final="true" required="true" />
+			</class>
+			
+			<class name="MUserCodeStatement" extends="AbstractMCodeStatement">	
+				<property name="userBlockName" type="String" final="true" required="true" />
+			</class>
+			
+			<class name="MAssignmentCodeStatement" extends="AbstractMCodeStatement">
+				<property name="varName" type="String" final="true" required="true" />
+				<property name="valueExpression" type="AbstractMCodeExpression" final="true" required="true" />
+			</class>
+			
+			<class name="AbstractMCodeExpression" abstract="true">
+			</class>
+			
+			<class name="MTextCodeExpression" extends="AbstractMCodeExpression">
+				<property name="expressionText" type="String" final="true" required="true" />
+			</class>
+			
+			<!-- PatternLevel  -->
+			
+			<class name="AbstractMClassPattern" abstract="true">
+				<property name="owner" type="MClass" backref="pattern" final="true" required="true" />
+			</class>			
+			
+			<class name="MPropertyChangeListener" extends="AbstractMClassPattern">
+				<property name="name" type="String" />
+				<property name="property" type="MProperty" cardinality="*" />
+				<property name="onChange" type="MCodeBuffer" final="true" value="new MCodeBuffer()" />
+			</class>
+			
+			<class name="MProperty" extends="AbstractMClassPattern">
+				<property name="name" type="String" />
+				<property name="description" type="String" />
+				<property name="type" type="AbstractMType" />
+				<property name="cardinality" type="String" />
+				<property name="backref" type="MProperty" backref="referral" />
+				<property name="final" type="boolean" />
+				<property name="required" type="boolean" />
+				<property name="bound" type="boolean" />
+				<property name="initialValue" type="String" />
+				<property name="referral" type="MProperty" cardinality="*" backref="backref" />
+				<property name="writeVisibility" type="String" />
+				<property name="readVisibility" type="String" />
+				<property name="afterWriteCode" type="MCodeBuffer" final="true" value="new MCodeBuffer()" />
+				<property name="beforeWriteCode" type="MCodeBuffer" final="true" value="new MCodeBuffer()" />
+			</class>
+			
+		</model>
+
+		<model name="application">
+			<class name="AApplication">
+				<property name="baseFolder" type="de.hasait.eclipse.common.resource.XFolder" final="true" required="true" />
+				<property name="packageName" type="String" />
+				<property name="container" type="AbstractAContainer" cardinality="*" backref="application" />
+			</class>
+			<class name="AbstractAContainer">
+				<property name="application" type="AApplication" backref="container" />
+				<property name="name" type="String" />
+			</class>
+			<class name="AModel" extends="AbstractAContainer">
+			</class>
 		</model>
 	</application>
 </ccg>
