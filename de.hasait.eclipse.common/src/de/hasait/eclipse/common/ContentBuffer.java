@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.5 2007-01-06 00:43:41 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.6 2007-01-11 16:30:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -18,13 +18,16 @@
 
 package de.hasait.eclipse.common;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -103,9 +106,21 @@ public class ContentBuffer {
 		_indentNeeded = true;
 	}
 
-	public final void p(String line) {
-		a(line);
-		bn();
+	public final void p(final String pLines) {
+		if (pLines.length() == 0) {
+			bn();
+		} else {
+			BufferedReader vLineReader = new BufferedReader(new StringReader(pLines));
+			String vLine;
+			try {
+				while ((vLine = vLineReader.readLine()) != null) {
+					a(vLine);
+					bn();
+				}
+			} catch (IOException e) {
+				// can not occur
+			}
+		}
 	}
 
 	public final void p() {
