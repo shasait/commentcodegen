@@ -1,5 +1,5 @@
 /*
- * $Id: AInterface.java,v 1.2 2007-01-10 18:04:16 concentus Exp $
+ * $Id: AInterface.java,v 1.3 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 09.01.2007
  */
 public class AInterface extends AbstractCompilationUnit {
@@ -77,6 +77,9 @@ public class AInterface extends AbstractCompilationUnit {
 		pContent.pi("{");
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceBegin");
 		pContent.p(_code);
+		pContent.p();
+		writeAttachedCode(pContent, pMonitor);
+		pContent.p();
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceEnd");
 		pContent.pu("}");
 	}

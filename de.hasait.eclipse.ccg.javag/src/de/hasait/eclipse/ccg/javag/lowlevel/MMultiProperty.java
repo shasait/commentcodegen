@@ -1,5 +1,5 @@
 /*
- * $Id: MMultiProperty.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
+ * $Id: MMultiProperty.java,v 1.4 2007-01-11 16:29:52 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.ContentBuffer;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 04.01.2007
  */
 public class MMultiProperty extends AbstractMProperty {
@@ -132,21 +132,26 @@ public class MMultiProperty extends AbstractMProperty {
 
 	public void writeFields(ContentBuffer content, IProgressMonitor monitor) {
 		super.writeFields(content, monitor);
-		CodeUtils.writeFinalField(content, getFieldName(), getCollectionClass(), getCollectionImplClass(),
-		      getInitialValue());
-		content.p();
+		if (!isAbstract()) {
+			CodeUtils.writeFinalField(content, getFieldName(), getCollectionClass(), getCollectionImplClass(),
+			      getInitialValue());
+			content.p();
+		}
 	}
 
 	public void writeMethods(final ContentBuffer pContent, Map pUserBlockContentByName, final IProgressMonitor pMonitor) {
 		super.writeMethods(pContent, pUserBlockContentByName, pMonitor);
-		writeMultiGetter(pContent);
-		writeMultiContains(pContent);
-		writeMultiIterator(pContent);
-		writeMultiSize(pContent);
-		if (!isFinal()) {
-			writeMultiAdder(pContent);
-			writeMultiRemover(pContent);
+		if (!(isAbstract() && getReadVisibility() == MVisibility.PRIVATE)) {
+			writeMultiGetter(pContent);
+			writeMultiContains(pContent);
+			writeMultiIterator(pContent);
+			writeMultiIsEmpty(pContent);
+			writeMultiSize(pContent);
 		}
+		if (!isFinal() && !(isAbstract() && getWriteVisibility() == MVisibility.PRIVATE)) {
+      	writeMultiAdder(pContent);
+      	writeMultiRemover(pContent);
+      }
 	}
 
 	/**
@@ -171,27 +176,31 @@ public class MMultiProperty extends AbstractMProperty {
 			pContent.p("@param " + getParameterVarName() + " The value to remove from property " + getName() + ".");
 			pContent.p("@see " + getCollectionClass().getName() + "#remove(Object)");
 			pContent.pu(" */");
-
-			pContent.pi(getWriteVisibility().getId() + " final void " + getRemoveMethodName() + "(final " + getType()
-			      + " " + getParameterVarName() + ") {");
-			pContent.pi("if (!" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
-			pContent.p("return;");
-			pContent.pu("}");
-			if (isRequired()) {
-				writeRequiredCheckPreRemove(pContent);
-			}
-			pContent.p(getFieldName() + ".remove(" + getParameterVarName() + ");");
-			if (isBound()) {
-				pContent.p(getAddMultiRemoveChangeCall("this", getParameterVarName()) + ";");
-			}
-			writeAfterChangeCode(pContent);
-			if (getBackrefProperty() != null) {
-				pContent.pi("if (" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ") {");
-				pContent.p(getBackrefProperty().getRemoverCall(getParameterVarName(), "this") + ";");
+			if (isAbstract()) {
+				pContent.p(getWriteVisibility().getId() + " abstract void " + getRemoveMethodName() + "(final " + getType()
+				      + " " + getParameterVarName() + ");");
+			} else {
+				pContent.pi(getWriteVisibility().getId() + " final void " + getRemoveMethodName() + "(final " + getType()
+				      + " " + getParameterVarName() + ") {");
+				pContent.pi("if (!" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
+				pContent.p("return;");
+				pContent.pu("}");
+				if (isRequired()) {
+					writeRequiredCheckPreRemove(pContent);
+				}
+				writeBeforeChangeCode(pContent);
+				pContent.p(getFieldName() + ".remove(" + getParameterVarName() + ");");
+				if (isBound()) {
+					pContent.p(getAddMultiRemoveChangeCall("this", getParameterVarName()) + ";");
+				}
+				writeAfterChangeCode(pContent);
+				if (getBackrefProperty() != null) {
+					pContent.pi("if (" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ") {");
+					pContent.p(getBackrefProperty().getRemoverCall(getParameterVarName(), "this") + ";");
+					pContent.pu("}");
+				}
 				pContent.pu("}");
 			}
-			pContent.pu("}");
-			
 			pContent.p();
 		}
 	}
@@ -217,29 +226,54 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@param " + getParameterVarName() + " The additional value for property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass().getName() + "#add(Object)");
 		pContent.pu(" */");
+		if (isAbstract()) {
+			pContent.p(getWriteVisibility().getId() + " abstract void " + getAddMethodName() + "(final " + getType() + " "
+			      + getParameterVarName() + ");");
+		} else {
+			pContent.pi(getWriteVisibility().getId() + " final void " + getAddMethodName() + "(final " + getType() + " "
+			      + getParameterVarName() + ") {");
+			pContent.pi("if (" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
+			pContent.p("return;");
+			pContent.pu("}");
+			if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
+				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
+				pContent.p("throw new IllegalArgumentException(\"backref != this\");");
+				pContent.pu("}");
+			}
+			writeBeforeChangeCode(pContent);
+			pContent.p(getFieldName() + ".add(" + getParameterVarName() + ");");
+			if (isBound()) {
+				pContent.p(getAddMultiAddChangeCall("this", getParameterVarName()) + ";");
+			}
+			writeAfterChangeCode(pContent);
+			if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
+				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
+				pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
+				pContent.pu("}");
+			}
+			pContent.pu("}");
+		}
+		pContent.p();
+	}
 
-		pContent.pi(getWriteVisibility().getId() + " final void " + getAddMethodName() + "(final " + getType() + " "
-		      + getParameterVarName() + ") {");
-		pContent.pi("if (" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
-		pContent.p("return;");
-		pContent.pu("}");
-		if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
-			pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
-			pContent.p("throw new IllegalArgumentException(\"backref != this\");");
+	/**
+	 * @param pContent
+	 */
+	private void writeMultiIsEmpty(final ContentBuffer pContent) {
+		//
+		// isEmpty
+		//
+		pContent.pi("/**", " * ");
+		pContent.p("@return Is property " + getName() + " emtpy?");
+		pContent.p("@see " + getCollectionClass().getName() + "#isEmpty()");
+		pContent.pu(" */");
+		if (isAbstract()) {
+			pContent.p(getReadVisibility().getId() + " final abstract is" + getCapName() + "Empty();");
+		} else {
+			pContent.pi(getReadVisibility().getId() + " final boolean is" + getCapName() + "Empty() {");
+			pContent.p("return " + getFieldName() + ".isEmpty();");
 			pContent.pu("}");
 		}
-		pContent.p(getFieldName() + ".add(" + getParameterVarName() + ");");
-		if (isBound()) {
-			pContent.p(getAddMultiAddChangeCall("this", getParameterVarName()) + ";");
-		}
-		writeAfterChangeCode(pContent);
-		if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
-			pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
-			pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
-			pContent.pu("}");
-		}
-		pContent.pu("}");
-		
 		pContent.p();
 	}
 
@@ -254,11 +288,13 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@return The number of values of property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass().getName() + "#size()");
 		pContent.pu(" */");
-
-		pContent.pi(getReadVisibility().getId() + " final int " + getName() + "Size() {");
-		pContent.p("return " + getFieldName() + ".size();");
-		pContent.pu("}");
-		
+		if (isAbstract()) {
+			pContent.p(getReadVisibility().getId() + " abstract int " + getName() + "Size();");
+		} else {
+			pContent.pi(getReadVisibility().getId() + " final int " + getName() + "Size() {");
+			pContent.p("return " + getFieldName() + ".size();");
+			pContent.pu("}");
+		}
 		pContent.p();
 	}
 
@@ -273,12 +309,15 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@return An {@link " + Iterator.class.getName() + "} over all values of property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass().getName() + "#iterator()");
 		pContent.pu(" */");
-
-		pContent
-		      .pi(getReadVisibility().getId() + " final " + Iterator.class.getName() + " " + getName() + "Iterator() {");
-		pContent.p("return " + getFieldName() + ".iterator();");
-		pContent.pu("}");
-		
+		if (isAbstract()) {
+			pContent.p(getReadVisibility().getId() + " abstract " + Iterator.class.getName() + " " + getName()
+			      + "Iterator();");
+		} else {
+			pContent.pi(getReadVisibility().getId() + " final " + Iterator.class.getName() + " " + getName()
+			      + "Iterator() {");
+			pContent.p("return " + getFieldName() + ".iterator();");
+			pContent.pu("}");
+		}
 		pContent.p();
 	}
 
@@ -294,11 +333,15 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@return Does this property contain the specified object?");
 		pContent.p("@see " + getCollectionClass().getName() + "#contains(Object)");
 		pContent.pu(" */");
-
-		pContent.pi(getReadVisibility().getId() + " final boolean contains" + getCapName() + "(Object pObject) {");
-		pContent.p("return " + getFieldName() + ".contains(pObject);");
-		pContent.pu("}");
-
+		if (isAbstract()) {
+			pContent.p(getReadVisibility().getId() + " abstract boolean contains" + getCapName()
+			      + "(final Object pObject);");
+		} else {
+			pContent.pi(getReadVisibility().getId() + " final boolean contains" + getCapName()
+			      + "(final Object pObject) {");
+			pContent.p("return " + getFieldName() + ".contains(pObject);");
+			pContent.pu("}");
+		}
 		pContent.p();
 	}
 
@@ -320,11 +363,15 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@return The value of property " + getName() + " at the specified index.");
 		pContent.p("@see " + getCollectionClass().getName() + "#get(int)");
 		pContent.pu(" */");
-
-		pContent.pi(getReadVisibility().getId() + " final " + getType() + " get" + getCapName() + "(int index) {");
-		pContent.p("return (" + getType() + ") " + getFieldName() + ".get(index);");
-		pContent.pu("}");
-
+		if (isAbstract()) {
+			pContent.p(getReadVisibility().getId() + " abstract " + getType() + " get" + getCapName()
+			      + "(final int index);");
+		} else {
+			pContent.pi(getReadVisibility().getId() + " final " + getType() + " get" + getCapName()
+			      + "(final int index) {");
+			pContent.p("return (" + getType() + ") " + getFieldName() + ".get(index);");
+			pContent.pu("}");
+		}
 		pContent.p();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: AClass.java,v 1.2 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AClass.java,v 1.3 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,6 +31,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.javag.application.AbstractCompilationUnit;
+import de.hasait.eclipse.ccg.javag.lowlevel.AbstractMProperty;
 import de.hasait.eclipse.ccg.javag.lowlevel.MAbstractMethod;
 import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
 import de.hasait.eclipse.ccg.javag.util.CodeUtils;
@@ -41,7 +42,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public class AClass extends AbstractCompilationUnit {
@@ -55,7 +56,7 @@ public class AClass extends AbstractCompilationUnit {
 
 	private final String _extends;
 
-	private AClass _extendsBean;
+	private AClass _extendsClass;
 
 	private final String[] _implements;
 
@@ -74,6 +75,8 @@ public class AClass extends AbstractCompilationUnit {
 	private final List _abstractMethods = new ArrayList();
 
 	private final List _updaters = new ArrayList();
+
+	private final List _constructorBodyAttachCode = new ArrayList();
 
 	/**
 	 * Constructor.
@@ -104,10 +107,7 @@ public class AClass extends AbstractCompilationUnit {
 			} else {
 				throw new IllegalArgumentException("cardinality not supported: " + vCardinality);
 			}
-			vProperty.getProperty().setStaticEventDispatcherName(
-			      getCuContainer().getApplication()._applicationContextCu.getQualifiedName() + ".DEFAULT.ED");
-			_properties.add(vProperty);
-			_propertiesByName.put(vProperty.getProperty().getName(), vProperty);
+			addProperty(vProperty);
 		}
 
 		XElement[] vValidatorElements = pConfigElement.getChildElements("validator");
@@ -116,7 +116,7 @@ public class AClass extends AbstractCompilationUnit {
 			String vValidatorExpression = vValidatorElement.getTextContent();
 			String vValidatorDescription = vValidatorElement.getRequiredAttribute("description");
 			String[] vValidatorBindings = vValidatorElement.getRequiredAttribute("bound").split(";");
-			AValidator vValidator = new AValidator("id" + vValidatorElementsI, vValidatorExpression,
+			AValidator vValidator = new AValidator(this, "id" + vValidatorElementsI, vValidatorExpression,
 			      vValidatorDescription, vValidatorBindings);
 			addValidator(vValidator);
 		}
@@ -135,8 +135,8 @@ public class AClass extends AbstractCompilationUnit {
 		XElement[] vAbstractMethodElements = pConfigElement.getChildElements("abstractmethod");
 		for (int vAbstractMethodElementsI = 0; vAbstractMethodElementsI < vAbstractMethodElements.length; vAbstractMethodElementsI++) {
 			XElement vAbstractMethodElement = vAbstractMethodElements[vAbstractMethodElementsI];
-			String vName = vAbstractMethodElement.getAttribute("name");
-			String vReturnType = vAbstractMethodElement.getAttribute("resulttype");
+			String vName = vAbstractMethodElement.getRequiredAttribute("name");
+			String vReturnType = vAbstractMethodElement.getAttribute("resulttype", "void");
 			String vParameters = vAbstractMethodElement.getAttribute("parameters");
 			String[] vParametersArray = vParameters == null ? null : vParameters.split(",");
 			MAbstractMethod vAbstractMethod = new MAbstractMethod(vName, vReturnType, vParametersArray);
@@ -168,8 +168,8 @@ public class AClass extends AbstractCompilationUnit {
 	/**
 	 * @return the extendsBean
 	 */
-	public final AClass getExtendsBean() {
-		return _extendsBean;
+	public final AClass getExtendsClass() {
+		return _extendsClass;
 	}
 
 	/**
@@ -206,6 +206,11 @@ public class AClass extends AbstractCompilationUnit {
 		return (AbstractAProperty) _propertiesByName.get(pName);
 	}
 
+	public final void addProperty(final AbstractAProperty pProperty) {
+		_properties.add(pProperty);
+		_propertiesByName.put(pProperty.getProperty().getName(), pProperty);
+	}
+
 	public final void addValidator(final AValidator pValidator) {
 		_validators.add(pValidator);
 		String[] vValidatorBindings = pValidator.getBindings();
@@ -228,36 +233,46 @@ public class AClass extends AbstractCompilationUnit {
 		return _validatorsByBinding.keySet().iterator();
 	}
 
-	public final void resolve(final IProgressMonitor pMonitor) {
-		super.resolve(pMonitor);
-		if (_extends != null) {
-			_extendsBean = (AClass) _model.findCompilationUnitByName(_extends);
-			if (_extendsBean != null) {
-				_extendsBean._derivedBeans.add(this);
-			}
+	public final void addConstructorBodyAttachCode(final String pAttachCode) {
+		_constructorBodyAttachCode.add(pAttachCode);
+	}
+
+	public static final int EXTENDS_RESOLVE_LAYER = 2;
+
+	public final boolean transform(int pLayer, IProgressMonitor pMonitor) {
+		boolean vResult = super.transform(pLayer, pMonitor);
+		if (pLayer < EXTENDS_RESOLVE_LAYER) {
+			vResult = true;
 		}
-		for (Iterator propertyI = _properties.iterator(); propertyI.hasNext();) {
-			AbstractAProperty property = (AbstractAProperty) propertyI.next();
-			property.resolve(pMonitor);
+		if (pLayer == EXTENDS_RESOLVE_LAYER) {
+			if (_extends != null) {
+				_extendsClass = (AClass) _model.findCompilationUnitByName(_extends);
+				if (_extendsClass != null) {
+					_extendsClass._derivedBeans.add(this);
+				}
+			}
 		}
 		for (Iterator vValidatorI = validatorIterator(); vValidatorI.hasNext();) {
 			AValidator vValidator = (AValidator) vValidatorI.next();
-			String[] vValidatorBindings = vValidator.getBindings();
-			for (int vValidatorBindingI = 0; vValidatorBindingI < vValidatorBindings.length; vValidatorBindingI++) {
-				String vValidatorBinding = vValidatorBindings[vValidatorBindingI];
-				AbstractAProperty vValidatorBindingProperty = findProperty(vValidatorBinding);
-				if (vValidatorBindingProperty == null) {
-					throw new IllegalArgumentException("invalid validatorBinding " + vValidatorBinding + " for "
-					      + vValidator.getDescription());
-				}
-				vValidatorBindingProperty.getProperty().addAfterChangeCode("//TODO validator");
+			if (vValidator.transform(pLayer, pMonitor)) {
+				vResult = true;
 			}
 		}
-		// updater
+		// clone to allow property-changes from inside properties
+		List vProperties = new ArrayList(_properties);
+		for (Iterator vPropertyI = vProperties.iterator(); vPropertyI.hasNext();) {
+			AbstractAProperty vProperty = (AbstractAProperty) vPropertyI.next();
+			if (vProperty.transform(pLayer, pMonitor)) {
+				vResult = true;
+			}
+		}
 		for (Iterator vUpdatersI = _updaters.iterator(); vUpdatersI.hasNext();) {
 			AUpdater vUpdater = (AUpdater) vUpdatersI.next();
-			vUpdater.resolve();
+			if (vUpdater.transform(pLayer, pMonitor)) {
+				vResult = true;
+			}
 		}
+		return vResult;
 	}
 
 	public final void validate(final IProgressMonitor pMonitor) {
@@ -265,6 +280,25 @@ public class AClass extends AbstractCompilationUnit {
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractAProperty property = (AbstractAProperty) propertyI.next();
 			property.validate(pMonitor);
+		}
+		AClass vExtends = getExtendsClass();
+		while (vExtends != null) {
+			for (Iterator vExtendsPropertyI = vExtends.propertyIterator(); vExtendsPropertyI.hasNext();) {
+				AbstractMProperty vForeignProperty = ((AbstractAProperty) vExtendsPropertyI.next()).getProperty();
+				if (vForeignProperty.isAbstract() && _propertiesByName.containsKey(vForeignProperty.getName())) {
+					AbstractMProperty vLocalProperty = ((AbstractAProperty) _propertiesByName
+					      .get(vForeignProperty.getName())).getProperty();
+					if (!vForeignProperty.getType().equals(vLocalProperty.getType())) {
+						throw new IllegalArgumentException("local type != abstract type for property "
+						      + vLocalProperty.getQualifiedName());
+					}
+					if (vForeignProperty.isBound() && !vLocalProperty.isBound()) {
+						throw new IllegalArgumentException("local is not bound but abstract for property "
+						      + vLocalProperty.getQualifiedName());
+					}
+				}
+			}
+			vExtends = vExtends.getExtendsClass();
 		}
 	}
 
@@ -329,9 +363,10 @@ public class AClass extends AbstractCompilationUnit {
 		}
 		// constructor
 		pContent.a(MVisibility.PUBLIC.getId()).a(" ").a(getName()).a("(");
+		// constructor arguments
 		boolean vFirstConstructorArgument = true;
-		if (getExtendsBean() != null) {
-			for (Iterator propertyI = getExtendsBean().propertyIterator(); propertyI.hasNext();) {
+		if (getExtendsClass() != null) {
+			for (Iterator propertyI = getExtendsClass().propertyIterator(); propertyI.hasNext();) {
 				AbstractAProperty property = (AbstractAProperty) propertyI.next();
 				String vConstructorArguments = property.getProperty().getConstructorArguments();
 				if (vConstructorArguments != null) {
@@ -357,10 +392,11 @@ public class AClass extends AbstractCompilationUnit {
 			}
 		}
 		pContent.pi(") {");
+		// constructor super call
 		pContent.a("super(");
 		vFirstConstructorArgument = true;
-		if (getExtendsBean() != null) {
-			for (Iterator propertyI = getExtendsBean().propertyIterator(); propertyI.hasNext();) {
+		if (getExtendsClass() != null) {
+			for (Iterator propertyI = getExtendsClass().propertyIterator(); propertyI.hasNext();) {
 				AbstractAProperty property = (AbstractAProperty) propertyI.next();
 				String vConstructorArguments = property.getProperty().getConstructorArguments();
 				if (vConstructorArguments != null) {
@@ -374,13 +410,20 @@ public class AClass extends AbstractCompilationUnit {
 			}
 		}
 		pContent.p(");");
+		// constructor property code
 		for (Iterator propertyI = propertyIterator(); propertyI.hasNext();) {
 			AbstractAProperty property = (AbstractAProperty) propertyI.next();
 			property.getProperty().writeConstructorBody(pContent);
 		}
+		// constructor validator code
 		for (Iterator vValidatorBindingI = validatorBindingIterator(); vValidatorBindingI.hasNext();) {
 			String vValidatorBinding = (String) vValidatorBindingI.next();
 			pContent.a("validate").a(vValidatorBinding).a("()").p(";");
+		}
+		// constructor body attached code
+		for (Iterator vAttachedCodeI = _constructorBodyAttachCode.iterator(); vAttachedCodeI.hasNext();) {
+			String vAttachedCode = (String) vAttachedCodeI.next();
+			pContent.p(vAttachedCode);
 		}
 		pContent.pu("}");
 		pContent.p();
@@ -391,12 +434,6 @@ public class AClass extends AbstractCompilationUnit {
 		for (Iterator vAbstractMethodsI = _abstractMethods.iterator(); vAbstractMethodsI.hasNext();) {
 			MAbstractMethod vAbstractMethod = (MAbstractMethod) vAbstractMethodsI.next();
 			vAbstractMethod.write(pContent);
-			pContent.p();
-		}
-		// updater methods
-		for (Iterator vUpdatersI = _updaters.iterator(); vUpdatersI.hasNext();) {
-			AUpdater vUpdater = (AUpdater) vUpdatersI.next();
-			vUpdater.write(pContent);
 			pContent.p();
 		}
 		// property methods
@@ -421,6 +458,8 @@ public class AClass extends AbstractCompilationUnit {
 			pContent.pu("}");
 			pContent.p();
 		}
+		writeAttachedCode(pContent, pMonitor);
+		pContent.p();
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassEnd");
 		pContent.pu("}");
 	}

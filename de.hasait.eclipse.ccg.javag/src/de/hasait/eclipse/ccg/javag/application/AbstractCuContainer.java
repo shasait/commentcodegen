@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCuContainer.java,v 1.2 2007-01-10 18:04:16 concentus Exp $
+ * $Id: AbstractCuContainer.java,v 1.3 2007-01-11 16:29:51 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 05.01.2007
  */
 public class AbstractCuContainer {
@@ -134,22 +134,28 @@ public class AbstractCuContainer {
 		return _targetFolder;
 	}
 
-	public final void resolve(final IProgressMonitor pMonitor) {
+	public boolean transform(final int pLayer, final IProgressMonitor pMonitor) {
+		pMonitor.subTask("transform container " + getPackage());
+		boolean vResult = false;
 		for (Iterator vCompilationUnitI = compilationUnitIterator(); vCompilationUnitI.hasNext();) {
-			AbstractCompilationUnit bean = (AbstractCompilationUnit) vCompilationUnitI.next();
-			bean.resolve(pMonitor);
+			AbstractCompilationUnit vCompilationUnit = (AbstractCompilationUnit) vCompilationUnitI.next();
+			if (vCompilationUnit.transform(pLayer, pMonitor)) {
+				vResult = true;
+			}
 		}
+		return vResult;
 	}
 
 	public final void validate(final IProgressMonitor pMonitor) {
+		pMonitor.subTask("validate container " + getPackage());
 		for (Iterator vCompilationUnitI = compilationUnitIterator(); vCompilationUnitI.hasNext();) {
-			AbstractCompilationUnit bean = (AbstractCompilationUnit) vCompilationUnitI.next();
-			bean.validate(pMonitor);
+			AbstractCompilationUnit vCompilationUnit = (AbstractCompilationUnit) vCompilationUnitI.next();
+			vCompilationUnit.validate(pMonitor);
 		}
 	}
 
 	public final void write(final IProgressMonitor pMonitor) throws CoreException {
-		pMonitor.subTask("write Model " + getPackage());
+		pMonitor.subTask("write container " + getPackage());
 		for (Iterator vCompilationUnitI = compilationUnitIterator(); vCompilationUnitI.hasNext();) {
 			AbstractCompilationUnit vCompilationUnit = (AbstractCompilationUnit) vCompilationUnitI.next();
 			vCompilationUnit.write(pMonitor);

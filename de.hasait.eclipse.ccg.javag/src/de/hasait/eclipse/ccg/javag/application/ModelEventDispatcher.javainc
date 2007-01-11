@@ -150,6 +150,19 @@ public class ModelEventDispatcher {
 		vChangeListeners.add(pChangeListener);
 	}
 
+	public final void removeChangeListener(final Object pSource, final String pPropertyName,
+	      final IChangeListener pChangeListener) {
+		if (!_changeListenersByPropertyNameBySource.containsKey(pSource)) {
+			return;
+		}
+		Map vChangeListenersByPropertyName = (Map) _changeListenersByPropertyNameBySource.get(pSource);
+		if (!vChangeListenersByPropertyName.containsKey(pPropertyName)) {
+			return;
+		}
+		Collection vChangeListeners = (Collection) vChangeListenersByPropertyName.get(pPropertyName);
+		vChangeListeners.remove(pChangeListener);
+	}
+
 	public final boolean containsChangeListener(final Object pSource, final String pPropertyName) {
 		if (!_changeListenersByPropertyNameBySource.containsKey(pSource)) {
 			return false;
@@ -203,7 +216,7 @@ public class ModelEventDispatcher {
 
 	private static int TYPE_COUNTER = 0;
 
-	static class AbstractChange {
+	public static class AbstractChange {
 		private final int _type;
 
 		private final Object _source;
@@ -241,7 +254,7 @@ public class ModelEventDispatcher {
 
 	public static final int TYPE_COMPLEX_CHANGE = TYPE_COUNTER++;
 
-	static class ComplexChange extends AbstractChange {
+	public static class ComplexChange extends AbstractChange {
 		/**
 		 */
 		public ComplexChange(final Object pSource, final String pPropertyName) {
@@ -251,7 +264,7 @@ public class ModelEventDispatcher {
 
 	public static final int TYPE_SINGLE_CHANGE = TYPE_COUNTER++;
 
-	static class SingleChange extends AbstractChange {
+	public static class SingleChange extends AbstractChange {
 		private final Object _oldValue;
 
 		private final Object _newValue;
@@ -284,7 +297,7 @@ public class ModelEventDispatcher {
 
 	public static final int TYPE_MULTI_ADD_CHANGE = TYPE_COUNTER++;
 
-	static class MultiAddChange extends AbstractChange {
+	public static class MultiAddChange extends AbstractChange {
 		private final Object _addedValue;
 
 		/**
@@ -305,7 +318,7 @@ public class ModelEventDispatcher {
 
 	public static final int TYPE_MULTI_REMOVE_CHANGE = TYPE_COUNTER++;
 
-	static class MultiRemoveChange extends AbstractChange {
+	public static class MultiRemoveChange extends AbstractChange {
 		private final Object _removedValue;
 
 		/**
@@ -324,7 +337,7 @@ public class ModelEventDispatcher {
 		}
 	}
 
-	static interface IChangeListener {
+	public static interface IChangeListener {
 		void handle(AbstractChange pChange);
 	}
 }

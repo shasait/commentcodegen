@@ -1,5 +1,5 @@
 /*
- * $Id: AUpdater.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AUpdater.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,13 +18,15 @@
 
 package de.hasait.eclipse.ccg.javag.application.model;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.StringUtil;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 10.01.2007
  */
 public class AUpdater {
@@ -44,6 +46,9 @@ public class AUpdater {
 	 */
 	public AUpdater(final AClass pClazz, final String pName, final String[] pListenTo, final String pCode) {
 		super();
+		if (pClazz == null) {
+			throw new IllegalArgumentException("pClazz == null");
+		}
 		_clazz = pClazz;
 		_name = pName;
 		_listenTo = pListenTo;
@@ -54,26 +59,57 @@ public class AUpdater {
 		return "update" + StringUtil.capitalize(_name);
 	}
 
-	public void resolve() {
-		for (int vListenToI = 0; vListenToI < _listenTo.length; vListenToI++) {
-			String vListenTo = _listenTo[vListenToI];
-			if (vListenTo.indexOf(".") < 0) {
-				AbstractAProperty vListenToProperty = _clazz.findProperty(vListenTo);
-				if (vListenToProperty == null) {
-					throw new IllegalArgumentException("property " + vListenTo + " not found for listenTo in "
-					      + _clazz.getQualifiedName());
+	public static final int ADD_AFTER_CHANGE_CODE_LAYER = 8;
+
+	public boolean transform(int pLayer, IProgressMonitor pMonitor) {
+		if (pLayer < ADD_AFTER_CHANGE_CODE_LAYER) {
+			return true;
+		}
+		if (pLayer == ADD_AFTER_CHANGE_CODE_LAYER) {
+			AClass vTopMostClass = _clazz;
+			for (int vListenToI = 0; vListenToI < _listenTo.length; vListenToI++) {
+				String vListenTo = _listenTo[vListenToI];
+				if (vListenTo.indexOf(".") < 0) {
+					AClass vExtends = _clazz;
+					boolean vUpdateTopMostClass = false;
+					AbstractAProperty vListenToProperty;
+					do {
+						vListenToProperty = vExtends.findProperty(vListenTo);
+						if (vExtends == vTopMostClass) {
+							vUpdateTopMostClass = true;
+						}
+					} while (vListenToProperty == null && (vExtends = vExtends.getExtendsClass()) != null);
+					if (vUpdateTopMostClass) {
+						vTopMostClass = vExtends;
+					}
+					if (vListenToProperty == null) {
+						throw new IllegalArgumentException("property " + vListenTo + " not found for listenTo in "
+						      + _clazz.getQualifiedName());
+					}
+					vListenToProperty.getProperty().addAfterChangeCode(getUpdateMethodName() + "();");
+				} else {
+					throw new IllegalArgumentException("property navigation not supported for listenTo " + vListenTo
+					      + " in " + _clazz.getQualifiedName() + " - sync foreign property and use sync-to instead");
 				}
-				vListenToProperty.getProperty().addAfterChangeCode(getUpdateMethodName() + "();");
-			} else {
-				throw new IllegalArgumentException("property navigation not supported for listenTo " + vListenTo + " in "
-				      + _clazz.getQualifiedName() + " - sync foreign property and use sync-to instead");
+			}
+			ContentBuffer vAttachedCode = new ContentBuffer();
+			vAttachedCode.pi("public final void " + getUpdateMethodName() + "() {");
+			if (vTopMostClass != _clazz) {
+				vAttachedCode.p("super." + getUpdateMethodName() + "();");
+			}
+			vAttachedCode.p(_code);
+			vAttachedCode.pu("}");
+			vAttachedCode.p();
+			_clazz.addAttachedCode(vAttachedCode.getContent());
+			if (vTopMostClass != _clazz) {
+				vAttachedCode.c();
+				vAttachedCode.p("/** Extended by " + _clazz.getJavaDocLink() + " */");
+				vAttachedCode.pi("protected void " + getUpdateMethodName() + "() {");
+				vAttachedCode.p("// nop");
+				vAttachedCode.pu("}");
+				vTopMostClass.addAttachedCode(vAttachedCode.getContent());
 			}
 		}
-	}
-
-	public void write(final ContentBuffer pContent) {
-		pContent.pi("public final void " + getUpdateMethodName() + "() {");
-		pContent.p(_code);
-		pContent.pu("}");
+		return false;
 	}
 }

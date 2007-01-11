@@ -1,5 +1,5 @@
 /*
- * $Id: ASingleProperty.java,v 1.1 2007-01-10 18:04:16 concentus Exp $
+ * $Id: ASingleProperty.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -19,8 +19,12 @@
 package de.hasait.eclipse.ccg.javag.application.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
+import de.hasait.eclipse.ccg.javag.lowlevel.AbstractMProperty;
 import de.hasait.eclipse.ccg.javag.lowlevel.MSingleProperty;
 import de.hasait.eclipse.common.xml.XElement;
 
@@ -35,15 +39,37 @@ public class ASingleProperty extends AbstractAProperty {
 	 */
 	public ASingleProperty(final AClass pBean, final XElement pConfigElement) {
 		super(pBean, new MSingleProperty(), pConfigElement);
+
 		XElement[] vSyncElements = pConfigElement.getChildElements("sync");
 		for (int vSyncElementsI = 0; vSyncElementsI < vSyncElements.length; vSyncElementsI++) {
-	      XElement vSyncElement = vSyncElements[vSyncElementsI];
-	      String vSyncFrom = vSyncElement.getRequiredAttribute("from");
-	      String vSyncTo = vSyncElement.getRequiredAttribute("to");
-      }
+			XElement vSyncElement = vSyncElements[vSyncElementsI];
+			String vSyncFrom = vSyncElement.getRequiredAttribute("from");
+			String vSyncTo = vSyncElement.getRequiredAttribute("to");
+			boolean vSyncBound = vSyncElement.getAttributeAsBoolean("bound", false);
+			addSync(vSyncFrom, vSyncTo, vSyncBound);
+		}
+	}
+
+	public ASingleProperty(AClass pClazz, AbstractMProperty pProperty, String pBackref) {
+		super(pClazz, pProperty, pBackref);
 	}
 
 	public final MSingleProperty getSingleProperty() {
 		return (MSingleProperty) getProperty();
+	}
+
+	public final void addSync(final String pFrom, final String pTo, final boolean pBound) {
+		_syncs.add(new APropertySync(this, pFrom, pTo, pBound));
+	}
+
+	public boolean transform(int pLayer, IProgressMonitor pMonitor) {
+		boolean vResult = super.transform(pLayer, pMonitor);
+		for (Iterator vSyncI = _syncs.iterator(); vSyncI.hasNext();) {
+			APropertySync vSync = (APropertySync) vSyncI.next();
+			if (vSync.transform(pLayer, pMonitor)) {
+				vResult = true;
+			}
+		}
+		return vResult;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.4 2007-01-11 16:29:51 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,7 +37,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
@@ -51,7 +53,9 @@ public abstract class AbstractCompilationUnit {
 
 	private final XFile _targetFile;
 
-	private final List _imports = new ArrayList();
+	private final SortedSet _imports = new TreeSet();
+
+	private final List _attachedCode = new ArrayList();
 
 	/**
 	 * Constructor.
@@ -142,8 +146,16 @@ public abstract class AbstractCompilationUnit {
 		return _targetFile;
 	}
 
-	public void resolve(final IProgressMonitor pMonitor) {
-		// nop
+	public final void addImport(final String pType) {
+		_imports.add(pType);
+	}
+
+	public final void addAttachedCode(final String pCode) {
+		_attachedCode.add(pCode);
+	}
+
+	public boolean transform(final int pLayer, final IProgressMonitor pMonitor) {
+		return false;
 	}
 
 	public void validate(final IProgressMonitor pMonitor) {
@@ -185,4 +197,11 @@ public abstract class AbstractCompilationUnit {
 
 	protected abstract void writeTypes(final ContentBuffer pContent, final Map pUserBlockContentByName,
 	      final IProgressMonitor pMonitor) throws CoreException;
+
+	protected void writeAttachedCode(final ContentBuffer pContent, final IProgressMonitor pMonitor) {
+		for (Iterator vAttachedCodeI = _attachedCode.iterator(); vAttachedCodeI.hasNext();) {
+			String vAttachedCode = (String) vAttachedCodeI.next();
+			pContent.p(vAttachedCode);
+		}
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractMProperty.java,v 1.3 2007-01-10 18:04:16 concentus Exp $
+ * $Id: AbstractMProperty.java,v 1.4 2007-01-11 16:29:51 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 04.01.2007
  */
 public abstract class AbstractMProperty {
@@ -69,7 +69,11 @@ public abstract class AbstractMProperty {
 
 	private boolean _required;
 
+	private boolean _abstract;
+
 	private final List _afterChangeCode = new ArrayList();
+
+	private final List _beforeChangeCode = new ArrayList();
 
 	private String _staticEventDispatcherName;
 
@@ -141,6 +145,20 @@ public abstract class AbstractMProperty {
 	public final void setRequired(boolean pRequired) {
 		_required = pRequired;
 	}
+
+	/**
+    * @return the abstract
+    */
+   public final boolean isAbstract() {
+   	return _abstract;
+   }
+
+	/**
+    * @param pAbstract the abstract to set
+    */
+   public final void setAbstract(boolean pAbstract) {
+   	_abstract = pAbstract;
+   }
 
 	/**
 	 * @return the initialValue
@@ -275,6 +293,13 @@ public abstract class AbstractMProperty {
 	}
 
 	/**
+	 * @return the nameConstantName
+	 */
+	public final String getNameConstantQualifiedName() {
+		return _beanName + "." + _nameConstantName;
+	}
+
+	/**
 	 * @return the typeConstantName
 	 */
 	public final String getTypeConstantName() {
@@ -326,16 +351,12 @@ public abstract class AbstractMProperty {
 		_beanName = pBeanName;
 	}
 
+	public final void addBeforeChangeCode(final String pBeforeChangeCode) {
+		_beforeChangeCode.add(pBeforeChangeCode);
+	}
+
 	public final void addAfterChangeCode(final String pAfterChangeCode) {
 		_afterChangeCode.add(pAfterChangeCode);
-	}
-
-	private final Iterator afterChangeCodeIterator() {
-		return _afterChangeCode.iterator();
-	}
-
-	private final boolean isAfterChangeCodeEmpty() {
-		return _afterChangeCode.isEmpty();
 	}
 
 	public abstract String getAdderCall(String instance, String value);
@@ -348,7 +369,7 @@ public abstract class AbstractMProperty {
 
 	public abstract void writeConstructorBody(ContentBuffer pContent);
 
-	public final String getFullName() {
+	public final String getQualifiedName() {
 		return getBeanName() + "." + _name;
 	}
 
@@ -378,8 +399,15 @@ public abstract class AbstractMProperty {
 		// nop
 	}
 
+	public final void writeBeforeChangeCode(final ContentBuffer pContent) {
+		for (Iterator vBeforeChangeCodeI = _beforeChangeCode.iterator(); vBeforeChangeCodeI.hasNext();) {
+			String vBeforeChangeCode = (String) vBeforeChangeCodeI.next();
+			pContent.p(vBeforeChangeCode);
+		}
+	}
+
 	public final void writeAfterChangeCode(final ContentBuffer pContent) {
-		for (Iterator vAfterChangeCodeI = afterChangeCodeIterator(); vAfterChangeCodeI.hasNext();) {
+		for (Iterator vAfterChangeCodeI = _afterChangeCode.iterator(); vAfterChangeCodeI.hasNext();) {
 			String vAfterChangeCode = (String) vAfterChangeCodeI.next();
 			pContent.p(vAfterChangeCode);
 		}

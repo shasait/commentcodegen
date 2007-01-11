@@ -1,5 +1,5 @@
 /*
- * $Id: AValidator.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AValidator.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,15 +18,19 @@
 
 package de.hasait.eclipse.ccg.javag.application.model;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import de.hasait.eclipse.common.StringUtil;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 10.01.2007
  */
 public class AValidator {
+	private final AClass _clazz;
+
 	private final String _name;
 
 	private final String _messageConstantName;
@@ -41,14 +45,23 @@ public class AValidator {
 	 * @param pExpression
 	 * @param pBindings
 	 */
-	public AValidator(final String pName, final String pExpression, final String pDescription, final String[] pBindings) {
+	public AValidator(final AClass pClazz, final String pName, final String pExpression, final String pDescription,
+	      final String[] pBindings) {
 		super();
+		_clazz = pClazz;
 		_name = pName;
 		_expression = pExpression;
 		_description = pDescription;
 		_bindings = pBindings;
 
 		_messageConstantName = "VALIDATION_MESSAGE_" + StringUtil.camelCaseToUpperCase(_name);
+	}
+
+	/**
+	 * @return the clazz
+	 */
+	public final AClass getClazz() {
+		return _clazz;
 	}
 
 	/**
@@ -84,5 +97,26 @@ public class AValidator {
 	 */
 	public final String[] getBindings() {
 		return _bindings;
+	}
+
+	public static final int ADD_AFTER_CHANGE_CODE_LAYER = 5;
+
+	public boolean transform(final int pLayer, final IProgressMonitor pMonitor) {
+		if (pLayer < ADD_AFTER_CHANGE_CODE_LAYER) {
+			return true;
+		}
+		if (pLayer == ADD_AFTER_CHANGE_CODE_LAYER) {
+			String[] vValidatorBindings = getBindings();
+			for (int vValidatorBindingI = 0; vValidatorBindingI < vValidatorBindings.length; vValidatorBindingI++) {
+				String vValidatorBinding = vValidatorBindings[vValidatorBindingI];
+				AbstractAProperty vValidatorBindingProperty = getClazz().findProperty(vValidatorBinding);
+				if (vValidatorBindingProperty == null) {
+					throw new IllegalArgumentException("invalid validatorBinding " + vValidatorBinding + " for "
+					      + getDescription());
+				}
+				vValidatorBindingProperty.getProperty().addAfterChangeCode("//TODO validator");
+			}
+		}
+		return false;
 	}
 }

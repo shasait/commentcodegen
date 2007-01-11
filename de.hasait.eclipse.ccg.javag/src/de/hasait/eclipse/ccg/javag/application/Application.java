@@ -25,7 +25,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
 public class Application {
@@ -78,7 +78,8 @@ public class Application {
 
 		_modelEventDispatcherCu = new AbstractCompilationUnit(_appGlobalCuContainer, null, "ModelEventDispatcher", null,
 		      null) {
-			protected void writeTypes(ContentBuffer pContent, Map pUserBlockContentByName, IProgressMonitor pMonitor) throws CoreException {
+			protected void writeTypes(ContentBuffer pContent, Map pUserBlockContentByName, IProgressMonitor pMonitor)
+			      throws CoreException {
 				InputStream vSourceIn = Application.class.getResourceAsStream("ModelEventDispatcher.javainc");
 				if (vSourceIn != null) {
 					Reader vSourceReader = new InputStreamReader(vSourceIn);
@@ -157,11 +158,15 @@ public class Application {
 		return null;
 	}
 
-	public final void resolve(final IProgressMonitor pMonitor) {
+	public final boolean transform(final int pLayer, final IProgressMonitor pMonitor) {
+		boolean vResult = false;
 		for (Iterator vCuContainerI = cuContainerIterator(); vCuContainerI.hasNext();) {
 			AbstractCuContainer vCuContainer = (AbstractCuContainer) vCuContainerI.next();
-			vCuContainer.resolve(pMonitor);
+			if (vCuContainer.transform(pLayer, pMonitor)) {
+				vResult = true;
+			}
 		}
+		return vResult;
 	}
 
 	public final void validate(final IProgressMonitor pMonitor) {

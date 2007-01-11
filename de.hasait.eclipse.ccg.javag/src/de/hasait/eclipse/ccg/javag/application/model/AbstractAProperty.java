@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAProperty.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,11 +29,11 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 13.12.2006
  */
 public abstract class AbstractAProperty {
-	private final AClass _bean;
+	private final AClass _clazz;
 
 	private final AbstractMProperty _property;
 
@@ -42,13 +42,13 @@ public abstract class AbstractAProperty {
 	/**
 	 * Constructor.
 	 */
-	protected AbstractAProperty(final AClass pBean, final AbstractMProperty pProperty, final XElement pConfigElement) {
+	protected AbstractAProperty(final AClass pClazz, final AbstractMProperty pProperty, final XElement pConfigElement) {
 		super();
 
-		_bean = pBean;
+		_clazz = pClazz;
 		_property = pProperty;
 
-		pProperty.setBeanName(_bean.getFullName());
+		pProperty.setBeanName(_clazz.getFullName());
 
 		pProperty.setName(pConfigElement.getRequiredAttribute("name"));
 		pProperty.setDescription(pConfigElement.getAttribute("description"));
@@ -57,16 +57,33 @@ public abstract class AbstractAProperty {
 		pProperty.setBound(pConfigElement.getAttributeAsBoolean("bound", false));
 		pProperty.setFinal(pConfigElement.getAttributeAsBoolean("final", false));
 		pProperty.setRequired(pConfigElement.getAttributeAsBoolean("required", false));
+		pProperty.setAbstract(pConfigElement.getAttributeAsBoolean("abstract", false));
 		pProperty.setInitialValue(pConfigElement.getAttribute("value"));
 		pProperty.setReadVisibility(MVisibility.get(pConfigElement.getAttribute("readvisibility", "public")));
 		pProperty.setWriteVisibility(MVisibility.get(pConfigElement.getAttribute("writevisibility", "public")));
+
+		if (pProperty.isBound()) {
+			getClazz().addImport(getClazz().getCuContainer().getApplication()._applicationContextCu.getQualifiedName());
+			pProperty.setStaticEventDispatcherName(getClazz().getCuContainer().getApplication()._applicationContextCu
+			      .getName()
+			      + ".DEFAULT.ED");
+		}
+	}
+
+	protected AbstractAProperty(final AClass pClazz, final AbstractMProperty pProperty, final String pBackref) {
+		super();
+		_clazz = pClazz;
+		_property = pProperty;
+		_backref = pBackref;
+		
+		pProperty.setBeanName(_clazz.getFullName());
 	}
 
 	/**
-	 * @return The value of property bean.
+	 * @return The value of property clazz.
 	 */
-	public final AClass getBean() {
-		return _bean;
+	public final AClass getClazz() {
+		return _clazz;
 	}
 
 	/**
@@ -76,27 +93,35 @@ public abstract class AbstractAProperty {
 		return _property;
 	}
 
-	public void resolve(IProgressMonitor monitor) {
-		if (_backref != null) {
-			AClass typeBean = (AClass) getBean().getModel().findCompilationUnitByName(getProperty().getType());
-			if (typeBean == null) {
-				throw new IllegalArgumentException(getProperty().getFullName() + "#backref: Cannot find bean "
-				      + getProperty().getType());
-			}
-			AbstractAProperty property = typeBean.findProperty(_backref);
-			if (property == null) {
-				throw new IllegalArgumentException(getProperty().getFullName() + "#backref: No property " + _backref
-				      + " in bean " + typeBean.getFullName());
-			}
-			getProperty().setBackrefProperty(property.getProperty());
+	public static int BACKREF_RESOLVE_LAYER = 10;
+
+	public boolean transform(final int pLayer, final IProgressMonitor pMonitor) {
+		if (pLayer < BACKREF_RESOLVE_LAYER) {
+			return true;
 		}
+		if (pLayer == BACKREF_RESOLVE_LAYER) {
+			if (_backref != null) {
+				AClass typeBean = (AClass) getClazz().getModel().findCompilationUnitByName(getProperty().getType());
+				if (typeBean == null) {
+					throw new IllegalArgumentException(getProperty().getQualifiedName() + "#backref: Cannot find bean "
+					      + getProperty().getType());
+				}
+				AbstractAProperty property = typeBean.findProperty(_backref);
+				if (property == null) {
+					throw new IllegalArgumentException(getProperty().getQualifiedName() + "#backref: No property " + _backref
+					      + " in bean " + typeBean.getFullName());
+				}
+				getProperty().setBackrefProperty(property.getProperty());
+			}
+		}
+		return false;
 	}
 
 	public void validate(IProgressMonitor monitor) {
 		if (getProperty().getBackrefProperty() != null && getProperty().getBackrefProperty().getBackrefProperty() != null
 		      && getProperty().getBackrefProperty().getBackrefProperty() != getProperty()) {
-			throw new IllegalArgumentException("Backref of backref " + _backref + " is not " + getProperty().getFullName()
-			      + ", but " + getProperty().getBackrefProperty().getBackrefProperty().getFullName());
+			throw new IllegalArgumentException("Backref of backref " + _backref + " is not " + getProperty().getQualifiedName()
+			      + ", but " + getProperty().getBackrefProperty().getBackrefProperty().getQualifiedName());
 		}
 	}
 
