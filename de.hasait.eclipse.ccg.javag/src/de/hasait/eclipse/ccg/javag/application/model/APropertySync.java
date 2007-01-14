@@ -1,5 +1,5 @@
 /*
- * $Id: APropertySync.java,v 1.2 2007-01-11 16:29:47 concentus Exp $
+ * $Id: APropertySync.java,v 1.3 2007-01-14 20:13:55 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -23,11 +23,12 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import de.hasait.eclipse.ccg.javag.lowlevel.MSingleProperty;
 import de.hasait.eclipse.ccg.javag.lowlevel.MVisibility;
 import de.hasait.eclipse.common.ContentBuffer;
+import de.hasait.eclipse.common.StringUtil;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 10.01.2007
  */
 public class APropertySync {
@@ -90,20 +91,32 @@ public class APropertySync {
 			vClazz.addImport(vClazz.getModel().getApplication()._applicationContextCu.getQualifiedName());
 			String vAppContextName = vClazz.getModel().getApplication()._applicationContextCu.getName();
 			String vChangeListenerInstanceName = "_" + _to + "SyncFromChangeListener";
+			String vUpdateMethodName = "update" + StringUtil.capitalize(_to) + "SyncTarget";
 
 			ContentBuffer vAttachedCode = new ContentBuffer();
+			// class code attachment
 			vAttachedCode.pi("private final ModelEventDispatcher.IChangeListener " + vChangeListenerInstanceName
 			      + " = new ModelEventDispatcher.IChangeListener() {");
 			vAttachedCode.pi("public void handle(ModelEventDispatcher.AbstractChange pChange) {");
-			vAttachedCode.p(vToMSingleProperty.getAdderCall(null, vFromMSingleProperty.getGetCall(vParentMSingleProperty
-			      .getGetCall(null)))
-			      + ";");
+			vAttachedCode.p(vUpdateMethodName + "()" + ";");
 			vAttachedCode.pu("}");
 			vAttachedCode.pu("};");
 			vAttachedCode.p();
+			vAttachedCode.pi("public void " + vUpdateMethodName + "() {");
+			vAttachedCode.p(vParentMSingleProperty.getType() + " " + vParentMSingleProperty.getLocalVarName() + " = "
+			      + vParentMSingleProperty.getGetCall(null) + ";");
+			vAttachedCode.p(vToMSingleProperty.getAdderCall(null, vParentMSingleProperty.getLocalVarName()
+			      + " == null ? null : " + vFromMSingleProperty.getGetCall(vParentMSingleProperty.getLocalVarName()))
+			      + ";");
+			vAttachedCode.pu("}");
+			vAttachedCode.p();
 			vClazz.addAttachedCode(vAttachedCode.getContent());
-
 			vAttachedCode.c();
+			// constructor body code attachment
+			vAttachedCode.p(vUpdateMethodName + "()" + ";");
+			vClazz.addConstructorBodyAttachCode(vAttachedCode.getContent());
+			vAttachedCode.c();
+			// beforeChange code attachment
 			vAttachedCode.pi("if (" + vParentMSingleProperty.getFieldName() + " != null) {");
 			vAttachedCode
 			      .p(vAppContextName + ".DEFAULT.ED.removeChangeListener(" + vParentMSingleProperty.getFieldName() + ", "
@@ -111,18 +124,13 @@ public class APropertySync {
 			vAttachedCode.pu("}");
 			_property.getProperty().addBeforeChangeCode(vAttachedCode.getContent());
 			vAttachedCode.c();
-
-			vAttachedCode.c();
-			vAttachedCode.pi("if (" + vParentMSingleProperty.getFieldName() + " == null) {");
-			vAttachedCode.p(vToMSingleProperty.getAdderCall(null, "null") + ";");
-			vAttachedCode.pui("} else {");
+			// afterChange code attachment
+			vAttachedCode.pi("if (" + vParentMSingleProperty.getFieldName() + " != null) {");
 			vAttachedCode
 			      .p(vAppContextName + ".DEFAULT.ED.addChangeListener(" + vParentMSingleProperty.getFieldName() + ", "
 			            + vFromMSingleProperty.getNameConstantQualifiedName() + ", " + vChangeListenerInstanceName + ");");
-			vAttachedCode.p(vToMSingleProperty.getAdderCall(null, vFromMSingleProperty.getGetCall(vParentMSingleProperty
-			      .getFieldName()))
-			      + ";");
 			vAttachedCode.pu("}");
+			vAttachedCode.p(vUpdateMethodName + "()" + ";");
 			_property.getProperty().addAfterChangeCode(vAttachedCode.getContent());
 			vAttachedCode.c();
 		}
