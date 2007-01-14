@@ -1,1 +1,5 @@
-- implement ChangeCollector
+- properties should support simple aspects like beforewrite, afterwrite, beforeread
+- PropertySync, Updater implement different and unify:
+  - enhance Updater to allow navigation over one node (i.e. property of local property: local.foreign)
+  - introduce target-spec and dirty-flag to Updater to allow lazy-calculation
+  - PropertySync is special-case or higher-level pattern, which uses Updater
