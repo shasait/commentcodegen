@@ -1,5 +1,5 @@
 /*
- * $Id: APropertySync.java,v 1.3 2007-01-14 20:13:55 concentus Exp $
+ * $Id: APropertySync.java,v 1.4 2007-01-15 08:54:38 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -28,7 +28,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 10.01.2007
  */
 public class APropertySync {
@@ -66,7 +66,7 @@ public class APropertySync {
 			AClass typeBean = (AClass) vClazz.getModel().findCompilationUnitByName(_property.getProperty().getType());
 			if (typeBean == null) {
 				throw new IllegalArgumentException(_property.getProperty().getQualifiedName()
-				      + "#backref: Cannot find bean " + _property.getProperty().getType());
+				      + "#type: Cannot find bean " + _property.getProperty().getType());
 			}
 			AbstractAProperty vFromProperty = typeBean.findProperty(_from);
 			if (vFromProperty == null) {
