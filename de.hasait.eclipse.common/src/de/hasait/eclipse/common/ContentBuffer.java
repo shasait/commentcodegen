@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.6 2007-01-11 16:30:18 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.7 2007-01-15 20:39:47 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import java.util.LinkedList;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -108,6 +108,7 @@ public class ContentBuffer {
 
 	public final void p(final String pLines) {
 		if (pLines.length() == 0) {
+			a("");
 			bn();
 		} else {
 			BufferedReader vLineReader = new BufferedReader(new StringReader(pLines));
@@ -115,6 +116,23 @@ public class ContentBuffer {
 			try {
 				while ((vLine = vLineReader.readLine()) != null) {
 					a(vLine);
+					bn();
+				}
+			} catch (IOException e) {
+				// can not occur
+			}
+		}
+	}
+
+	public final void pni(final String pLines) {
+		if (pLines.length() == 0) {
+			bn();
+		} else {
+			BufferedReader vLineReader = new BufferedReader(new StringReader(pLines));
+			String vLine;
+			try {
+				while ((vLine = vLineReader.readLine()) != null) {
+					_buffer.append(vLine);
 					bn();
 				}
 			} catch (IOException e) {
