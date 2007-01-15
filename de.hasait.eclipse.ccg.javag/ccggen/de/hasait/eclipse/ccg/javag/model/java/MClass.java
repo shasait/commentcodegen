@@ -1,9 +1,11 @@
 package de.hasait.eclipse.ccg.javag.model.java;
 
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CCG /model/ccg/model.ccg.xml
@@ -48,10 +50,10 @@ public class MClass extends AbstractMType {
 	/** Type of property instanceField. */
 	public static final Class PROPERTY_INSTANCE_FIELD_TYPE = MInstanceFieldDeclaration.class;
 	
-	/** Name of property method. */
-	public static final String PROPERTY_METHOD_NAME = "method";
-	/** Type of property method. */
-	public static final Class PROPERTY_METHOD_TYPE = MMethodImplementation.class;
+	/** Name of property implementedMethod. */
+	public static final String PROPERTY_IMPLEMENTED_METHOD_NAME = "implementedMethod";
+	/** Type of property implementedMethod. */
+	public static final Class PROPERTY_IMPLEMENTED_METHOD_TYPE = MMethodImplementation.class;
 	
 	
 	private boolean _abstract;
@@ -68,7 +70,7 @@ public class MClass extends AbstractMType {
 	
 	private final List _instanceField = new ArrayList();
 	
-	private final List _method = new ArrayList();
+	private final List _implementedMethod = new ArrayList();
 	
 	public MClass(final AbstractMTypeContainer pContainer, final String pName, final MClass pExtends) {
 		super(pContainer, pName);
@@ -79,7 +81,7 @@ public class MClass extends AbstractMType {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	public void write(final ContentBuffer pContent) {
+	public void write(final ContentBuffer pContent, final Map pUserBlockContentByName) {
 		if (isFinal() && isAbstract()) {
 			throw new IllegalArgumentException("Class " + getFullQualifiedName()
 			      + " is final and abstract at the same time");
@@ -110,7 +112,63 @@ public class MClass extends AbstractMType {
 			}
 		}
 		pContent.pi(" {");
-		// TODO
+		// userblock ClassBegin
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassBegin");
+		pContent.p();
+		// static fields
+		if (!isStaticFieldEmpty()) {
+			pContent.p("// static fields");
+			for (Iterator vStaticFieldI = staticFieldIterator(); vStaticFieldI.hasNext();) {
+				MStaticFieldDeclaration vStaticField = (MStaticFieldDeclaration) vStaticFieldI.next();
+				vStaticField.writeWithFlags(pContent);
+			}
+			pContent.p();
+		}
+		// instance fields
+		if (!isInstanceFieldEmpty()) {
+			pContent.p("// instance fields");
+			for (Iterator vInstanceFieldI = instanceFieldIterator(); vInstanceFieldI.hasNext();) {
+				MInstanceFieldDeclaration vInstanceField = (MInstanceFieldDeclaration) vInstanceFieldI.next();
+				vInstanceField.write(pContent);
+			}
+			pContent.p();
+		}
+		// constructors
+		if (!isConstructorEmpty()) {
+			pContent.p("// constructors");
+			for (Iterator vConstructorI = constructorIterator(); vConstructorI.hasNext();) {
+				MConstructorImplementation vConstructor = (MConstructorImplementation) vConstructorI.next();
+				vConstructor.write(pContent, pUserBlockContentByName);
+			}
+			pContent.p();
+		}
+		// userblock ClassAfterConstructor
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassAfterConstructor");
+		pContent.p();
+		// abstract methods
+		if (!isAbstractMethodEmpty()) {
+			pContent.p("// abstract methods");
+			for (Iterator vAbstractMethodI = abstractMethodIterator(); vAbstractMethodI.hasNext();) {
+				MMethodDeclaration vAbstractMethod = (MMethodDeclaration) vAbstractMethodI.next();
+				vAbstractMethod.writeAbstractWithFlags(pContent);
+			}
+			pContent.p();
+		}
+		// methods
+		if (!isImplementedMethodEmpty()) {
+			pContent.p("// implemented methods");
+			for (Iterator vImplementedMethodI = implementedMethodIterator(); vImplementedMethodI.hasNext();) {
+				MMethodImplementation vImplementedMethod = (MMethodImplementation) vImplementedMethodI.next();
+				vImplementedMethod.write(pContent, pUserBlockContentByName);
+			}
+			pContent.p();
+		}
+		// inner types
+		writeTypes(pContent, pUserBlockContentByName);
+		// userblock ClassEnd
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassEnd");
+		pContent.p();
+		//
 		pContent.pu("}");
 	}
 	// @ccg.userblock.end
@@ -428,14 +486,14 @@ public class MClass extends AbstractMType {
 	}
 	
 	/**
-	 * Returns the value of property method at the specified index.
+	 * Returns the value of property implementedMethod at the specified index.
 	 * 
 	 * @param index The index, which must be valid.
-	 * @return The value of property method at the specified index.
+	 * @return The value of property implementedMethod at the specified index.
 	 * @see List#get(int)
 	 */
-	public final MMethodImplementation getMethod(final int index) {
-		return (MMethodImplementation) _method.get(index);
+	public final MMethodImplementation getImplementedMethod(final int index) {
+		return (MMethodImplementation) _implementedMethod.get(index);
 	}
 	
 	/**
@@ -443,49 +501,49 @@ public class MClass extends AbstractMType {
 	 * @return Does this property contain the specified object?
 	 * @see List#contains(Object)
 	 */
-	public final boolean containsMethod(final Object pObject) {
-		return _method.contains(pObject);
+	public final boolean containsImplementedMethod(final Object pObject) {
+		return _implementedMethod.contains(pObject);
 	}
 	
 	/**
-	 * @return An {@link Iterator} over all values of property method.
+	 * @return An {@link Iterator} over all values of property implementedMethod.
 	 * @see List#iterator()
 	 */
-	public final Iterator methodIterator() {
-		return _method.iterator();
+	public final Iterator implementedMethodIterator() {
+		return _implementedMethod.iterator();
 	}
 	
 	/**
-	 * @return Is property method emtpy?
+	 * @return Is property implementedMethod emtpy?
 	 * @see List#isEmpty()
 	 */
-	public final boolean isMethodEmpty() {
-		return _method.isEmpty();
+	public final boolean isImplementedMethodEmpty() {
+		return _implementedMethod.isEmpty();
 	}
 	
 	/**
-	 * @return The number of values of property method.
+	 * @return The number of values of property implementedMethod.
 	 * @see List#size()
 	 */
-	public final int methodSize() {
-		return _method.size();
+	public final int implementedMethodSize() {
+		return _implementedMethod.size();
 	}
 	
 	/**
-	 * Add the specified value to property method.
+	 * Add the specified value to property implementedMethod.
 	 * Referred from {@link de.hasait.eclipse.ccg.javag.model.java.MMethodImplementation#PROPERTY_OWNER_NAME}, which will be updated by this method.
 	 * 
-	 * @param pMethod The additional value for property method.
+	 * @param pImplementedMethod The additional value for property implementedMethod.
 	 * @see List#add(Object)
 	 */
-	public final void addMethod(final MMethodImplementation pMethod) {
-		if (_method.contains(pMethod)) {
+	public final void addImplementedMethod(final MMethodImplementation pImplementedMethod) {
+		if (_implementedMethod.contains(pImplementedMethod)) {
 			return;
 		}
-		if (!(pMethod.getOwner() == this)) {
+		if (!(pImplementedMethod.getOwner() == this)) {
 			throw new IllegalArgumentException("backref != this");
 		}
-		_method.add(pMethod);
+		_implementedMethod.add(pImplementedMethod);
 	}
 	
 	

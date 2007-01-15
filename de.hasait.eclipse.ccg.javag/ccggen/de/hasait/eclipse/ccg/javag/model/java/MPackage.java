@@ -72,15 +72,11 @@ public class MPackage {
 			throw new IllegalArgumentException("pName == null");
 		}
 		_name = pName;
-		_fullQualifiedName = 
-						getName()
-					;
+		_fullQualifiedName = getName();
 		if (_fullQualifiedName == null) {
 			throw new IllegalArgumentException("_fullQualifiedName == null");
 		}
-		_folder = 
-						getRoot().getFolder().getFolder(StringUtil.replace(getFullQualifiedName(), ".", "/"));
-					;
+		_folder = getRoot().getFolder().getFolder(StringUtil.replace(getFullQualifiedName(), ".", "/"));;
 		if (_folder == null) {
 			throw new IllegalArgumentException("_folder == null");
 		}

@@ -1,10 +1,12 @@
 package de.hasait.eclipse.ccg.javag.model.java;
 
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -86,9 +88,7 @@ public class MCompilationUnit extends AbstractMTypeContainer {
 		if (_compilationUnit == null) {
 			throw new IllegalArgumentException("_compilationUnit == null");
 		}
-		_fullQualifiedName = 
-						getPackage().getFullQualifiedName()
-					;
+		_fullQualifiedName = getPackage().getFullQualifiedName();
 		if (_fullQualifiedName == null) {
 			throw new IllegalArgumentException("_fullQualifiedName == null");
 		}
@@ -99,12 +99,19 @@ public class MCompilationUnit extends AbstractMTypeContainer {
 		if (isDoNotWrite()) {
 			return;
 		}
+		Map vUserBlockContentByName;
+		if (getFile().exists()) {
+			String vFileContent = getFile().read();
+			vUserBlockContentByName = CodeUtils.parseUserBlockContentByBlockName(vFileContent);
+		} else {
+			vUserBlockContentByName = null;
+		}
 		ContentBuffer vContent = new ContentBuffer();
-		writeCompilationUnit(vContent);
+		writeCompilationUnit(vContent, vUserBlockContentByName);
 		getFile().write(vContent.getContent(), Boolean.TRUE, pMonitor);
 	}
 
-	private void writeCompilationUnit(final ContentBuffer pContent) {
+	private void writeCompilationUnit(final ContentBuffer pContent, final Map pUserBlockContentByName) {
 		pContent.a("package").a(" ").a(getPackage().getFullQualifiedName()).p(";");
 		pContent.p();
 		if (!isImportEmpty()) {
@@ -114,7 +121,7 @@ public class MCompilationUnit extends AbstractMTypeContainer {
 			}
 			pContent.p();
 		}
-		writeTypes(pContent);
+		writeTypes(pContent, pUserBlockContentByName);
 	}
 	// @ccg.userblock.end
 	

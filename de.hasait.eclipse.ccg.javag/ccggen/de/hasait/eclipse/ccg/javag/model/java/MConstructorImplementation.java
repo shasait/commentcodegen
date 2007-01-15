@@ -4,6 +4,7 @@ import de.hasait.eclipse.common.ContentBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CCG /model/ccg/model.ccg.xml
@@ -72,7 +73,9 @@ public class MConstructorImplementation {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	
+	public void write(final ContentBuffer pContent, final Map pUserBlockContentByName) {
+		// TODO
+	}
 	// @ccg.userblock.end
 	
 	/**

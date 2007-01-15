@@ -30,7 +30,22 @@ public class MStaticFieldDeclaration extends AbstractMFieldDeclaration {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	
+	public void writeWithoutFlags(final ContentBuffer pContent) {
+		pContent.a(getType().getFullQualifiedName());
+		pContent.a(" ").a(getName());
+		pContent.a(" = ").a(getValue());
+		pContent.p(";");
+	}
+
+	public void writeWithFlags(final ContentBuffer pContent) {
+		if (getVisibility() != null) {
+			pContent.a(getVisibility()).a(" ");
+		}
+		if (isFinal()) {
+			pContent.a("final").a(" ");
+		}
+		writeWithoutFlags(pContent);
+	}
 	// @ccg.userblock.end
 	
 	/**

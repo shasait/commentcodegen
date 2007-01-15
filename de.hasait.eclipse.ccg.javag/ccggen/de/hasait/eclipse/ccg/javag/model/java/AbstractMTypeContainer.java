@@ -4,6 +4,7 @@ import de.hasait.eclipse.common.ContentBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Subclasses are:<ul>
@@ -40,10 +41,12 @@ public abstract class AbstractMTypeContainer {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	public void writeTypes(final ContentBuffer pContent) {
-		for (Iterator vTypeI = _type.iterator(); vTypeI.hasNext();) {
-			AbstractMType vType = (AbstractMType) vTypeI.next();
-			vType.write(pContent);
+	public void writeTypes(final ContentBuffer pContent, Map pUserBlockContentByName) {
+		if (!isTypeEmpty()) {
+			for (Iterator vTypeI = typeIterator(); vTypeI.hasNext();) {
+				AbstractMType vType = (AbstractMType) vTypeI.next();
+				vType.write(pContent, pUserBlockContentByName);
+			}
 		}
 	}
 	// @ccg.userblock.end

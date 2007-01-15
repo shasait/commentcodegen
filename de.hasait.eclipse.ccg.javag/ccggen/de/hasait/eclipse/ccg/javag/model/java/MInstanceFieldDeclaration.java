@@ -30,7 +30,20 @@ public class MInstanceFieldDeclaration extends AbstractMFieldDeclaration {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	
+	public void write(final ContentBuffer pContent) {
+		if (getVisibility() != null) {
+			pContent.a(getVisibility()).a(" ");
+		}
+		if (isFinal()) {
+			pContent.a("final").a(" ");			
+		}
+		pContent.a(getType().getFullQualifiedName());
+		pContent.a(" ").a(getName());
+		if (getValue() != null) {
+			pContent.a(" = ").a(getValue());
+		}
+		pContent.p(";");
+	}
 	// @ccg.userblock.end
 	
 	/**

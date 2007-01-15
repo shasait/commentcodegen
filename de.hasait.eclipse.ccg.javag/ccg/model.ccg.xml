@@ -34,11 +34,11 @@
 			</class>
 
 			<class name="MResource">
+				<import type="org.eclipse.core.runtime.IProgressMonitor" />
+				<import type="org.eclipse.core.runtime.CoreException" />
 				<import type="de.hasait.eclipse.common.resource.XFile" />
 				<import type="de.hasait.eclipse.common.resource.XFolder" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
-				<import type="org.eclipse.core.runtime.IProgressMonitor" />
-				<import type="org.eclipse.core.runtime.CoreException" />
 				<property name="package" type="MPackage" backref="resource" final="true" required="true" />
 				<property name="name" type="String" final="true" required="true" />
 				<property name="file" type="XFile" final="true" required="true">
@@ -47,9 +47,11 @@
 					]]></value>
 				</property>
 				<property name="doNotWrite" type="boolean" />
+				<property name="content" type="String" cardinality="*" />
 			</class>
 			
 			<class name="AbstractMTypeContainer" abstract="true">
+				<import type="java.util.Map" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="type" type="AbstractMType" cardinality="*" backref="container" />
 				<property name="compilationUnit" type="MCompilationUnit" abstract="true" writevisibility="private" />
@@ -57,10 +59,12 @@
 			</class>
 			
 			<class name="MCompilationUnit" extends="AbstractMTypeContainer">
-				<import type="de.hasait.eclipse.common.resource.XFile" />
-				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="java.util.Map" />
 				<import type="org.eclipse.core.runtime.IProgressMonitor" />
 				<import type="org.eclipse.core.runtime.CoreException" />
+				<import type="de.hasait.eclipse.common.resource.XFile" />
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="de.hasait.eclipse.ccg.javag.util.CodeUtils" />
 				<property name="package" type="MPackage" backref="compilationUnit" final="true" required="true" />
 				<property name="compilationUnit" type="MCompilationUnit" final="true" required="true" value="this" />
 				<property name="fullQualifiedName" type="String" final="true" required="true">
@@ -87,7 +91,9 @@
 			</class>
 			
 			<class name="AbstractMType" extends="AbstractMTypeContainer" abstract="true">
+				<import type="java.util.Map" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="de.hasait.eclipse.ccg.javag.util.CodeUtils" />
 				<property name="container" type="AbstractMTypeContainer" backref="type" final="true" required="true" />
 				<property name="compilationUnit" type="MCompilationUnit" final="true" required="true">
 					<value><![CDATA[
@@ -107,7 +113,9 @@
 			</class>
 			
 			<class name="MClass" extends="AbstractMType">
+				<import type="java.util.Map" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="de.hasait.eclipse.ccg.javag.util.CodeUtils" />
 				<property name="abstract" type="boolean" />
 				<property name="final" type="boolean" />
 				<property name="extends" type="MClass" backref="derived" final="true" />
@@ -115,11 +123,13 @@
 				<property name="implements" type="MInterface" cardinality="*" backref="implementor" />
 				<property name="constructor" type="MConstructorImplementation" cardinality="*" backref="owner" />
 				<property name="instanceField" type="MInstanceFieldDeclaration" cardinality="*" backref="owner" />
-				<property name="method" type="MMethodImplementation" cardinality="*" backref="owner" />
+				<property name="implementedMethod" type="MMethodImplementation" cardinality="*" backref="owner" />
 			</class>
 			
 			<class name="MInterface" extends="AbstractMType">
+				<import type="java.util.Map" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="de.hasait.eclipse.ccg.javag.util.CodeUtils" />
 				<property name="extends" type="MInterface" cardinality="*" backref="derived" />
 				<property name="derived" type="MInterface" cardinality="*" backref="extends" />
 				<property name="implementor" type="MClass" cardinality="*" backref="implements" />
@@ -129,21 +139,29 @@
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="AbstractMType" cardinality="*" backref="abstractMethod" final="true" required="true" />
 				<property name="implementation" type="MMethodImplementation" cardinality="*" backref="declaration" />
-				<property name="name" type="String" />
+				<property name="visibility" type="String" />
+				<property name="name" type="String" final="true" required="true" />
 				<property name="resultType" type="AbstractMType" />
-				<property name="parameterType" type="AbstractMType" cardinality="*" />
+				<property name="parameter" type="MMethodParameterDeclaration" cardinality="*" />
 			</class>
 			
-			<class name="MMethodImplementation">
+			<class name="MMethodParameterDeclaration">
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
-				<property name="owner" type="MClass" backref="method" final="true" required="true" />
+				<property name="type" type="AbstractMType" final="true" required="true" />
+				<property name="name" type="String" final="true" required="true" />
+			</class>			
+			
+			<class name="MMethodImplementation">
+				<import type="java.util.Map" />
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<property name="owner" type="MClass" backref="implementedMethod" final="true" required="true" />
 				<property name="declaration" type="MMethodDeclaration" backref="implementation" final="true" required="true" />
-				<property name="parameterFinal" type="Boolean" cardinality="*" />
-				<property name="parameterName" type="String" cardinality="*" />
+				<property name="finalParameter" type="MMethodParameterDeclaration" cardinality="*" />
 				<property name="code" type="MCodeBuffer" final="true" required="true" value="new MCodeBuffer()" />
 			</class>
 			
 			<class name="MConstructorImplementation">
+				<import type="java.util.Map" />
 				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="MClass" backref="constructor" final="true" required="true" />
 				<property name="name" type="String" />
@@ -175,6 +193,8 @@
 			<!-- CodeLevel  -->
 
 			<class name="MCodeBuffer">
+				<import type="java.util.Map" />
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="statement" type="AbstractMCodeStatement" cardinality="*" />
 			</class>
 			

@@ -1,9 +1,11 @@
 package de.hasait.eclipse.ccg.javag.model.java;
 
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CCG /model/ccg/model.ccg.xml
@@ -40,7 +42,7 @@ public class MInterface extends AbstractMType {
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	public void write(final ContentBuffer pContent) {
+	public void write(final ContentBuffer pContent, final Map pUserBlockContentByName) {
 		pContent.a(getVisibility());
 		pContent.a(" ").a("interface").a(" ").a(getName());
 		if (!isExtendsEmpty()) {
@@ -58,7 +60,42 @@ public class MInterface extends AbstractMType {
 			}
 		}
 		pContent.pi(" {");
-		// TODO
+		// userblock InterfaceBegin
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceBegin");
+		pContent.p();
+		// constants
+		if (!isStaticFieldEmpty()) {
+			pContent.p("// constants");
+			for (Iterator vStaticFieldI = staticFieldIterator(); vStaticFieldI.hasNext();) {
+				MStaticFieldDeclaration vStaticField = (MStaticFieldDeclaration) vStaticFieldI.next();
+				if (!"public".equals(vStaticField.getVisibility())) {
+					throw new IllegalArgumentException(getFullQualifiedName() + " - static field " + vStaticField.getName()
+					      + " has to be public for interfaces");
+				}
+				if (!vStaticField.isFinal()) {
+					throw new IllegalArgumentException(getFullQualifiedName() + " - static field " + vStaticField.getName()
+					      + " has to be final for interfaces");
+				}
+				vStaticField.writeWithoutFlags(pContent);
+			}
+			pContent.p();
+		}
+		// methods
+		if (!isAbstractMethodEmpty()) {
+			pContent.p("// methods");
+			for (Iterator vAbstractMethodI = abstractMethodIterator(); vAbstractMethodI.hasNext();) {
+				MMethodDeclaration vAbstractMethod = (MMethodDeclaration) vAbstractMethodI.next();
+				if (!"public".equals(vAbstractMethod.getVisibility())) {
+					throw new IllegalArgumentException(getFullQualifiedName() + " - abstract method "
+					      + vAbstractMethod.getName() + " has to be public for interfaces");
+				}
+				vAbstractMethod.writeAbstractWithoutFlags(pContent);
+			}
+			pContent.p();
+		}
+		// userblock InterfaceEnd
+		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceEnd");
+		pContent.p();
 		pContent.pu("}");
 	}
 	// @ccg.userblock.end

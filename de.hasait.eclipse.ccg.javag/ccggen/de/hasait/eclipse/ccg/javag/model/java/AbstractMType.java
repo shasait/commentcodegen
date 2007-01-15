@@ -1,9 +1,11 @@
 package de.hasait.eclipse.ccg.javag.model.java;
 
+import de.hasait.eclipse.ccg.javag.util.CodeUtils;
 import de.hasait.eclipse.common.ContentBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Subclasses are:<ul>
@@ -83,9 +85,7 @@ public abstract class AbstractMType extends AbstractMTypeContainer {
 		if (_container != null) {
 			pContainer.addType(this);
 		}
-		_compilationUnit = 
-						getContainer().getCompilationUnit()
-					;
+		_compilationUnit = getContainer().getCompilationUnit();
 		if (_compilationUnit == null) {
 			throw new IllegalArgumentException("_compilationUnit == null");
 		}
@@ -93,16 +93,14 @@ public abstract class AbstractMType extends AbstractMTypeContainer {
 			throw new IllegalArgumentException("pName == null");
 		}
 		_name = pName;
-		_fullQualifiedName = 
-						getContainer().getFullQualifiedName() + "." + getName()
-					;
+		_fullQualifiedName = getContainer().getFullQualifiedName() + "." + getName();
 		if (_fullQualifiedName == null) {
 			throw new IllegalArgumentException("_fullQualifiedName == null");
 		}
 	}
 	
 	// @ccg.userblock.start ClassAfterConstructor
-	public abstract void write(final ContentBuffer pContent);
+	public abstract void write(ContentBuffer pContent, Map pUserBlockContentByName);
 	// @ccg.userblock.end
 	
 	/**
