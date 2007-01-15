@@ -1,5 +1,5 @@
 /*
- * $Id: CodeUtils.java,v 1.3 2007-01-15 20:40:12 concentus Exp $
+ * $Id: CodeUtils.java,v 1.4 2007-01-15 22:28:47 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 18.12.2006
  */
 public final class CodeUtils {
@@ -169,9 +169,11 @@ public final class CodeUtils {
 	public static void writeUserBlock(final ContentBuffer pContent, final Map pUserBlockContentByName,
 	      final String pUserBlockName) {
 		pContent.a(USERBLOCK_START).p(pUserBlockName);
-		String vUserBlockContent = (String) pUserBlockContentByName.get(pUserBlockName);
-		if (vUserBlockContent != null) {
-			pContent.a("").pni(vUserBlockContent);
+		if (pUserBlockContentByName != null) {
+			String vUserBlockContent = (String) pUserBlockContentByName.get(pUserBlockName);
+			if (vUserBlockContent != null) {
+				pContent.a("").pni(vUserBlockContent);
+			}
 		}
 		pContent.p(USERBLOCK_END);
 	}
