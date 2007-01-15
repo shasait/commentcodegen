@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAProperty.java,v 1.3 2007-01-15 19:26:36 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.4 2007-01-15 22:28:31 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 13.12.2006
  */
 public abstract class AbstractAProperty {
@@ -64,7 +64,7 @@ public abstract class AbstractAProperty {
 			StringBuffer vInitialValueBuffer = new StringBuffer();
 			for (int vValueElementsI = 0; vValueElementsI < vValueElements.length; vValueElementsI++) {
 				XElement vValueElement = vValueElements[vValueElementsI];
-				vInitialValueBuffer.append(vValueElement.getTextContent());
+				vInitialValueBuffer.append(vValueElement.getTextContent().trim());
 			}
 			vInitialValue = vInitialValueBuffer.toString();
 		} else {
