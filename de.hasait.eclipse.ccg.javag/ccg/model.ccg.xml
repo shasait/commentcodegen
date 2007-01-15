@@ -6,6 +6,8 @@
 			<class name="MRoot">
 				<import type="de.hasait.eclipse.common.StringUtil" />
 				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<import type="org.eclipse.core.runtime.IProgressMonitor" />
+				<import type="org.eclipse.core.runtime.CoreException" />
 				<property name="folder" type="XFolder" final="true" required="true" />
 				<property name="package" type="MPackage" cardinality="*" backref="root" />
 			</class>
@@ -13,6 +15,8 @@
 			<class name="MPackage">
 				<import type="de.hasait.eclipse.common.StringUtil" />
 				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<import type="org.eclipse.core.runtime.IProgressMonitor" />
+				<import type="org.eclipse.core.runtime.CoreException" />
 				<property name="root" type="MRoot" backref="package" final="true" required="true" />
 				<property name="name" type="String" final="true" required="true" />
 				<property name="fullQualifiedName" type="String" final="true" required="true">
@@ -32,6 +36,9 @@
 			<class name="MResource">
 				<import type="de.hasait.eclipse.common.resource.XFile" />
 				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="org.eclipse.core.runtime.IProgressMonitor" />
+				<import type="org.eclipse.core.runtime.CoreException" />
 				<property name="package" type="MPackage" backref="resource" final="true" required="true" />
 				<property name="name" type="String" final="true" required="true" />
 				<property name="file" type="XFile" final="true" required="true">
@@ -43,6 +50,7 @@
 			</class>
 			
 			<class name="AbstractMTypeContainer" abstract="true">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="type" type="AbstractMType" cardinality="*" backref="container" />
 				<property name="compilationUnit" type="MCompilationUnit" abstract="true" writevisibility="private" />
 				<property name="fullQualifiedName" type="String" abstract="true" writevisibility="private" />
@@ -50,7 +58,9 @@
 			
 			<class name="MCompilationUnit" extends="AbstractMTypeContainer">
 				<import type="de.hasait.eclipse.common.resource.XFile" />
-				<import type="de.hasait.eclipse.common.resource.XFolder" />
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<import type="org.eclipse.core.runtime.IProgressMonitor" />
+				<import type="org.eclipse.core.runtime.CoreException" />
 				<property name="package" type="MPackage" backref="compilationUnit" final="true" required="true" />
 				<property name="compilationUnit" type="MCompilationUnit" final="true" required="true" value="this" />
 				<property name="fullQualifiedName" type="String" final="true" required="true">
@@ -62,16 +72,22 @@
 				<updater name="firstType" listento="type"><![CDATA[
 					setFirstType(isTypeEmpty() ? null : getType(0));
 				]]></updater>
+				<property name="name" type="String" writevisibility="private" />
+				<updater name="name" listento="firstType"><![CDATA[
+					AbstractMType vFirstType = getFirstType();
+					setName(vFirstType == null ? null : vFirstType.getName());
+				]]></updater>
 				<property name="file" type="XFile" writevisibility="private" />
-				<updater name="file" listento="firstType"><![CDATA[
-					String vTypeName = getFirstType().getName();
-					setFile(vTypeName == null ? null : getPackage().getFolder().getFile(vTypeName));
+				<updater name="file" listento="name"><![CDATA[
+					String vName = getName();
+					setFile(vName == null ? null : getPackage().getFolder().getFile(vName));
 				]]></updater>
 				<property name="import" type="AbstractMType" cardinality="*" backref="imported" />
 				<property name="doNotWrite" type="boolean" />
 			</class>
 			
 			<class name="AbstractMType" extends="AbstractMTypeContainer" abstract="true">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="container" type="AbstractMTypeContainer" backref="type" final="true" required="true" />
 				<property name="compilationUnit" type="MCompilationUnit" final="true" required="true">
 					<value><![CDATA[
@@ -91,6 +107,7 @@
 			</class>
 			
 			<class name="MClass" extends="AbstractMType">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="abstract" type="boolean" />
 				<property name="final" type="boolean" />
 				<property name="extends" type="MClass" backref="derived" final="true" />
@@ -102,10 +119,14 @@
 			</class>
 			
 			<class name="MInterface" extends="AbstractMType">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
+				<property name="extends" type="MInterface" cardinality="*" backref="derived" />
+				<property name="derived" type="MInterface" cardinality="*" backref="extends" />
 				<property name="implementor" type="MClass" cardinality="*" backref="implements" />
 			</class>
 			
 			<class name="MMethodDeclaration">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="AbstractMType" cardinality="*" backref="abstractMethod" final="true" required="true" />
 				<property name="implementation" type="MMethodImplementation" cardinality="*" backref="declaration" />
 				<property name="name" type="String" />
@@ -114,6 +135,7 @@
 			</class>
 			
 			<class name="MMethodImplementation">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="MClass" backref="method" final="true" required="true" />
 				<property name="declaration" type="MMethodDeclaration" backref="implementation" final="true" required="true" />
 				<property name="parameterFinal" type="Boolean" cardinality="*" />
@@ -122,6 +144,7 @@
 			</class>
 			
 			<class name="MConstructorImplementation">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="MClass" backref="constructor" final="true" required="true" />
 				<property name="name" type="String" />
 				<property name="parameterFinal" type="Boolean" cardinality="*" />
@@ -131,6 +154,7 @@
 			</class>
 			
 			<class name="AbstractMFieldDeclaration" abstract="true">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="type" type="AbstractMType" />
 				<property name="name" type="String" />
 				<property name="visibility" type="String" />
@@ -139,10 +163,12 @@
 			</class>
 			
 			<class name="MStaticFieldDeclaration" extends="AbstractMFieldDeclaration">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="AbstractMType" backref="staticField" final="true" required="true" />
 			</class>
 			
 			<class name="MInstanceFieldDeclaration" extends="AbstractMFieldDeclaration">
+				<import type="de.hasait.eclipse.common.ContentBuffer" />
 				<property name="owner" type="MClass" backref="instanceField" final="true" required="true" />
 			</class>
 
