@@ -1,5 +1,5 @@
 /*
- * $Id: CodeUtils.java,v 1.2 2007-01-10 18:04:17 concentus Exp $
+ * $Id: CodeUtils.java,v 1.3 2007-01-15 20:40:12 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 18.12.2006
  */
 public final class CodeUtils {
@@ -171,7 +171,7 @@ public final class CodeUtils {
 		pContent.a(USERBLOCK_START).p(pUserBlockName);
 		String vUserBlockContent = (String) pUserBlockContentByName.get(pUserBlockName);
 		if (vUserBlockContent != null) {
-			pContent.p(vUserBlockContent);
+			pContent.a("").pni(vUserBlockContent);
 		}
 		pContent.p(USERBLOCK_END);
 	}
