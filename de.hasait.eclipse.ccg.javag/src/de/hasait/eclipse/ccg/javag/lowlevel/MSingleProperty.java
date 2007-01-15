@@ -1,5 +1,5 @@
 /*
- * $Id: MSingleProperty.java,v 1.4 2007-01-11 16:29:52 concentus Exp $
+ * $Id: MSingleProperty.java,v 1.5 2007-01-15 20:37:46 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 04.01.2007
  */
 public class MSingleProperty extends AbstractMProperty {
@@ -102,6 +102,7 @@ public class MSingleProperty extends AbstractMProperty {
 			if (getInitialValue() == null) {
 				writeRequiredCheck(pContent, getParameterVarName());
 			} else {
+				pContent.a(getFieldName()).a(" = ").a(getInitialValue()).p(";");
 				writeRequiredCheck(pContent, getFieldName());
 			}
 		}
@@ -122,12 +123,7 @@ public class MSingleProperty extends AbstractMProperty {
 			if (isFinal()) {
 				pContent.a("final ");
 			}
-			pContent.a(getType()).a(" ").a(getFieldName());
-			if (getInitialValue() != null) {
-				pContent.a(" = ").a(getInitialValue());
-			}
-			pContent.a(";").p();
-
+			pContent.a(getType()).a(" ").a(getFieldName()).p(";");
 			pContent.p();
 		}
 	}
