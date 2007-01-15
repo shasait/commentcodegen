@@ -1,5 +1,5 @@
 /*
- * $Id: AMultiProperty.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AMultiProperty.java,v 1.2 2007-01-15 20:38:08 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -19,6 +19,7 @@
 package de.hasait.eclipse.ccg.javag.application.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import de.hasait.eclipse.ccg.javag.lowlevel.MMultiProperty;
@@ -31,10 +32,13 @@ public class AMultiProperty extends AbstractAProperty {
 	/**
 	 * Constructor.
 	 */
-	public AMultiProperty(final AClass pBean, final XElement pConfigElement) {
-		super(pBean, new MMultiProperty(), pConfigElement);
-		getMultiProperty().setCollectionClass(List.class);
-		getMultiProperty().setCollectionImplClass(ArrayList.class);
+	public AMultiProperty(final AClass pClazz, final XElement pConfigElement) {
+		super(pClazz, new MMultiProperty(), pConfigElement);
+		pClazz.addImport(List.class.getName());
+		pClazz.addImport(ArrayList.class.getName());
+		pClazz.addImport(Iterator.class.getName());
+		getMultiProperty().setCollectionClass("List");
+		getMultiProperty().setCollectionImplClass("ArrayList");
 	}
 
 	public final MMultiProperty getMultiProperty() {

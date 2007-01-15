@@ -1,5 +1,5 @@
 /*
- * $Id: MMultiProperty.java,v 1.4 2007-01-11 16:29:52 concentus Exp $
+ * $Id: MMultiProperty.java,v 1.5 2007-01-15 20:38:10 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.ContentBuffer;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 04.01.2007
  */
 public class MMultiProperty extends AbstractMProperty {
@@ -37,14 +37,14 @@ public class MMultiProperty extends AbstractMProperty {
 
 	private String _removeMethodName;
 
-	private Class _collectionClass;
+	private String _collectionClass;
 
-	private Class _collectionImplClass;
+	private String _collectionImplClass;
 
 	/**
 	 * @return the collectionImplClass
 	 */
-	public final Class getCollectionImplClass() {
+	public final String getCollectionImplClass() {
 		return _collectionImplClass;
 	}
 
@@ -52,7 +52,7 @@ public class MMultiProperty extends AbstractMProperty {
 	 * @param pCollectionImplClass
 	 *           the collectionImplClass to set
 	 */
-	public final void setCollectionImplClass(Class pCollectionImplClass) {
+	public final void setCollectionImplClass(String pCollectionImplClass) {
 		_collectionImplClass = pCollectionImplClass;
 	}
 
@@ -74,14 +74,14 @@ public class MMultiProperty extends AbstractMProperty {
 	 * @param pCollectionClass
 	 *           the collectionClass to set
 	 */
-	public final void setCollectionClass(Class pCollectionClass) {
+	public final void setCollectionClass(String pCollectionClass) {
 		_collectionClass = pCollectionClass;
 	}
 
 	/**
 	 * @return the collectionClass
 	 */
-	public final Class getCollectionClass() {
+	public final String getCollectionClass() {
 		return _collectionClass;
 	}
 
@@ -149,9 +149,9 @@ public class MMultiProperty extends AbstractMProperty {
 			writeMultiSize(pContent);
 		}
 		if (!isFinal() && !(isAbstract() && getWriteVisibility() == MVisibility.PRIVATE)) {
-      	writeMultiAdder(pContent);
-      	writeMultiRemover(pContent);
-      }
+			writeMultiAdder(pContent);
+			writeMultiRemover(pContent);
+		}
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class MMultiProperty extends AbstractMProperty {
 			}
 			pContent.p();
 			pContent.p("@param " + getParameterVarName() + " The value to remove from property " + getName() + ".");
-			pContent.p("@see " + getCollectionClass().getName() + "#remove(Object)");
+			pContent.p("@see " + getCollectionClass() + "#remove(Object)");
 			pContent.pu(" */");
 			if (isAbstract()) {
 				pContent.p(getWriteVisibility().getId() + " abstract void " + getRemoveMethodName() + "(final " + getType()
@@ -224,7 +224,7 @@ public class MMultiProperty extends AbstractMProperty {
 		}
 		pContent.p();
 		pContent.p("@param " + getParameterVarName() + " The additional value for property " + getName() + ".");
-		pContent.p("@see " + getCollectionClass().getName() + "#add(Object)");
+		pContent.p("@see " + getCollectionClass() + "#add(Object)");
 		pContent.pu(" */");
 		if (isAbstract()) {
 			pContent.p(getWriteVisibility().getId() + " abstract void " + getAddMethodName() + "(final " + getType() + " "
@@ -265,7 +265,7 @@ public class MMultiProperty extends AbstractMProperty {
 		//
 		pContent.pi("/**", " * ");
 		pContent.p("@return Is property " + getName() + " emtpy?");
-		pContent.p("@see " + getCollectionClass().getName() + "#isEmpty()");
+		pContent.p("@see " + getCollectionClass() + "#isEmpty()");
 		pContent.pu(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " final abstract is" + getCapName() + "Empty();");
@@ -286,7 +286,7 @@ public class MMultiProperty extends AbstractMProperty {
 		//
 		pContent.pi("/**", " * ");
 		pContent.p("@return The number of values of property " + getName() + ".");
-		pContent.p("@see " + getCollectionClass().getName() + "#size()");
+		pContent.p("@see " + getCollectionClass() + "#size()");
 		pContent.pu(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract int " + getName() + "Size();");
@@ -306,14 +306,14 @@ public class MMultiProperty extends AbstractMProperty {
 		// iterator
 		//
 		pContent.pi("/**", " * ");
-		pContent.p("@return An {@link " + Iterator.class.getName() + "} over all values of property " + getName() + ".");
-		pContent.p("@see " + getCollectionClass().getName() + "#iterator()");
+		pContent.p("@return An {@link Iterator} over all values of property " + getName() + ".");
+		pContent.p("@see " + getCollectionClass() + "#iterator()");
 		pContent.pu(" */");
 		if (isAbstract()) {
-			pContent.p(getReadVisibility().getId() + " abstract " + Iterator.class.getName() + " " + getName()
+			pContent.p(getReadVisibility().getId() + " abstract Iterator " + getName()
 			      + "Iterator();");
 		} else {
-			pContent.pi(getReadVisibility().getId() + " final " + Iterator.class.getName() + " " + getName()
+			pContent.pi(getReadVisibility().getId() + " final Iterator " + getName()
 			      + "Iterator() {");
 			pContent.p("return " + getFieldName() + ".iterator();");
 			pContent.pu("}");
@@ -331,7 +331,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.pi("/**", " * ");
 		pContent.p("@param pObject The object to check for containment.");
 		pContent.p("@return Does this property contain the specified object?");
-		pContent.p("@see " + getCollectionClass().getName() + "#contains(Object)");
+		pContent.p("@see " + getCollectionClass() + "#contains(Object)");
 		pContent.pu(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract boolean contains" + getCapName()
@@ -361,7 +361,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p();
 		pContent.p("@param index The index, which must be valid.");
 		pContent.p("@return The value of property " + getName() + " at the specified index.");
-		pContent.p("@see " + getCollectionClass().getName() + "#get(int)");
+		pContent.p("@see " + getCollectionClass() + "#get(int)");
 		pContent.pu(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract " + getType() + " get" + getCapName()
