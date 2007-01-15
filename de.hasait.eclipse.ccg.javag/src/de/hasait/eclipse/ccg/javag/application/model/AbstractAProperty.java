@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAProperty.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.3 2007-01-15 19:26:36 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public abstract class AbstractAProperty {
@@ -58,7 +58,19 @@ public abstract class AbstractAProperty {
 		pProperty.setFinal(pConfigElement.getAttributeAsBoolean("final", false));
 		pProperty.setRequired(pConfigElement.getAttributeAsBoolean("required", false));
 		pProperty.setAbstract(pConfigElement.getAttributeAsBoolean("abstract", false));
-		pProperty.setInitialValue(pConfigElement.getAttribute("value"));
+		String vInitialValue;
+		XElement[] vValueElements = pConfigElement.getChildElements("value");
+		if (vValueElements.length > 0) {
+			StringBuffer vInitialValueBuffer = new StringBuffer();
+			for (int vValueElementsI = 0; vValueElementsI < vValueElements.length; vValueElementsI++) {
+				XElement vValueElement = vValueElements[vValueElementsI];
+				vInitialValueBuffer.append(vValueElement.getTextContent());
+			}
+			vInitialValue = vInitialValueBuffer.toString();
+		} else {
+			vInitialValue = pConfigElement.getAttribute("value");
+		}
+		pProperty.setInitialValue(vInitialValue);
 		pProperty.setReadVisibility(MVisibility.get(pConfigElement.getAttribute("readvisibility", "public")));
 		pProperty.setWriteVisibility(MVisibility.get(pConfigElement.getAttribute("writevisibility", "public")));
 
@@ -75,7 +87,7 @@ public abstract class AbstractAProperty {
 		_clazz = pClazz;
 		_property = pProperty;
 		_backref = pBackref;
-		
+
 		pProperty.setBeanName(_clazz.getFullName());
 	}
 
@@ -108,8 +120,8 @@ public abstract class AbstractAProperty {
 				}
 				AbstractAProperty property = typeBean.findProperty(_backref);
 				if (property == null) {
-					throw new IllegalArgumentException(getProperty().getQualifiedName() + "#backref: No property " + _backref
-					      + " in bean " + typeBean.getFullName());
+					throw new IllegalArgumentException(getProperty().getQualifiedName() + "#backref: No property "
+					      + _backref + " in bean " + typeBean.getFullName());
 				}
 				getProperty().setBackrefProperty(property.getProperty());
 			}
@@ -120,8 +132,9 @@ public abstract class AbstractAProperty {
 	public void validate(IProgressMonitor monitor) {
 		if (getProperty().getBackrefProperty() != null && getProperty().getBackrefProperty().getBackrefProperty() != null
 		      && getProperty().getBackrefProperty().getBackrefProperty() != getProperty()) {
-			throw new IllegalArgumentException("Backref of backref " + _backref + " is not " + getProperty().getQualifiedName()
-			      + ", but " + getProperty().getBackrefProperty().getBackrefProperty().getQualifiedName());
+			throw new IllegalArgumentException("Backref of backref " + _backref + " is not "
+			      + getProperty().getQualifiedName() + ", but "
+			      + getProperty().getBackrefProperty().getBackrefProperty().getQualifiedName());
 		}
 	}
 
