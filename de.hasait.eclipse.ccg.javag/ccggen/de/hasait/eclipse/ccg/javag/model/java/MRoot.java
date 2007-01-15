@@ -1,35 +1,36 @@
 package de.hasait.eclipse.ccg.javag.model.java;
 
+import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.common.resource.XFolder;
+import java.util.ArrayList;
 import java.util.Iterator;
-
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-
-import de.hasait.eclipse.common.resource.XFolder;
 
 /**
  * @author CCG /model/ccg/model.ccg.xml
  */
 public class MRoot {
 	// @ccg.userblock.start ClassBegin
+	
 	// @ccg.userblock.end
-
+	
 	/** Name of property folder. */
 	public static final String PROPERTY_FOLDER_NAME = "folder";
-
 	/** Type of property folder. */
 	public static final Class PROPERTY_FOLDER_TYPE = XFolder.class;
-
+	
 	/** Name of property package. */
 	public static final String PROPERTY_PACKAGE_NAME = "package";
-
 	/** Type of property package. */
 	public static final Class PROPERTY_PACKAGE_TYPE = MPackage.class;
-
+	
+	
 	private final XFolder _folder;
-
-	private final java.util.List _package = new java.util.ArrayList();
-
+	
+	private final List _package = new ArrayList();
+	
 	public MRoot(final XFolder pFolder) {
 		super();
 		if (pFolder == null) {
@@ -37,7 +38,7 @@ public class MRoot {
 		}
 		_folder = pFolder;
 	}
-
+	
 	// @ccg.userblock.start ClassAfterConstructor
 	public void write(final IProgressMonitor pMonitor) throws CoreException {
 		for (Iterator vPackageI = packageIterator(); vPackageI.hasNext();) {
@@ -45,9 +46,8 @@ public class MRoot {
 			vPackage.write(pMonitor);
 		}
 	}
-
 	// @ccg.userblock.end
-
+	
 	/**
 	 * Return the value of property folder.
 	 * 
@@ -56,60 +56,57 @@ public class MRoot {
 	public final XFolder getFolder() {
 		return _folder;
 	}
-
+	
 	/**
 	 * Returns the value of property package at the specified index.
 	 * 
-	 * @param index
-	 *           The index, which must be valid.
+	 * @param index The index, which must be valid.
 	 * @return The value of property package at the specified index.
-	 * @see java.util.List#get(int)
+	 * @see List#get(int)
 	 */
 	public final MPackage getPackage(final int index) {
 		return (MPackage) _package.get(index);
 	}
-
+	
 	/**
-	 * @param pObject
-	 *           The object to check for containment.
+	 * @param pObject The object to check for containment.
 	 * @return Does this property contain the specified object?
-	 * @see java.util.List#contains(Object)
+	 * @see List#contains(Object)
 	 */
 	public final boolean containsPackage(final Object pObject) {
 		return _package.contains(pObject);
 	}
-
+	
 	/**
-	 * @return An {@link java.util.Iterator} over all values of property package.
-	 * @see java.util.List#iterator()
+	 * @return An {@link Iterator} over all values of property package.
+	 * @see List#iterator()
 	 */
-	public final java.util.Iterator packageIterator() {
+	public final Iterator packageIterator() {
 		return _package.iterator();
 	}
-
+	
 	/**
 	 * @return Is property package emtpy?
-	 * @see java.util.List#isEmpty()
+	 * @see List#isEmpty()
 	 */
 	public final boolean isPackageEmpty() {
 		return _package.isEmpty();
 	}
-
+	
 	/**
 	 * @return The number of values of property package.
-	 * @see java.util.List#size()
+	 * @see List#size()
 	 */
 	public final int packageSize() {
 		return _package.size();
 	}
-
+	
 	/**
-	 * Add the specified value to property package. Referred from
-	 * {@link de.hasait.eclipse.ccg.javag.model.java.MPackage#PROPERTY_ROOT_NAME}, which will be updated by this method.
+	 * Add the specified value to property package.
+	 * Referred from {@link de.hasait.eclipse.ccg.javag.model.java.MPackage#PROPERTY_ROOT_NAME}, which will be updated by this method.
 	 * 
-	 * @param pPackage
-	 *           The additional value for property package.
-	 * @see java.util.List#add(Object)
+	 * @param pPackage The additional value for property package.
+	 * @see List#add(Object)
 	 */
 	public final void addPackage(final MPackage pPackage) {
 		if (_package.contains(pPackage)) {
@@ -120,7 +117,9 @@ public class MRoot {
 		}
 		_package.add(pPackage);
 	}
-
+	
+	
 	// @ccg.userblock.start ClassEnd
+	
 	// @ccg.userblock.end
 }

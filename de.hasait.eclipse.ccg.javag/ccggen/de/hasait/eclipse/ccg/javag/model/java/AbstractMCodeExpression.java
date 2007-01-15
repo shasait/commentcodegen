@@ -9,17 +9,20 @@ package de.hasait.eclipse.ccg.javag.model.java;
  */
 public abstract class AbstractMCodeExpression {
 	// @ccg.userblock.start ClassBegin
+	
 	// @ccg.userblock.end
-
-
+	
+	
 	public AbstractMCodeExpression() {
 		super();
 	}
-
+	
 	// @ccg.userblock.start ClassAfterConstructor
+	
 	// @ccg.userblock.end
-
-
+	
+	
 	// @ccg.userblock.start ClassEnd
+	
 	// @ccg.userblock.end
 }

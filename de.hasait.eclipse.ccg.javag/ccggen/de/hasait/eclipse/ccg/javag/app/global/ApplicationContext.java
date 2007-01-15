@@ -8,10 +8,10 @@ public final class ApplicationContext {
 	private ApplicationContext() {
 		super();
 	}
-
+	
 	public static final ApplicationContext DEFAULT = new ApplicationContext();
-
+	
 	public final ModelEventDispatcher ED = new ModelEventDispatcher();
-
-
+	
+	
 }
