@@ -35,7 +35,8 @@
     <eOperations name="getFile" eType="#//XFile"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="package" lowerBound="1"
         eType="#//MPackage" eOpposite="#//MPackage/compilationUnits"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="imports" upperBound="-1"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="imports" upperBound="-1"
+        eType="#//IType"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractMDeclaredType" abstract="true"
       eSuperTypes="#//AbstractMTypeContainer">
