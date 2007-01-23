@@ -14,6 +14,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="MRoot" eSuperTypes="#//AbstractMPackageContainer">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="folder" lowerBound="1"
         eType="#//XFolder"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="externalTypes" upperBound="-1"
+        eType="#//AbstractMExternalType" containment="true" eOpposite="#//AbstractMExternalType/root"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MPackage" eSuperTypes="#//AbstractMPackageContainer">
     <eStructuralFeatures xsi:type="ecore:EReference" name="parent" lowerBound="1"
@@ -27,47 +29,55 @@
       eSuperTypes="#//AbstractMElement">
     <eOperations name="getName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="types" upperBound="-1"
-        eType="#//AbstractMType" containment="true" eOpposite="#//AbstractMType/container"/>
+        eType="#//AbstractMDeclaredType" containment="true" eOpposite="#//AbstractMDeclaredType/container"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MCompilationUnit" eSuperTypes="#//AbstractMTypeContainer">
     <eOperations name="getFile" eType="#//XFile"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="package" lowerBound="1"
         eType="#//MPackage" eOpposite="#//MPackage/compilationUnits"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="imports" upperBound="-1"
-        eType="#//IMTypeReference"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="imports" upperBound="-1"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AbstractMType" eSuperTypes="#//AbstractMTypeContainer">
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractMDeclaredType" abstract="true"
+      eSuperTypes="#//AbstractMTypeContainer">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="container" lowerBound="1"
         eType="#//AbstractMTypeContainer" eOpposite="#//AbstractMTypeContainer/types"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="superInterfaces" upperBound="-1"
-        eType="#//IMInterfaceReference" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="referredBy" upperBound="-1"
-        eType="#//MQualifiedTypeReference" eOpposite="#//MQualifiedTypeReference/type"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MClass" eSuperTypes="#//AbstractMType">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="superClass" eType="#//IMClassReference"
-        containment="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AbstractMExternalType" abstract="true"
+      eSuperTypes="#//AbstractMElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="root" eType="#//MRoot"
+        eOpposite="#//MRoot/externalTypes"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="IType" abstract="true" interface="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IMClass" abstract="true" interface="true"
+      eSuperTypes="#//IType"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MDeclaredClass" eSuperTypes="#//IMClass #//AbstractMDeclaredType">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="extends" eType="#//IMClass"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="implements" upperBound="-1"
+        eType="#//IMInterface"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="staticFields" upperBound="-1"
         eType="#//MStaticClassFieldDeclaration" containment="true" eOpposite="#//MStaticClassFieldDeclaration/owner"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="instanceFields" upperBound="-1"
         eType="#//MInstanceClassFieldDeclaration" containment="true" eOpposite="#//MInstanceClassFieldDeclaration/owner"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="referredBy" upperBound="-1"
-        eType="#//MQualifiedClassReference" eOpposite="#//MQualifiedClassReference/class"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MInterface" eSuperTypes="#//AbstractMType">
+  <eClassifiers xsi:type="ecore:EClass" name="MExternalClass" eSuperTypes="#//IMClass #//AbstractMExternalType"/>
+  <eClassifiers xsi:type="ecore:EClass" name="IMInterface" abstract="true" interface="true"
+      eSuperTypes="#//IType"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MDeclaredInterface" eSuperTypes="#//IMInterface #//AbstractMDeclaredType">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="extends" upperBound="-1"
+        eType="#//IMInterface"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="constants" upperBound="-1"
         eType="#//MConstantInterfaceFieldDeclaration" containment="true" eOpposite="#//MConstantInterfaceFieldDeclaration/owner"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="referredBy" upperBound="-1"
-        eType="#//MQualifiedInterfaceReference" eOpposite="#//MQualifiedInterfaceReference/interface"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MExternalInterface" eSuperTypes="#//IMInterface #//AbstractMExternalType"/>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractMFieldDeclaration" abstract="true"
       eSuperTypes="#//AbstractMElement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//IMTypeReference"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//IType"/>
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="array" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="initialValue" eType="#//AbstractCExpression"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="initialValue" eType="#//AbstractCExpression"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractMClassFieldDeclaration" abstract="true"
       eSuperTypes="#//AbstractMFieldDeclaration">
@@ -75,46 +85,22 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="final" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MStaticClassFieldDeclaration" eSuperTypes="#//AbstractMClassFieldDeclaration">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MClass"
-        eOpposite="#//MClass/staticFields"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MDeclaredClass"
+        eOpposite="#//MDeclaredClass/staticFields"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MInstanceClassFieldDeclaration" eSuperTypes="#//AbstractMClassFieldDeclaration">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MClass"
-        eOpposite="#//MClass/instanceFields"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MDeclaredClass"
+        eOpposite="#//MDeclaredClass/instanceFields"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MConstantInterfaceFieldDeclaration"
       eSuperTypes="#//AbstractMFieldDeclaration">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MInterface"
-        eOpposite="#//MInterface/constants"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="#//MDeclaredInterface"
+        eOpposite="#//MDeclaredInterface/constants"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MMethodDeclaration"/>
   <eClassifiers xsi:type="ecore:EClass" name="MMethodParameterDeclaration"/>
   <eClassifiers xsi:type="ecore:EClass" name="MMethodImplementation"/>
   <eClassifiers xsi:type="ecore:EClass" name="MConstructorImplementation"/>
-  <eClassifiers xsi:type="ecore:EClass" name="IMTypeReference" abstract="true" interface="true">
-    <eOperations name="getTypeName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MQualifiedTypeReference" eSuperTypes="#//IMTypeReference">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="type" lowerBound="1" eType="#//AbstractMType"
-        eOpposite="#//AbstractMType/referredBy"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MUnqualifiedTypeReference" eSuperTypes="#//IMTypeReference">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="type" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IMInterfaceReference" abstract="true"
-      interface="true" eSuperTypes="#//IMTypeReference"/>
-  <eClassifiers xsi:type="ecore:EClass" name="MUnqualifiedInterfaceReference" eSuperTypes="#//IMInterfaceReference #//MUnqualifiedTypeReference"/>
-  <eClassifiers xsi:type="ecore:EClass" name="MQualifiedInterfaceReference" eSuperTypes="#//IMInterfaceReference">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="interface" lowerBound="1"
-        eType="#//MInterface" eOpposite="#//MInterface/referredBy"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="IMClassReference" abstract="true" interface="true"
-      eSuperTypes="#//IMTypeReference"/>
-  <eClassifiers xsi:type="ecore:EClass" name="MUnqualifiedClassReference" eSuperTypes="#//IMClassReference #//MUnqualifiedTypeReference"/>
-  <eClassifiers xsi:type="ecore:EClass" name="MQualifiedClassReference" eSuperTypes="#//IMClassReference">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="class" lowerBound="1" eType="#//MClass"
-        eOpposite="#//MClass/referredBy"/>
-  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CCodeBuffer">
     <eStructuralFeatures xsi:type="ecore:EReference" name="statements" upperBound="-1"
         eType="#//AbstractCStatement" containment="true"/>
@@ -124,6 +110,7 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="text" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractCExpression" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CUnparsedExpression" eSuperTypes="#//AbstractCExpression"/>
   <eClassifiers xsi:type="ecore:EDataType" name="XFolder" instanceClassName="de.hasait.eclipse.common.resource.XFolder"/>
   <eClassifiers xsi:type="ecore:EDataType" name="XFile" instanceClassName="de.hasait.eclipse.common.resource.XFile"/>
   <eClassifiers xsi:type="ecore:EEnum" name="MVisibility">
