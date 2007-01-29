@@ -213,10 +213,35 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="statements" upperBound="-1"
         eType="#//AbstractCStatement" containment="true"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CDeclarationStatement" eSuperTypes="#//AbstractCStatement #//AbstractMTypeWithNameDeclaration">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="final" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="value" eType="#//AbstractCExpression"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CExpressionStatement" eSuperTypes="#//AbstractCStatement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="expression" lowerBound="1"
+        eType="#//AbstractCExpression" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="CIfStatement" eSuperTypes="#//AbstractCStatement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" lowerBound="1"
+        eType="#//AbstractCExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trueStatement" lowerBound="1"
+        eType="#//AbstractCStatement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="falseStatement" eType="#//AbstractCStatement"
+        containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CUnparsedStatement" eSuperTypes="#//AbstractCStatement">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AbstractCExpression" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="CConditionalExpression" eSuperTypes="#//AbstractCExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="condition" lowerBound="1"
+        eType="#//AbstractCExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="trueExpression" lowerBound="1"
+        eType="#//AbstractCExpression" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="falseExpression" eType="#//AbstractCExpression"
+        containment="true"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="CUnparsedExpression" eSuperTypes="#//AbstractCExpression">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="code" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
