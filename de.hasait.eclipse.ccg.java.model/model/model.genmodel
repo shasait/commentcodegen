@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0"
+    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/de.hasait.eclipse.ccg.java.model/src"
+    modelPluginID="de.hasait.eclipse.ccg.java.model" modelName="model" importerID="org.eclipse.emf.importer.ecore">
+  <foreignModel>model.ecore</foreignModel>
+  <genPackages prefix="Model" basePackage="de.hasait.eclipse.ccg.java" disposableProviderFactory="true"
+      ecorePackage="model.ecore#/">
+    <genEnums ecoreEnum="model.ecore#//MPrimitiveTypes">
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/boolean"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/byte"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/short"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/int"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/long"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/float"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/double"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MPrimitiveTypes/char"/>
+    </genEnums>
+    <genEnums ecoreEnum="model.ecore#//MVisibility">
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MVisibility/DEFAULT"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MVisibility/PRIVATE"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MVisibility/PROTECTED"/>
+      <genEnumLiterals ecoreEnumLiteral="model.ecore#//MVisibility/PUBLIC"/>
+    </genEnums>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMPackageContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMPackageContainer/packages"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MRoot">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MRoot/externalTypes"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MPackage">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MPackage/packageContainer"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MPackage/name"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MPackage/resources"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMResource">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//AbstractMResource/package"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMResource/name"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMResource/derived"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMResource/derivedFrom"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMResource/superOf"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MResource">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MResource/content"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMTypeContainer">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMTypeContainer/types"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MCompilationUnit">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MCompilationUnit/imports"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMDeclaredType">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//AbstractMDeclaredType/typeContainer"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMDeclaredType/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMExternalType">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//AbstractMExternalType/root"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMExternalType/fullQualifiedName"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMType"/>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMTypeReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMTypeReference/array"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MDeclaredTypeReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredTypeReference/type"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MExternalTypeReference">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MExternalTypeReference/type"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MPrimitiveTypeReference">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MPrimitiveTypeReference/type"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractModifiers">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractModifiers/visibility"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractModifiers/final"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractModifiers/synchronized"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMMethodLike">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMMethodLike/statement"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMTypeWithNameDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMTypeWithNameDeclaration/type"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMTypeWithNameDeclaration/name"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMClass"/>
+    <genClasses ecoreClass="model.ecore#//MDeclaredClass">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/extends"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/implements"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/staticFields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/instanceFields"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/constructors"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/implementedMethods"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredClass/nativeMethods"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MAbstractDeclaredClass">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MAbstractDeclaredClass/abstractMethods"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MExternalClass"/>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMInterface"/>
+    <genClasses ecoreClass="model.ecore#//MDeclaredInterface">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredInterface/extends"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredInterface/constants"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredInterface/methods"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MExternalInterface"/>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMFieldDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMFieldDeclaration/initialValue"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMClassFieldDeclaration">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMClassFieldDeclaration/visibility"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//AbstractMClassFieldDeclaration/final"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MStaticClassFieldDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MStaticClassFieldDeclaration/owner"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MInstanceClassFieldDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MInstanceClassFieldDeclaration/owner"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MInstanceClassFieldDeclaration/transient"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MConstantInterfaceFieldDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MConstantInterfaceFieldDeclaration/owner"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMMethodDeclaration">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMMethodDeclaration/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MMethodDeclarationParameter">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MMethodDeclarationParameter/methodDeclaration"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MImplicitMethodDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MImplicitMethodDeclaration/owner"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMImplementableMethodDeclaration">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMImplementableMethodDeclaration/implementations"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MAbstractClassMethodDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MAbstractClassMethodDeclaration/owner"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MAbstractClassMethodDeclaration/visibility"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MInterfaceMethodDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MInterfaceMethodDeclaration/owner"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MNativeMethodDeclaration">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MNativeMethodDeclaration/owner"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractMMethodImplementation">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//AbstractMMethodImplementation/owner"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//AbstractMMethodImplementation/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MDeclaredMethodImplementation">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference model.ecore#//MDeclaredMethodImplementation/declaration"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MDirectMethodImplementation">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MDirectMethodImplementation/declaration"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MMethodImplementationParameter">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MMethodImplementationParameter/methodImplementation"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MMethodImplementationParameter/final"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MMethodImplementationParameter/name"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MConstructor">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MConstructor/owner"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//MConstructor/parameters"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//MConstructorParameter">
+      <genFeatures property="None" notify="false" createChild="false" ecoreFeature="ecore:EReference model.ecore#//MConstructorParameter/constructor"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//MConstructorParameter/final"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractCStatement"/>
+    <genClasses ecoreClass="model.ecore#//CBlockStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CBlockStatement/statements"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//CDeclarationStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//CDeclarationStatement/final"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CDeclarationStatement/value"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//CExpressionStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CExpressionStatement/expression"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//CIfStatement">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CIfStatement/condition"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CIfStatement/trueStatement"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CIfStatement/falseStatement"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//CUnparsedStatement">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//CUnparsedStatement/code"/>
+    </genClasses>
+    <genClasses image="false" ecoreClass="model.ecore#//AbstractCExpression"/>
+    <genClasses ecoreClass="model.ecore#//CConditionalExpression">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CConditionalExpression/condition"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CConditionalExpression/trueExpression"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference model.ecore#//CConditionalExpression/falseExpression"/>
+    </genClasses>
+    <genClasses ecoreClass="model.ecore#//CUnparsedExpression">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute model.ecore#//CUnparsedExpression/code"/>
+    </genClasses>
+  </genPackages>
+</genmodel:GenModel>
