@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java Model Writer Plug-in
+Bundle-SymbolicName: de.hasait.eclipse.ccg.java.model.writer
+Bundle-Version: 1.0.0
+Bundle-Vendor: Sebastian Hasait
+Bundle-Localization: plugin
+Require-Bundle: de.hasait.eclipse.ccg.java.model;visibility:=reexport,
+ de.hasait.eclipse.common;visibility:=reexport
