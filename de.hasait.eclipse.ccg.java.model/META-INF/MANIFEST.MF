@@ -10,5 +10,6 @@ Export-Package: de.hasait.eclipse.ccg.java.model,
  de.hasait.eclipse.ccg.java.model.impl,
  de.hasait.eclipse.ccg.java.model.util
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.emf.ecore;visibility:=reexport
+ org.eclipse.emf.ecore;visibility:=reexport,
+ de.hasait.eclipse.common;visibility:=reexport
 Eclipse-LazyStart: true
