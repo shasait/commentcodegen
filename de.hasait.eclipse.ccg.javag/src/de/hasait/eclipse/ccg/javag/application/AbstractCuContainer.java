@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCuContainer.java,v 1.3 2007-01-11 16:29:51 concentus Exp $
+ * $Id: AbstractCuContainer.java,v 1.4 2007-02-21 00:02:53 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 05.01.2007
  */
 public class AbstractCuContainer {
@@ -117,7 +117,7 @@ public class AbstractCuContainer {
 	 * @return ApplicationPackage + PackageInfix + SimpleName.
 	 */
 	public final String buildPackage(final String pSimpleName) {
-		return StringUtil.merge(new String[] { _application.getPackage(), _packageInfix, pSimpleName }, ".");
+		return StringUtil.join(new String[] { _application.getPackage(), _packageInfix, pSimpleName }, ".");
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * $Id: JavaCommentAstParser.java,v 1.2 2007-01-06 00:43:04 concentus Exp $
+ * $Id: JavaCommentAstParser.java,v 1.3 2007-02-21 00:03:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.StringUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class JavaCommentAstParser implements ICcgParser {
 	private static final String[] FILE_EXTENSIONS = new String[] { "java", "cpp", "c" };
@@ -141,7 +141,7 @@ public class JavaCommentAstParser implements ICcgParser {
 						vLineComment1.setLinePrefix(vNonComment2Source);
 					}
 					if (vLineComment1.getLinePrefix() != null && vLineComment1.getLinePrefix().equals(vNonComment2Source)) {
-						vLineComment1.setCommentText(StringUtil.merge(new String[] { vLineComment1.getCommentText(),
+						vLineComment1.setCommentText(StringUtil.join(new String[] { vLineComment1.getCommentText(),
 						      vLineComment2.getCommentText() }, "\n"));
 						pSimpleNode.jjtRemoveChild(vChildI + 2);
 						pSimpleNode.jjtRemoveChild(vChildI + 2);
