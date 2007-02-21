@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.5 2007-01-09 17:06:14 concentus Exp $
+ * $Id: StringUtil.java,v 1.6 2007-02-21 00:04:12 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -124,24 +124,48 @@ public final class StringUtil {
 		return current;
 	}
 
-	public static String merge(final String[] pInput, final String pSeparator) {
-		StringBuffer result = new StringBuffer();
-		if (pInput != null) {
-			for (int i = 0; i < pInput.length; i++) {
-				result.append(pInput[i]);
-				if (i < pInput.length - 1) {
-					result.append(pSeparator);
-				}
-			}
+	public static String join(final String[] pInput, final String pSeparator) {
+		if (pInput == null || pInput.length == 0) {
+			return null;
 		}
-		return result.toString();
+		String vResult = pInput[0];
+		for (int vInputI = 1; vInputI < pInput.length; vInputI++) {
+			vResult = join(vResult, pInput[vInputI], pSeparator);
+		}
+		return vResult;
+	}
+
+	/**
+	 * <ul>
+	 * <li>join(null, "cde", *) = "cde"</li>
+	 * <li>join("abc", null, *) = "abc"</li>
+	 * <li>join("abc", "cde", null) = "abccde"</li>
+	 * <li>join("abc", "cde", ".") = "abc.cde"</li>
+	 * </ul>
+	 * 
+	 * @param pInput1
+	 * @param pInput2
+	 * @param pSeparator
+	 * @return s.d.
+	 */
+	public static String join(final String pInput1, final String pInput2, final String pSeparator) {
+		if (pInput1 == null) {
+			return pInput2;
+		}
+		if (pInput2 == null) {
+			return pInput1;
+		}
+		if (pSeparator == null) {
+			return pInput1 + pInput2;
+		}
+		return pInput1 + pSeparator + pInput2;
 	}
 
 	/**
 	 * Finds args with the pattern
 	 * 
 	 * <pre>
-	 *                             -argName=argValue
+	 *                                      -argName=argValue
 	 * </pre>.
 	 * 
 	 * @param pArgs
@@ -250,7 +274,8 @@ public final class StringUtil {
 	public static String firstCharacters(final String pUserBlock) {
 		StringBuffer vResult = new StringBuffer();
 		CharacterIterator vUserBlockI = new StringCharacterIterator(pUserBlock);
-		for (char vChar = vUserBlockI.first(); vChar != CharacterIterator.DONE && Character.isLetter(vChar); vChar = vUserBlockI.next()) {
+		for (char vChar = vUserBlockI.first(); vChar != CharacterIterator.DONE && Character.isLetter(vChar); vChar = vUserBlockI
+		      .next()) {
 			vResult.append(vChar);
 		}
 		return vResult.toString();
