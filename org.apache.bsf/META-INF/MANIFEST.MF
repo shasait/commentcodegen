@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Bean Scripting Framefork Plug-in
 Bundle-SymbolicName: org.apache.bsf
 Bundle-Version: 2.4.0
-Bundle-ClassPath: bsf.jar
+Bundle-ClassPath: bsf-2.4.0.jar
 Bundle-Localization: plugin
 Bundle-Vendor: Apache Jakarta Project
 Export-Package: org.apache.bsf,
