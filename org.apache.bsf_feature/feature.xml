@@ -3,7 +3,7 @@
       id="org.apache.bsf_feature"
       label="org.apache.bsf_feature"
       version="2.4.0"
-      provider-name="Sebastian Hasait">
+      provider-name="Apache Software Foundation">
 
    <description>
       Provides the Bean Scription Framework as Eclipse Plug-in.
@@ -27,14 +27,13 @@ and limitations under the License.
    </license>
 
    <url>
-      <discovery label="Bean Scription Framework" url="http://jakarta.apache.org/bsf/"/>
-      <discovery label="Sebastian Hasait Development Page" url="http://hasait.dyndns.org/development/"/>
+      <discovery label="Homepage" url="http://jakarta.apache.org/bsf/"/>
    </url>
 
    <plugin
          id="org.apache.bsf"
          download-size="0"
          install-size="0"
-         version="2.4.0"/>
+         version="0.0.0"/>
 
 </feature>
