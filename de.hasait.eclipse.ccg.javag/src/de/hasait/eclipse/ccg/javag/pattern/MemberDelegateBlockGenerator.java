@@ -1,5 +1,5 @@
 /*
- * $Id: MemberDelegateBlockGenerator.java,v 1.2 2006-12-03 01:10:09 concentus Exp $
+ * $Id: MemberDelegateBlockGenerator.java,v 1.3 2007-06-21 16:35:03 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -41,22 +41,22 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class MemberDelegateBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Member delegate pattern generator - adds public method delegates";
-
-	private static final String[] TAG_NAMES = new String[] { "javamemberdelegate" };
 
 	/**
 	 * Constructor.
 	 */
 	public MemberDelegateBlockGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
-	public String generateBlock(CompilationUnit compilationUnit, XElement configElement, ICcgComment comment, XFile sourceFile,
-	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	@Override
+	public String generateBlock(final CompilationUnit compilationUnit, final XElement configElement,
+	      final ICcgComment comment, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws Exception {
 		String name = configElement.getRequiredAttribute("name");
 		Iterator types = compilationUnit.types().iterator();
 		AbstractTypeDeclaration abstractTypeDeclaration;

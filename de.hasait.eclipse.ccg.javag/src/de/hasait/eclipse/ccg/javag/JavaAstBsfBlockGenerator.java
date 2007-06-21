@@ -1,5 +1,5 @@
 /*
- * $Id: JavaAstBsfBlockGenerator.java,v 1.2 2006-12-03 01:07:38 concentus Exp $
+ * $Id: JavaAstBsfBlockGenerator.java,v 1.3 2007-06-21 16:35:05 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,23 +31,22 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
-
-	private static final String[] TAG_NAMES = new String[] { "JavaAstBsf" };
 
 	/**
 	 * Constructor.
 	 */
 	public JavaAstBsfBlockGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
-	public String generateBlock(CompilationUnit compilationUnit, XElement configElement, ICcgComment comment,
-	      XFile sourceFile, Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor)
-	      throws Exception {
+	@Override
+	public String generateBlock(final CompilationUnit compilationUnit, final XElement configElement,
+	      final ICcgComment comment, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws Exception {
 		BsfExecuter executer = new BsfExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
 		// TODO read default-indent from configuration or source
 		ContentBuffer out = new ContentBuffer("\t");

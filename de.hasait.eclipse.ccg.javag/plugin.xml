@@ -25,11 +25,11 @@
    </requires>
    
    <extension point="de.hasait.eclipse.ccg.generators">
-      <blockGenerator class="de.hasait.eclipse.ccg.javag.JavaAstBsfBlockGenerator"/>
-      <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.EventSupportBlockGenerator"/>
-      <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateBlockGenerator"/>
-      <blockGenerator class="de.hasait.eclipse.ccg.javag.pattern.PropertyBlockGenerator"/>
-      <resourceGenerator class="de.hasait.eclipse.ccg.javag.application.ApplicationResourceGenerator"/>
+      <blockGenerator tagnames="javaastbsf" class="de.hasait.eclipse.ccg.javag.JavaAstBsfBlockGenerator" />
+      <blockGenerator tagnames="eventsupport" class="de.hasait.eclipse.ccg.javag.pattern.EventSupportBlockGenerator" />
+      <blockGenerator tagnames="memberdelegate" class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateBlockGenerator"/>
+      <blockGenerator tagnames="property" class="de.hasait.eclipse.ccg.javag.pattern.PropertyBlockGenerator"/>
+      <resourceGenerator tagnames="application" class="de.hasait.eclipse.ccg.javag.application.ApplicationResourceGenerator"/>
    </extension>
 
 </plugin>

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractJavaAstTagContentBlockGenerator.java,v 1.2 2006-12-03 01:10:09 concentus Exp $
+ * $Id: AbstractJavaAstTagContentBlockGenerator.java,v 1.3 2007-06-21 16:35:05 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -40,12 +40,13 @@ import de.hasait.eclipse.common.xml.XElement;
  * @since 05.11.2006
  */
 public abstract class AbstractJavaAstTagContentBlockGenerator extends AbstractCcgBlockGenerator {
-	protected AbstractJavaAstTagContentBlockGenerator(String description, String[] tagnames) {
-		super(description, tagnames);
+	protected AbstractJavaAstTagContentBlockGenerator(final String description) {
+		super(description);
 	}
 
-	public final String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile,
-	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
 		// parse source file
 		IJavaElement javaElement = JavaCore.create(sourceFile.getRawFile());
 		if (javaElement == null || !(javaElement instanceof ICompilationUnit)) {
@@ -59,7 +60,7 @@ public abstract class AbstractJavaAstTagContentBlockGenerator extends AbstractCc
 		      monitor);
 	}
 
-	public abstract String generateBlock(CompilationUnit compilationUnit, XElement configElement, ICcgComment comment,
-	      XFile sourceFile, Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor)
-	      throws Exception;
+	public abstract String generateBlock(final CompilationUnit compilationUnit, final XElement configElement,
+	      final ICcgComment comment, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws Exception;
 }

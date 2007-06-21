@@ -1,5 +1,5 @@
 /*
- * $Id: ApplicationResourceGenerator.java,v 1.3 2007-01-11 16:29:50 concentus Exp $
+ * $Id: ApplicationResourceGenerator.java,v 1.4 2007-06-21 16:35:04 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,29 +31,28 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 13.12.2006
  */
 public class ApplicationResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Creates an application";
 
-	private static final String[] TAG_NAMES = new String[] { "application" };
-
 	/**
 	 * Constructor.
 	 */
 	public ApplicationResourceGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
-	public void generateResources(XElement pConfigElement, XFile pSourceFile, XFolder pTargetBaseFolder,
-	      Map pSourceFileContext, ICcgGeneratorLookup pGeneratorLookup, IProgressMonitor pMonitor) throws Exception {
-		Application vApplication = new Application(pSourceFile, pTargetBaseFolder, pConfigElement);
-		int vLayer = 0;
-		while (vApplication.transform(vLayer, pMonitor)) {
-			vLayer++;
+	public void generateResources(final XElement configElement, final XFile sourceFile, final XFolder targetBaseFolder,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
+		Application application = new Application(sourceFile, targetBaseFolder, configElement);
+		int layer = 0;
+		while (application.transform(layer, monitor)) {
+			layer++;
 		}
-		vApplication.validate(pMonitor);
-		vApplication.write(pMonitor);
+		application.validate(monitor);
+		application.write(monitor);
 	}
 }
