@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mozilla.javascript_feature"
+      label="org.mozilla.javascript_feature"
+      version="1.6.5"
+      provider-name="Mozilla Foundation">
+
+   <description>
+      Provides Javascript Plug-in.
+   </description>
+
+   <copyright>
+      Copyright 2006 Mozilla Foundation
+   </copyright>
+
+   <license">
+      Licensed under the MPL/GPL.
+   </license>
+
+   <url>
+      <discovery label="Homepage" url="http://www.mozilla.org/rhino/"/>
+   </url>
+
+   <plugin
+         id="org.mozilla.javascript"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>
