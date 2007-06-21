@@ -1,5 +1,5 @@
 /*
- * $Id: ASTComment.java,v 1.3 2007-01-06 00:43:04 concentus Exp $
+ * $Id: ASTComment.java,v 1.4 2007-06-21 16:35:50 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,7 +24,7 @@ import de.hasait.eclipse.common.StringUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ASTComment extends SourceLeaf implements ICcgComment {
 	public static final String C_START = "[c]";
@@ -53,27 +53,27 @@ public class ASTComment extends SourceLeaf implements ICcgComment {
 	}
 
 	public String getCommand() {
-		return StringUtil.getMergedBlocks(C_START, C_END, getSource());
+		return StringUtil.getMergedBlocks(getSource(), C_START, C_END);
 	}
 
 	public void setCommand(final String pCommand) {
-		setCommentText(StringUtil.setMergedBlocks(C_START, C_END, getCommentText(), pCommand));
+		setCommentText(StringUtil.setMergedBlocks(getCommentText(), pCommand, C_START, C_END));
 	}
 
 	public String getBlockStart() {
-		return StringUtil.getMergedBlocks(BS_START, BS_END, getCommentText());
+		return StringUtil.getMergedBlocks(getCommentText(), BS_START, BS_END);
 	}
 
 	public void setBlockStart(final String pBlockStart) {
-		setCommentText(StringUtil.setMergedBlocks(BS_START, BS_END, getCommentText(), pBlockStart));
+		setCommentText(StringUtil.setMergedBlocks(getCommentText(), pBlockStart, BS_START, BS_END));
 	}
 
 	public String getBlockEnd() {
-		return StringUtil.getMergedBlocks(BE_START, BE_END, getCommentText());
+		return StringUtil.getMergedBlocks(getCommentText(), BE_START, BE_END);
 	}
 
 	public void setBlockEnd(final String pBlockEnd) {
-		setCommentText(StringUtil.setMergedBlocks(BE_START, BE_END, getCommentText(), pBlockEnd));
+		setCommentText(StringUtil.setMergedBlocks(getCommentText(), pBlockEnd, BE_START, BE_END));
 	}
 
 	public final String getCommentText() {
