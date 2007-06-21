@@ -1,5 +1,5 @@
 /*
- * $Id: JavaModelWriter.java,v 1.1 2007-02-20 23:54:08 concentus Exp $
+ * $Id: JavaModelWriter.java,v 1.2 2007-06-21 16:34:39 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -24,6 +24,7 @@ import java.util.Iterator;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import de.hasait.eclipse.ccg.java.model.AbstractMDeclaredType;
 import de.hasait.eclipse.ccg.java.model.AbstractMPackageContainer;
 import de.hasait.eclipse.ccg.java.model.AbstractMResource;
 import de.hasait.eclipse.ccg.java.model.AbstractMType;
@@ -40,7 +41,7 @@ import de.hasait.eclipse.common.resource.XFolder;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 20.02.2007
  */
 public class JavaModelWriter {
@@ -89,8 +90,8 @@ public class JavaModelWriter {
 		XFolder vPackageFolder = vPackagePath == null ? pContext._baseFolder : pContext._baseFolder
 		      .getFolder(vPackagePath);
 		WritePackageContext vContext = new WritePackageContext(pContext._monitor, vPackageFolder, vFullPackageName);
-		for (Iterator vResourceIterator = pPackage.getResources().iterator(); vResourceIterator.hasNext();) {
-			AbstractMResource vResource = (AbstractMResource) vResourceIterator.next();
+		for (Iterator vResourceI = pPackage.getResources().iterator(); vResourceI.hasNext();) {
+			AbstractMResource vResource = (AbstractMResource) vResourceI.next();
 			writeAbstractMResource(vResource, vContext);
 		}
 		writeAbstractMPackageContainer(pPackage, vContext);
@@ -106,6 +107,10 @@ public class JavaModelWriter {
 			super(pContext);
 			_targetFile = pTargetFile;
 			_fullResourceName = pFullResourceName;
+		}
+
+		public WriteResourceContext(final WriteResourceContext pContext) {
+			this(pContext, pContext._targetFile, pContext._fullResourceName);
 		}
 	}
 
@@ -133,6 +138,15 @@ public class JavaModelWriter {
 		      pContext._monitor);
 	}
 
+	static class WriteCompilationUnitContext extends WriteResourceContext {
+		public final ContentBuffer _contentBuffer;
+
+		public WriteCompilationUnitContext(final WriteResourceContext pContext, final ContentBuffer pContentBuffer) {
+			super(pContext);
+			_contentBuffer = pContentBuffer;
+		}
+	}
+
 	public final void writeMCompilationUnit(final MCompilationUnit pCompilationUnit, final WriteResourceContext pContext)
 	      throws CoreException {
 		ContentBuffer vContentBuffer = new ContentBuffer();
@@ -141,14 +155,26 @@ public class JavaModelWriter {
 			vContentBuffer.p();
 		}
 		if (!pCompilationUnit.getImports().isEmpty()) {
-			for (Iterator vImportedTypesI = pCompilationUnit.getImports().iterator(); vImportedTypesI.hasNext();) {
-				AbstractMType vImportedType = (AbstractMType) vImportedTypesI.next();
+			for (Iterator vImportedTypeI = pCompilationUnit.getImports().iterator(); vImportedTypeI.hasNext();) {
+				AbstractMType vImportedType = (AbstractMType) vImportedTypeI.next();
 				String vFullImportedTypeName = ModelUtil.getFullQualifiedName(vImportedType);
 				vContentBuffer.a("import").a(" ").a(vFullImportedTypeName).p(";");
 			}
 			vContentBuffer.p();
 		}
-		// TODO writeTypes
+		if (!pCompilationUnit.getTypes().isEmpty()) {
+			WriteCompilationUnitContext vContext = new WriteCompilationUnitContext(pContext, vContentBuffer);
+			for (Iterator vTypeI = pCompilationUnit.getTypes().iterator(); vTypeI.hasNext();) {
+				AbstractMDeclaredType vType = (AbstractMDeclaredType) vTypeI.next();
+				writeAbstractMDeclaredType(vType, vContext);
+			}
+		}
 		pContext._targetFile.write(vContentBuffer.getContent(), Boolean.TRUE, pContext._monitor);
+	}
+
+	public final void writeAbstractMDeclaredType(final AbstractMDeclaredType pMDeclaredType,
+	      final WriteCompilationUnitContext pContext) throws CoreException {
+		pMDeclaredType.get
+
 	}
 }
