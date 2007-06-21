@@ -1,5 +1,5 @@
 /*
- * $Id: BsfBlockGenerator.java,v 1.2 2006-12-03 01:07:27 concentus Exp $
+ * $Id: BsfBlockGenerator.java,v 1.3 2007-06-21 16:34:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,18 +31,16 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class BsfBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
-
-	private static final String[] TAG_NAMES = new String[] { "bsf" };
 
 	/**
 	 * Constructor.
 	 */
 	public BsfBlockGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
 	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,

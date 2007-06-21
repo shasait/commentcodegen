@@ -1,5 +1,5 @@
 /*
- * $Id: BsfExecuter.java,v 1.1 2006-12-03 01:06:43 concentus Exp $
+ * $Id: BsfExecuter.java,v 1.2 2007-06-21 16:34:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,7 +17,6 @@
  */
 package de.hasait.eclipse.ccg.util;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.bsf.BSFException;
@@ -32,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class BsfExecuter {
 	private final String _script;
@@ -41,16 +40,31 @@ public final class BsfExecuter {
 
 	private final String _scriptLanguage;
 
-	private final IProgressMonitor _monitor;
-
 	private final BSFManager _manager;
 
+	/**
+	 * Delegiert und ermittelt das scriptFile aus dem configElement.
+	 */
 	public BsfExecuter(final XElement configElement, final XFile sourceFile, final Map sourceFileContext,
-	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws IOException, CoreException,
-	      BSFException {
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws CoreException, BSFException {
+		this(sourceFile.getFile(configElement.getRequiredAttribute("file")), configElement, sourceFile,
+		      sourceFileContext, generatorLookup, monitor);
+	}
+
+	/**
+	 * @param scriptFile
+	 * @param configElement
+	 * @param sourceFile
+	 * @param sourceFileContext
+	 * @param generatorLookup
+	 * @param monitor
+	 * @throws CoreException
+	 * @throws BSFException
+	 */
+	public BsfExecuter(final XFile scriptFile, final XElement configElement, final XFile sourceFile,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws CoreException, BSFException {
 		super();
-		String scriptFilePathS = configElement.getRequiredAttribute("file");
-		XFile scriptFile = sourceFile.getFile(scriptFilePathS);
 		if (!scriptFile.exists()) {
 			throw new IllegalArgumentException("Script file does not exist: " + scriptFile);
 		}
@@ -60,7 +74,6 @@ public final class BsfExecuter {
 		if (_scriptLanguage == null) {
 			throw new IllegalArgumentException("Unknown scripting language for: " + scriptFile);
 		}
-		_monitor = monitor;
 		_manager = new BSFManager();
 		_manager.declareBean("configElement", configElement, XElement.class);
 		_manager.declareBean("sourceFile", sourceFile, XFile.class);
@@ -77,6 +90,11 @@ public final class BsfExecuter {
 		_manager.declareBean(name, object, type);
 	}
 
+	/**
+	 * Führt das script aus.
+	 * 
+	 * @throws Exception
+	 */
 	public void execute() throws Exception {
 		try {
 			_manager.exec(_scriptLanguage, _scriptName, 0, 0, _script);

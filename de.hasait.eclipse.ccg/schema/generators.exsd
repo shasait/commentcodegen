@@ -52,12 +52,26 @@
                </documentation>
             </annotation>
          </attribute>
+         <attribute name="tagnames" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
       </complexType>
    </element>
 
    <element name="resourceGenerator">
       <complexType>
          <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="tagnames" type="string" use="required">
             <annotation>
                <documentation>
                   

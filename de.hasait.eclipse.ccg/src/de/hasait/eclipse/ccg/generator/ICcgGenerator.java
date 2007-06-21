@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgGenerator.java,v 1.3 2006-12-03 01:09:45 concentus Exp $
+ * $Id: ICcgGenerator.java,v 1.4 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,9 +27,4 @@ public interface ICcgGenerator {
 	 * @return The description for the generator.
 	 */
 	String getDescription();
-
-	/**
-	 * @return The names for the tags reserved by this generator.
-	 */
-	String[] getTagNames();
 }

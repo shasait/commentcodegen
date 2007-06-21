@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileBlockGenerator.java,v 1.3 2007-06-21 16:34:09 concentus Exp $
+ * $Id: ConfiguredBsfBlockGenerator.java,v 1.1 2007-06-21 16:34:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,7 +17,6 @@
  */
 package de.hasait.eclipse.ccg.generator.generic;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -25,44 +24,42 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
-import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
  */
-public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
-	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
+public final class ConfiguredBsfBlockGenerator extends AbstractCcgBlockGenerator {
+	private final XFile _scriptFile;
 
 	/**
-	 * Constructor.
+	 * @param description
 	 */
-	public IncludeFileBlockGenerator() {
-		super(DESCRIPTION);
+	public ConfiguredBsfBlockGenerator(final String description, final XFile scriptFile) {
+		super(description);
+
+		if (scriptFile == null) {
+			throw new IllegalArgumentException("scriptFile == null");
+		}
+		_scriptFile = scriptFile;
 	}
 
 	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
 	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		String includeFilePathS = configElement.getRequiredAttribute("file");
-		XElement[] replaceElements = configElement.getChildElements("replace");
-		Map<String, String> replacements = new HashMap<String, String>();
-		XElement replacement;
-		int anon = 0;
-		for (int i = 0; i < replaceElements.length; i++) {
-			replacement = replaceElements[i];
-			String search;
-			if (replacement.hasAttribute("s")) {
-				search = replacement.getAttribute("s");
-			} else {
-				search = "${" + anon + "}";
-				anon++;
-			}
-			String replace = replacement.getAttribute("r", "");
-			replacements.put(search, replace);
-		}
-		return StringUtil.replaceAll(sourceFile.getFile(includeFilePathS).read(), replacements);
+		BsfExecuter executer = new BsfExecuter(_scriptFile, configElement, sourceFile, sourceFileContext,
+		      generatorLookup, monitor);
+		executer.declareBean("comment", comment, ICcgComment.class);
+		// TODO read default-indent from configuration or source
+		ContentBuffer out = new ContentBuffer("\t");
+		out.i();
+		executer.declareBean("out", out, ContentBuffer.class);
+		executer.execute();
+		//
+		return "\n" + out.getContent().toString() + "\n";
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: BsfResourceGenerator.java,v 1.4 2006-12-03 01:07:27 concentus Exp $
+ * $Id: BsfResourceGenerator.java,v 1.5 2007-06-21 16:34:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,22 +30,21 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class BsfResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
-
-	private static final String[] TAG_NAMES = new String[] { "bsf" };
 
 	/**
 	 * Constructor.
 	 */
 	public BsfResourceGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
-	public void generateResources(XElement configElement, XFile sourceFile, XFolder targetBaseFolder,
-	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	public void generateResources(final XElement configElement, final XFile sourceFile, final XFolder targetBaseFolder,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
 		BsfExecuter executer = new BsfExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
 		executer.declareBean("targetBaseFolder", targetBaseFolder, XFolder.class);
 		executer.declareBean("monitor", monitor, IProgressMonitor.class);

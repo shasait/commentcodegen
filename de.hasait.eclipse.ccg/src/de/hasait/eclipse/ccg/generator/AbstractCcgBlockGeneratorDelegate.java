@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBlockGeneratorDelegate.java,v 1.4 2006-12-03 01:09:45 concentus Exp $
+ * $Id: AbstractCcgBlockGeneratorDelegate.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -30,21 +30,24 @@ import de.hasait.eclipse.common.xml.XElement;
  * Delegates generation to an instance of {@link ICcgBlockGeneratorGenerate}.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  * @since 10.11.2006
  */
-public class CcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
+public abstract class AbstractCcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
 	private final ICcgBlockGeneratorGenerate _generate;
 
-	protected CcgBlockGeneratorDelegate(String description, String[] tagNames, ICcgBlockGeneratorGenerate generate) {
-		super(description, tagNames);
-		//
-		assert generate != null;
+	protected AbstractCcgBlockGeneratorDelegate(final String description, final ICcgBlockGeneratorGenerate generate) {
+		super(description);
+
+		if (generate == null) {
+			throw new IllegalArgumentException("generate == null");
+		}
 		_generate = generate;
 	}
 
-	public final String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile, Map sourceContext,
-	      ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
+	      final Map sourceContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
 		return _generate.generateBlock(configElement, comment, sourceFile, sourceContext, generatorLookup, monitor);
 	}
 }

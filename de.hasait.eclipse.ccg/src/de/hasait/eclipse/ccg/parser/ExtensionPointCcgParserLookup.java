@@ -1,5 +1,5 @@
 /*
- * $Id: CcgParserLookupEp.java,v 1.4 2006-11-10 16:20:12 concentus Exp $
+ * $Id: ExtensionPointCcgParserLookup.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,9 +27,9 @@ import org.eclipse.core.runtime.Platform;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.1 $
  */
-public final class CcgParserLookupEp implements ICcgParserLookup {
+public final class ExtensionPointCcgParserLookup implements ICcgParserLookup {
 	private final String _extensionPointId;
 
 	private Map _parsersByFileExtension = null;
@@ -39,7 +39,7 @@ public final class CcgParserLookupEp implements ICcgParserLookup {
 	 * 
 	 * @param extensionPointId
 	 */
-	public CcgParserLookupEp(String extensionPointId) {
+	public ExtensionPointCcgParserLookup(String extensionPointId) {
 		super();
 		_extensionPointId = extensionPointId;
 	}

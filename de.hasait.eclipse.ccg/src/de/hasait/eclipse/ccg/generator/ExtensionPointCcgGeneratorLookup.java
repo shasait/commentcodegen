@@ -1,5 +1,5 @@
 /*
- * $Id: CcgGeneratorLookupEp.java,v 1.5 2006-12-03 01:09:45 concentus Exp $
+ * $Id: ExtensionPointCcgGeneratorLookup.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,29 +27,29 @@ import org.eclipse.core.runtime.Platform;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  */
-public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
+public final class ExtensionPointCcgGeneratorLookup implements ICcgGeneratorLookup {
 	private final String _extensionPointId;
 
-	private Map _blockGeneratorsByTagName = null;
+	private Map<String, ICcgBlockGenerator> _blockGeneratorsByTagName = null;
 
-	private Map _resourceGeneratorsByTagName = null;
+	private Map<String, ICcgResourceGenerator> _resourceGeneratorsByTagName = null;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param extensionPointId
 	 */
-	public CcgGeneratorLookupEp(String extensionPointId) {
+	public ExtensionPointCcgGeneratorLookup(final String extensionPointId) {
 		super();
 		_extensionPointId = extensionPointId;
 	}
 
 	private void initMaps() {
 		if (_blockGeneratorsByTagName == null || _resourceGeneratorsByTagName == null) {
-			_blockGeneratorsByTagName = new HashMap();
-			_resourceGeneratorsByTagName = new HashMap();
+			_blockGeneratorsByTagName = new HashMap<String, ICcgBlockGenerator>();
+			_resourceGeneratorsByTagName = new HashMap<String, ICcgResourceGenerator>();
 			IExtensionPoint extensionPoint = Platform.getExtensionRegistry().getExtensionPoint(_extensionPointId);
 			IExtension[] extensions = extensionPoint.getExtensions();
 			for (int extensionsI = 0; extensionsI < extensions.length; extensionsI++) {
@@ -59,22 +59,22 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 					String configurationElementName = configurationElement.getName();
 					if ("blockGenerator".equals(configurationElementName)) {
 						try {
-							ICcgBlockGenerator blockGenerator = (ICcgBlockGenerator) configurationElements[configurationElementsI]
+							ICcgBlockGenerator blockGenerator = (ICcgBlockGenerator) configurationElement
 							      .createExecutableExtension("class");
-							String[] tagNames = blockGenerator.getTagNames();
-							for (int tagNamesI = 0; tagNamesI < tagNames.length; tagNamesI++) {
-								_blockGeneratorsByTagName.put(tagNames[tagNamesI], blockGenerator);
+							String[] tagNames = configurationElement.getAttribute("tagnames").split(",");
+							for (String tagName : tagNames) {
+								_blockGeneratorsByTagName.put(tagName, blockGenerator);
 							}
 						} catch (Exception ce) {
 							// ignore
 						}
 					} else if ("resourceGenerator".equals(configurationElementName)) {
 						try {
-							ICcgResourceGenerator resourceGenerator = (ICcgResourceGenerator) configurationElements[configurationElementsI]
+							ICcgResourceGenerator resourceGenerator = (ICcgResourceGenerator) configurationElement
 							      .createExecutableExtension("class");
-							String[] tagNames = resourceGenerator.getTagNames();
-							for (int tagNamesI = 0; tagNamesI < tagNames.length; tagNamesI++) {
-								_resourceGeneratorsByTagName.put(tagNames[tagNamesI], resourceGenerator);
+							String[] tagNames = configurationElement.getAttribute("tagnames").split(",");
+							for (String tagName : tagNames) {
+								_resourceGeneratorsByTagName.put(tagName, resourceGenerator);
 							}
 						} catch (Exception ce) {
 							// ignore
@@ -85,23 +85,23 @@ public final class CcgGeneratorLookupEp implements ICcgGeneratorLookup {
 		}
 	}
 
-	public boolean containsBlockGenerator(String tagName) {
+	public boolean containsBlockGenerator(final String tagName) {
 		initMaps();
 		return _blockGeneratorsByTagName.containsKey(tagName);
 	}
 
-	public ICcgBlockGenerator findBlockGenerator(String tagName) {
-		initMaps();
-		return (ICcgBlockGenerator) _blockGeneratorsByTagName.get(tagName);
-	}
-
-	public boolean containsResourceGenerator(String tagName) {
+	public boolean containsResourceGenerator(final String tagName) {
 		initMaps();
 		return _resourceGeneratorsByTagName.containsKey(tagName);
 	}
 
-	public ICcgResourceGenerator findResourceGenerator(String tagName) {
+	public ICcgBlockGenerator findBlockGenerator(final String tagName) {
 		initMaps();
-		return (ICcgResourceGenerator) _resourceGeneratorsByTagName.get(tagName);
+		return _blockGeneratorsByTagName.get(tagName);
+	}
+
+	public ICcgResourceGenerator findResourceGenerator(final String tagName) {
+		initMaps();
+		return _resourceGeneratorsByTagName.get(tagName);
 	}
 }

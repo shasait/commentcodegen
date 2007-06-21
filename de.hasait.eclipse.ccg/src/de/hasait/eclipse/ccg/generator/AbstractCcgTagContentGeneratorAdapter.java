@@ -1,5 +1,5 @@
 /*
- * $Id: CcgTagContentGeneratorAdapter.java,v 1.5 2006-12-03 01:09:45 concentus Exp $
+ * $Id: AbstractCcgTagContentGeneratorAdapter.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,28 +27,23 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.1 $
  */
-public class CcgTagContentGeneratorAdapter extends AbstractCcgGenerator implements ICcgBlockGenerator {
+public abstract class AbstractCcgTagContentGeneratorAdapter extends AbstractCcgGenerator implements ICcgBlockGenerator {
 	private final ICcgBlockGeneratorGenerate _generator;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param description
-	 * @param tagNames
-	 * @param generator
-	 */
-	public CcgTagContentGeneratorAdapter(final String description, final String[] tagNames,
-	      final ICcgBlockGeneratorGenerate generator) {
-		super(description, tagNames);
-		//
-		assert generator != null;
+	protected AbstractCcgTagContentGeneratorAdapter(final String description, final ICcgBlockGeneratorGenerate generator) {
+		super(description);
+
+		if (generator == null) {
+			throw new IllegalArgumentException("generator == null");
+		}
 		_generator = generator;
 	}
 
-	public String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile, Map sourceFileContext,
-	      ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
 		return _generator.generateBlock(configElement, comment, sourceFile, sourceFileContext, generatorLookup, monitor);
 	}
 }

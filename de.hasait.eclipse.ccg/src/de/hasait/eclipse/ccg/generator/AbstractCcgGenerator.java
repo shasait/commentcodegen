@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCcgGenerator.java,v 1.3 2006-12-03 01:09:45 concentus Exp $
+ * $Id: AbstractCcgGenerator.java,v 1.4 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -26,23 +26,14 @@ package de.hasait.eclipse.ccg.generator;
 public abstract class AbstractCcgGenerator implements ICcgGenerator {
 	private final String _description;
 
-	private final String[] _tagNames;
-
-	protected AbstractCcgGenerator(final String description, final String[] tagNames) {
+	protected AbstractCcgGenerator(final String description) {
 		super();
 		//
 		assert description != null;
 		_description = description;
-		//
-		assert tagNames != null && tagNames.length > 0;
-		_tagNames = (String[]) tagNames.clone();
 	}
 
 	public final String getDescription() {
 		return _description;
-	}
-
-	public final String[] getTagNames() {
-		return (String[]) _tagNames.clone();
 	}
 }

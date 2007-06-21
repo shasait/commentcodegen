@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCcgBlockGenerator.java,v 1.1 2006-11-10 14:00:59 concentus Exp $
+ * $Id: AbstractCcgBlockGenerator.java,v 1.2 2007-06-21 16:34:10 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -21,11 +21,11 @@ package de.hasait.eclipse.ccg.generator;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 10.11.2006
  */
 public abstract class AbstractCcgBlockGenerator extends AbstractCcgGenerator implements ICcgBlockGenerator {
-	protected AbstractCcgBlockGenerator(String description, String[] tagNames) {
-		super(description, tagNames);
+	protected AbstractCcgBlockGenerator(final String description) {
+		super(description);
 	}
 }

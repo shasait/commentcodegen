@@ -1,5 +1,5 @@
 /*
- * $Id: NopBlockGenerator.java,v 1.2 2006-12-03 01:09:45 concentus Exp $
+ * $Id: NopBlockGenerator.java,v 1.3 2007-06-21 16:34:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -29,22 +29,21 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public final class NopBlockGenerator extends AbstractCcgBlockGenerator {
-	private static final String DESCRIPTION = "NOP (no operation) generator - pipe through paramter";
-
-	private static final String[] TAG_NAMES = new String[] { "nop" };
+	private static final String DESCRIPTION = "NOP (no operation) generator";
 
 	/**
 	 * Constructor.
 	 */
 	public NopBlockGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
 	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
-	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
-		return configElement.toString();
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor)
+	      throws Exception {
+		return null;
 	}
 }

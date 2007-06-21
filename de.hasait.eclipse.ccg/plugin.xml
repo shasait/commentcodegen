@@ -92,10 +92,10 @@
    </extension>
    
    <extension point="de.hasait.eclipse.ccg.generators">
-      <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.NopBlockGenerator"/>
-      <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.IncludeFileBlockGenerator"/>
-      <blockGenerator class="de.hasait.eclipse.ccg.generator.generic.BsfBlockGenerator"/>
-      <resourceGenerator class="de.hasait.eclipse.ccg.generator.generic.BsfResourceGenerator"/>
-      <resourceGenerator class="de.hasait.eclipse.ccg.generator.generic.BshResourceGenerator"/>
+      <blockGenerator tagnames="nop" class="de.hasait.eclipse.ccg.generator.generic.NopBlockGenerator"/>
+      <blockGenerator tagnames="includefile" class="de.hasait.eclipse.ccg.generator.generic.IncludeFileBlockGenerator"/>
+      <blockGenerator tagnames="bsf" class="de.hasait.eclipse.ccg.generator.generic.BsfBlockGenerator"/>
+      <resourceGenerator tagnames="bsf" class="de.hasait.eclipse.ccg.generator.generic.BsfResourceGenerator"/>
+      <resourceGenerator tagnames="bsh" class="de.hasait.eclipse.ccg.generator.generic.BshResourceGenerator"/>
    </extension>
 </plugin>

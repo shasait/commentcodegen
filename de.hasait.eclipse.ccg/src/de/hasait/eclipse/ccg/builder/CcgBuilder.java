@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.14 2007-01-06 00:36:58 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.15 2007-06-21 16:34:11 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -34,12 +34,15 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.ccg.generator.CcgGeneratorLookupEp;
+import de.hasait.eclipse.ccg.generator.ExtensionPointCcgGeneratorLookup;
 import de.hasait.eclipse.ccg.generator.ICcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.generator.ICcgResourceGenerator;
-import de.hasait.eclipse.ccg.parser.CcgParserLookupEp;
+import de.hasait.eclipse.ccg.generator.MemoryCcgGeneratorLookup;
+import de.hasait.eclipse.ccg.generator.MultiCcgGeneratorLookup;
+import de.hasait.eclipse.ccg.generator.generic.ConfiguredBsfBlockGenerator;
+import de.hasait.eclipse.ccg.parser.ExtensionPointCcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.parser.ICcgNonComment;
 import de.hasait.eclipse.ccg.parser.ICcgParser;
@@ -56,7 +59,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -71,37 +74,92 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	 */
 	public static final String PARSERS_EXTENSION_POINT_ID = "de.hasait.eclipse.ccg.parsers";
 
-	private final ICcgParserLookup _parserLookup = new CcgParserLookupEp(PARSERS_EXTENSION_POINT_ID);
+	private final ICcgParserLookup _parserLookup = new ExtensionPointCcgParserLookup(PARSERS_EXTENSION_POINT_ID);
 
 	/**
 	 * ID of {@link ICcgGenerator} extension point.
 	 */
 	public static final String GENERATORS_EXTENSION_POINT_ID = "de.hasait.eclipse.ccg.generators";
 
-	private final ICcgGeneratorLookup _generatorLookup = new CcgGeneratorLookupEp(GENERATORS_EXTENSION_POINT_ID);
+	private final MemoryCcgGeneratorLookup _memoryCcgGeneratorLookup = new MemoryCcgGeneratorLookup();
+
+	private final Map<IResource, ICcgBlockGenerator> _resourceToBlockGenerator = new HashMap<IResource, ICcgBlockGenerator>();
+
+	private final ExtensionPointCcgGeneratorLookup _extensionPointCcgGeneratorLookup = new ExtensionPointCcgGeneratorLookup(
+	      GENERATORS_EXTENSION_POINT_ID);
+
+	private final MultiCcgGeneratorLookup _generatorLookup = new MultiCcgGeneratorLookup(new ICcgGeneratorLookup[] {
+	      _memoryCcgGeneratorLookup, _extensionPointCcgGeneratorLookup });
 
 	/**
 	 * File extension used for resource generator scripts.
 	 */
-	public static final String RESOURCE_GENERATOR_FILENAME_SUFFIX = "ccg.xml";
+	public static final String CCG_FILENAME_SUFFIX = "ccg.xml";
 
 	/**
-	 * File extension used for resource generator scripts.
+	 * File extension used for resource generators.
 	 */
-	public static final String RESOURCE_GENERATOR_ROOT_TAG_NAME = "ccg";
+	public static final String RESOURCE_GENERATOR_FILENAME_SUFFIX = "ccg-rg.xml";
 
+	/**
+	 * File extension used for block generators.
+	 */
+	public static final String BLOCK_GENERATOR_FILENAME_SUFFIX = "ccg-bg.xml";
+
+	/**
+	 * Root Tagname used for resource generator scripts.
+	 */
+	public static final String CCG_ELEMENT = "ccg";
+
+	/**
+	 * Root Tagname used for block generators.
+	 */
+	public static final String BLOCK_GENERATOR_ELEMENT = "ccgbg";
+
+	/**
+	 * Tagnames-Attribute used for block generators.
+	 */
+	public static final String BLOCK_GENERATOR__TAGNAMES = "tagnames";
+
+	/**
+	 * Tagnames-Attribute used for block generators.
+	 */
+	public static final String BLOCK_GENERATOR__FILE = "file";
+
+	@Override
 	protected final IProject[] build(final int kind, final Map args, final IProgressMonitor monitor)
 	      throws CoreException {
 		CcgProjectConfiguration configuration = CcgProjectConfiguration.getProjectConfiguration(getProject());
 		if (kind == FULL_BUILD) {
 			fullBuild(configuration, monitor);
 		} else {
-			IResourceDelta delta = getDelta(getProject());
-			if (delta == null) {
+			IResourceDelta buildDelta = getDelta(getProject());
+			if (buildDelta == null) {
 				fullBuild(configuration, monitor);
 			} else {
-				// fullBuild(configuration, monitor);
-				incrementalBuild(delta, configuration, monitor);
+				// check if IncrementalBuild is possible, i.e. no generators have changed.
+				final boolean[] doIncrementalBuild = new boolean[] { true };
+				buildDelta.accept(new IResourceDeltaVisitor() {
+					public boolean visit(final IResourceDelta delta) throws CoreException {
+						IResource resource = delta.getResource();
+						if (resource instanceof IFile) {
+							if (resource.exists()) {
+								String fileName = resource.getName();
+								if (fileName.endsWith(BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+									doIncrementalBuild[0] = false;
+									return false;
+								}
+							}
+						}
+						return true;
+					}
+				});
+
+				if (doIncrementalBuild[0]) {
+					incrementalBuild(buildDelta, configuration, monitor);
+				} else {
+					fullBuild(configuration, monitor);
+				}
 			}
 		}
 		return null;
@@ -109,6 +167,13 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	protected final void fullBuild(final CcgProjectConfiguration configuration, final IProgressMonitor monitor)
 	      throws CoreException {
+		clearGenerators();
+		getProject().accept(new IResourceVisitor() {
+			public boolean visit(final IResource resource) {
+				addGenerator(resource);
+				return true;
+			}
+		});
 		getProject().accept(new IResourceVisitor() {
 			public boolean visit(final IResource resource) {
 				executeGenerators(resource, configuration, monitor);
@@ -138,13 +203,46 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		});
 	}
 
+	protected final void clearGenerators() {
+		_resourceToBlockGenerator.clear();
+		_memoryCcgGeneratorLookup.clear();
+	}
+
+	protected final void addGenerator(final IResource resource) {
+		if (resource instanceof IFile) {
+			if (resource.exists()) {
+				String fileName = resource.getName();
+				if (fileName.endsWith(BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+					XFile file = new XFile((IFile) resource, getProject());
+					try {
+						deleteMarkers(file.getRawFile());
+						String fileContent = file.read();
+						XElement fileElement = XElement.parse(fileContent);
+						if (BLOCK_GENERATOR_ELEMENT.equals(fileElement.getTagName())) {
+							String[] tagnames = fileElement.getRequiredAttribute(BLOCK_GENERATOR__TAGNAMES).split(",");
+							String scriptFileS = fileElement.getRequiredAttribute(BLOCK_GENERATOR__FILE);
+							XFile scriptFile = file.getFile(scriptFileS);
+							ICcgBlockGenerator blockGenerator = new ConfiguredBsfBlockGenerator(fileName, scriptFile);
+							_resourceToBlockGenerator.put(resource, blockGenerator);
+							for (String tagname : tagnames) {
+								_memoryCcgGeneratorLookup.putBlockGenerator(tagname, blockGenerator);
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						addMarker(file.getRawFile(), e, -1, IMarker.SEVERITY_ERROR);
+					}
+				}
+			}
+		}
+	}
+
 	protected final void executeGenerators(final IResource resource, final CcgProjectConfiguration configuration,
 	      final IProgressMonitor monitor) {
 		if (resource instanceof IFile) {
 			if (resource.exists() && !resource.isDerived()) {
 				XFile file = new XFile((IFile) resource, getProject());
-				if (file.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)
-				      || _parserLookup.containsParser(file.getFileExtension())) {
+				if (file.getName().endsWith(CCG_FILENAME_SUFFIX) || _parserLookup.containsParser(file.getFileExtension())) {
 					executeGenerators(file, configuration, monitor);
 				}
 			}
@@ -157,7 +255,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			deleteMarkers(sourceFile.getRawFile());
 			// create a context to allow data-exchange between generators...
 			Map sourceFileContext = new HashMap();
-			if (sourceFile.getName().endsWith(RESOURCE_GENERATOR_FILENAME_SUFFIX)) {
+			if (sourceFile.getName().endsWith(CCG_FILENAME_SUFFIX)) {
 				// check for valid sourceFolder
 				if (isPrefixOf(getProject(), configuration.getSourceFolderPaths(), sourceFile.getRawResource())) {
 					// our own file-format - execute generators...
@@ -171,7 +269,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 					ICcgRoot root = parser.parse(sourceFile.read());
 					if (root != null) {
 						// parsed - execute generators...
+						// modify root
 						if (executeBlockGenerators(sourceFile, root, sourceFileContext, monitor)) {
+							// if root did change, then write to sourceFile
 							sourceFile.write(root.getSource(), null, monitor);
 						}
 					}
@@ -196,7 +296,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	private void executeResourceGenerators(final XFile sourceFile, final Map sourceFileContext,
 	      final CcgProjectConfiguration configuration, final IProgressMonitor monitor) throws Exception {
 		XElement sourceElement = sourceFile.parseXml();
-		if (RESOURCE_GENERATOR_ROOT_TAG_NAME.equals(sourceElement.getTagName())) {
+		if (CCG_ELEMENT.equals(sourceElement.getTagName())) {
 			// contains our tag - continue...
 			XFolder targetBaseFolder = new XProject(getProject(), getProject()).getFolder(configuration
 			      .getOutputFolderPath());

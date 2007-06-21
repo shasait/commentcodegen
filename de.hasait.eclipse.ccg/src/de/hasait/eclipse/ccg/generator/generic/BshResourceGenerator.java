@@ -1,5 +1,5 @@
 /*
- * $Id: BshResourceGenerator.java,v 1.1 2006-12-10 13:45:12 concentus Exp $
+ * $Id: BshResourceGenerator.java,v 1.2 2007-06-21 16:34:09 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,22 +30,21 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class BshResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to beanshell";
-
-	private static final String[] TAG_NAMES = new String[] { "bsh" };
 
 	/**
 	 * Constructor.
 	 */
 	public BshResourceGenerator() {
-		super(DESCRIPTION, TAG_NAMES);
+		super(DESCRIPTION);
 	}
 
-	public void generateResources(XElement configElement, XFile sourceFile, XFolder targetBaseFolder,
-	      Map sourceFileContext, ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception {
+	public void generateResources(final XElement configElement, final XFile sourceFile, final XFolder targetBaseFolder,
+	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	      throws Exception {
 		BshExecuter executer = new BshExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
 		executer.set("targetBaseFolder", targetBaseFolder);
 		executer.set("monitor", monitor);
