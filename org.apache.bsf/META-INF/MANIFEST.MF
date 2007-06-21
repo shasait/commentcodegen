@@ -19,4 +19,5 @@ Export-Package: org.apache.bsf,
  org.apache.bsf.util.event.generator,
  org.apache.bsf.util.type
 Import-Package: org.apache.commons.logging
-Require-Bundle: org.mozilla.javascript;resolution:=optional
+Require-Bundle: org.mozilla.javascript;resolution:=optional,
+ org.apache.commons.logging
