@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.6 2007-02-21 00:04:12 concentus Exp $
+ * $Id: StringUtil.java,v 1.7 2007-06-22 08:35:57 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,24 +23,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public final class StringUtil {
 	private StringUtil() {
 		super();
 	}
 
-	public static boolean isEmpty(final String pInput) {
-		return pInput == null || pInput.length() == 0;
+	public static boolean isEmpty(final String input) {
+		return input == null || input.length() == 0;
 	}
 
-	public static boolean equalsAny(final String pInput, final String[] pAnyOf) {
-		if (pInput != null && pAnyOf != null) {
-			for (int i = 0; i < pAnyOf.length; i++) {
-				if (pInput.equals(pAnyOf[i])) {
+	public static boolean equalsAny(final String input, final String[] anyOf) {
+		if (input != null && anyOf != null) {
+			for (int i = 0; i < anyOf.length; i++) {
+				if (input.equals(anyOf[i])) {
 					return true;
 				}
 			}
@@ -48,20 +49,20 @@ public final class StringUtil {
 		return false;
 	}
 
-	public static String capitalize(final String pInput) {
-		if (pInput == null || pInput.length() == 0) {
-			return pInput;
+	public static String capitalize(final String input) {
+		if (input == null || input.length() == 0) {
+			return input;
 		}
-		char[] chars = pInput.toCharArray();
+		char[] chars = input.toCharArray();
 		chars[0] = Character.toUpperCase(chars[0]);
 		return new String(chars);
 	}
 
-	public static String uncapitalize(final String pInput) {
-		if (pInput == null || pInput.length() == 0) {
-			return pInput;
+	public static String uncapitalize(final String input) {
+		if (input == null || input.length() == 0) {
+			return input;
 		}
-		char[] chars = pInput.toCharArray();
+		char[] chars = input.toCharArray();
 		chars[0] = Character.toLowerCase(chars[0]);
 		return new String(chars);
 	}
@@ -83,56 +84,56 @@ public final class StringUtil {
 		return result.toString();
 	}
 
-	public static String replaceAll(final String pInput, final Map pReplacements) {
-		if (pInput == null) {
+	public static String replaceAll(final String input, final Map<String, String> replacements) {
+		if (input == null) {
 			return null;
 		}
-		Iterator replacementsI = pReplacements.entrySet().iterator();
-		Map.Entry replacement;
-		String current = pInput;
+		Iterator<Entry<String, String>> replacementsI = replacements.entrySet().iterator();
+		Entry<String, String> replacement;
+		String current = input;
 		while (replacementsI.hasNext()) {
-			replacement = (Map.Entry) replacementsI.next();
-			current = replace(current, (String) replacement.getKey(), (String) replacement.getValue());
+			replacement = replacementsI.next();
+			current = replace(current, replacement.getKey(), replacement.getValue());
 		}
 		return current;
 	}
 
-	public static String replace(final String pInput, final String pSearch, final String pReplace) {
-		if (pInput == null) {
+	public static String replace(final String input, final String search, final String replace) {
+		if (input == null) {
 			return null;
 		}
-		int index = pInput.lastIndexOf(pSearch);
+		int index = input.lastIndexOf(search);
 		if (index >= 0) {
-			StringBuffer result = new StringBuffer(pInput);
-			result.replace(index, index + pSearch.length(), pReplace);
-			return replace(result.toString(), pSearch, pReplace);
+			StringBuffer result = new StringBuffer(input);
+			result.replace(index, index + search.length(), replace);
+			return replace(result.toString(), search, replace);
 		}
-		return pInput;
+		return input;
 	}
 
-	public static String replaceAllRegex(String pInput, Map pReplacements) {
-		if (pInput == null) {
+	public static String replaceAllRegex(String input, Map<String, String> replacements) {
+		if (input == null) {
 			return null;
 		}
-		Iterator replacementsI = pReplacements.entrySet().iterator();
-		Map.Entry replacement;
-		String current = pInput;
+		Iterator<Entry<String, String>> replacementsI = replacements.entrySet().iterator();
+		Entry<String, String> replacement;
+		String current = input;
 		while (replacementsI.hasNext()) {
-			replacement = (Map.Entry) replacementsI.next();
-			current = current.replaceAll((String) replacement.getKey(), (String) replacement.getValue());
+			replacement = replacementsI.next();
+			current = current.replaceAll(replacement.getKey(), replacement.getValue());
 		}
 		return current;
 	}
 
-	public static String join(final String[] pInput, final String pSeparator) {
-		if (pInput == null || pInput.length == 0) {
+	public static String join(final String[] inputs, final String separator) {
+		if (inputs == null || inputs.length == 0) {
 			return null;
 		}
-		String vResult = pInput[0];
-		for (int vInputI = 1; vInputI < pInput.length; vInputI++) {
-			vResult = join(vResult, pInput[vInputI], pSeparator);
+		String result = null;
+		for (String input : inputs) {
+			result = join(result, input, separator);
 		}
-		return vResult;
+		return result;
 	}
 
 	/**
@@ -143,22 +144,22 @@ public final class StringUtil {
 	 * <li>join("abc", "cde", ".") = "abc.cde"</li>
 	 * </ul>
 	 * 
-	 * @param pInput1
-	 * @param pInput2
-	 * @param pSeparator
+	 * @param input1
+	 * @param input2
+	 * @param separator
 	 * @return s.d.
 	 */
-	public static String join(final String pInput1, final String pInput2, final String pSeparator) {
-		if (pInput1 == null) {
-			return pInput2;
+	public static String join(final String input1, final String input2, final String separator) {
+		if (input1 == null) {
+			return input2;
 		}
-		if (pInput2 == null) {
-			return pInput1;
+		if (input2 == null) {
+			return input1;
 		}
-		if (pSeparator == null) {
-			return pInput1 + pInput2;
+		if (separator == null) {
+			return input1 + input2;
 		}
-		return pInput1 + pSeparator + pInput2;
+		return input1 + separator + input2;
 	}
 
 	/**
@@ -168,19 +169,17 @@ public final class StringUtil {
 	 *                                      -argName=argValue
 	 * </pre>.
 	 * 
-	 * @param pArgs
-	 * @param pArgName
-	 * @return
+	 * @param args
+	 * @param argName
+	 * @return argValue
 	 */
-	public static String getArgValue(final String[] pArgs, final String pArgName) {
-		if (pArgs == null || pArgName == null) {
+	public static String getArgValue(final String[] args, final String argName) {
+		if (args == null || argName == null) {
 			return null;
 		}
 		String argPrefix;
-		String arg;
-		for (int i = 0; i < pArgs.length; i++) {
-			arg = pArgs[i];
-			argPrefix = "-" + pArgName + "=";
+		for (String arg : args) {
+			argPrefix = "-" + argName + "=";
 			if (arg.startsWith(argPrefix)) {
 				return arg.substring(argPrefix.length());
 			}
@@ -188,79 +187,81 @@ public final class StringUtil {
 		return null;
 	}
 
-	public static String toString(final Object pObject, final String pNullString) {
-		if (pObject == null) {
-			return pNullString;
+	public static String toString(final Object object, final String nullString) {
+		if (object == null) {
+			return nullString;
 		}
-		return pObject.toString();
+		return object.toString();
 	}
 
-	public static String toString(final Object pObject) {
-		return toString(pObject, null);
+	public static String toString(final Object object) {
+		return toString(object, null);
 	}
 
-	public static String[] getBlocks(final String pBlockStart, final String pBlockEnd, final String pContent) {
-		List vBlocks = new ArrayList();
-		int vBlockStartIndex = pContent.indexOf(pBlockStart);
-		int vBlockEndIndex = vBlockStartIndex == -1 ? -1 : pContent.indexOf(pBlockEnd, vBlockStartIndex);
-		while (vBlockStartIndex != -1 && vBlockEndIndex != -1) {
-			vBlocks.add(pContent.substring(vBlockStartIndex + pBlockStart.length(), vBlockEndIndex));
-			vBlockStartIndex = pContent.indexOf(pBlockStart, vBlockEndIndex);
-			vBlockEndIndex = vBlockStartIndex == -1 ? -1 : pContent.indexOf(pBlockEnd, vBlockStartIndex);
+	public static String[] getBlocks(final String input, final String blockStart, final String blockEnd) {
+		List<String> result = new ArrayList<String>();
+		int blockStartIndex = input.indexOf(blockStart);
+		int blockEndIndex = blockStartIndex == -1 ? -1 : input.indexOf(blockEnd, blockStartIndex);
+		while (blockStartIndex != -1 && blockEndIndex != -1) {
+			result.add(input.substring(blockStartIndex + blockStart.length(), blockEndIndex));
+			blockStartIndex = input.indexOf(blockStart, blockEndIndex);
+			blockEndIndex = blockStartIndex == -1 ? -1 : input.indexOf(blockEnd, blockStartIndex);
 		}
-		return (String[]) vBlocks.toArray(new String[vBlocks.size()]);
+		return result.toArray(new String[result.size()]);
 	}
 
-	public static String getMergedBlocks(String blockStart, String blockEnd, String content) {
-		int s = content.indexOf(blockStart);
-		if (s == -1) {
+	public static String getMergedBlocks(final String input, final String blockStart, final String blockEnd) {
+		int blockStartIndex = input.indexOf(blockStart);
+		if (blockStartIndex == -1) {
 			return null;
 		}
-		int e = content.indexOf(blockEnd, s);
-		if (e == -1) {
+		int blockEndIndex = input.indexOf(blockEnd, blockStartIndex);
+		if (blockEndIndex == -1) {
 			return null;
 		}
 		StringBuffer result = new StringBuffer();
-		while (s != -1 && e != -1) {
-			result.append(content.substring(s + blockStart.length(), e));
-			s = content.indexOf(blockStart, e);
-			if (s != -1) {
-				e = content.indexOf(blockEnd, s);
+		while (blockStartIndex != -1 && blockEndIndex != -1) {
+			result.append(input.substring(blockStartIndex + blockStart.length(), blockEndIndex));
+			blockStartIndex = input.indexOf(blockStart, blockEndIndex);
+			if (blockStartIndex != -1) {
+				blockEndIndex = input.indexOf(blockEnd, blockStartIndex);
 			}
 		}
 		return result.toString();
 	}
 
-	public static String setMergedBlocks(String blockStart, String blockEnd, String content, String value) {
-		String result = content;
-		int s = result.indexOf(blockStart);
-		if (s == -1) {
+	public static String setMergedBlocks(final String input, final String value, final String blockStart,
+	      final String blockEnd) {
+		String result = input;
+		int blockStartIndex = result.indexOf(blockStart);
+		if (blockStartIndex == -1) {
 			return result + blockStart + value + blockEnd;
 		}
-		int e = content.indexOf(blockEnd, s);
-		if (e == -1) {
+		int blockEndIndex = input.indexOf(blockEnd, blockStartIndex);
+		if (blockEndIndex == -1) {
 			return result + blockStart + value + blockEnd;
 		}
 		boolean set = false;
-		while (s != -1 && e != -1) {
-			result = result.substring(0, s + blockStart.length()) + (set ? "" : value) + result.substring(e);
+		while (blockStartIndex != -1 && blockEndIndex != -1) {
+			result = result.substring(0, blockStartIndex + blockStart.length()) + (set ? "" : value)
+			      + result.substring(blockEndIndex);
 			set = true;
-			s = content.indexOf(blockStart, e);
-			if (s != -1) {
-				e = content.indexOf(blockEnd, s);
+			blockStartIndex = input.indexOf(blockStart, blockEndIndex);
+			if (blockStartIndex != -1) {
+				blockEndIndex = input.indexOf(blockEnd, blockStartIndex);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * @param pInnerNonCommentSource
+	 * @param input
 	 * @param pString
 	 * @return
 	 */
-	public static boolean containsOnlyTheseChars(String pInnerNonCommentSource, String pChars) {
-		for (int vCharI = 0; vCharI < pInnerNonCommentSource.length(); vCharI++) {
-			if (pChars.indexOf(pInnerNonCommentSource.charAt(vCharI)) < 0) {
+	public static boolean containsOnlyTheseChars(final String input, final String chars) {
+		for (int inputI = 0; inputI < input.length(); inputI++) {
+			if (chars.indexOf(input.charAt(inputI)) < 0) {
 				return false;
 			}
 		}
@@ -268,16 +269,16 @@ public final class StringUtil {
 	}
 
 	/**
-	 * @param pUserBlock
+	 * @param input
 	 * @return
 	 */
-	public static String firstCharacters(final String pUserBlock) {
-		StringBuffer vResult = new StringBuffer();
-		CharacterIterator vUserBlockI = new StringCharacterIterator(pUserBlock);
-		for (char vChar = vUserBlockI.first(); vChar != CharacterIterator.DONE && Character.isLetter(vChar); vChar = vUserBlockI
+	public static String firstCharacters(final String input) {
+		StringBuffer result = new StringBuffer();
+		CharacterIterator inputI = new StringCharacterIterator(input);
+		for (char inputChar = inputI.first(); inputChar != CharacterIterator.DONE && Character.isLetter(inputChar); inputChar = inputI
 		      .next()) {
-			vResult.append(vChar);
+			result.append(inputChar);
 		}
-		return vResult.toString();
+		return result.toString();
 	}
 }
