@@ -35,6 +35,7 @@ and limitations under the License.
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.apache.bsf"/>
+      <import plugin="bsh"/>
    </requires>
 
    <plugin

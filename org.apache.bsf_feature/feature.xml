@@ -30,6 +30,10 @@ and limitations under the License.
       <discovery label="Homepage" url="http://jakarta.apache.org/bsf/"/>
    </url>
 
+   <requires>
+      <import plugin="org.apache.commons.logging"/>
+   </requires>
+
    <plugin
          id="org.apache.bsf"
          download-size="0"

@@ -36,6 +36,7 @@ and limitations under the License.
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.jdt.core"/>
       <import plugin="de.hasait.eclipse.common"/>
+      <import plugin="org.eclipse.jdt.ui"/>
    </requires>
 
    <plugin

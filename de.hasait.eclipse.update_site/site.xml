@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.hasait.eclipse.common_feature_1.0.1.jar" id="de.hasait.eclipse.common_feature" version="1.0.1">
-      <category name="common"/>
-   </feature>
-   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.0.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.0.0">
-      <category name="ccg"/>
-   </feature>
    <feature url="features/de.hasait.eclipse.charreplacer_feature_1.0.3.jar" id="de.hasait.eclipse.charreplacer_feature" version="1.0.3">
       <category name="other"/>
-   </feature>
-   <feature url="features/de.hasait.eclipse.ccg_feature_2.0.0.1.jar" id="de.hasait.eclipse.ccg_feature" version="2.0.0.1">
-      <category name="ccg"/>
    </feature>
    <feature url="features/de.hasait.eclipse.depsearch_feature_1.0.0.2.jar" id="de.hasait.eclipse.depsearch_feature" version="1.0.0.2">
       <category name="other"/>
@@ -28,6 +19,15 @@
       <category name="common"/>
    </feature>
    <feature url="features/org.mozilla.javascript_feature_1.6.5.jar" id="org.mozilla.javascript_feature" version="1.6.5">
+      <category name="common"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.1.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.1.0">
+      <category name="ccg"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.ccg_feature_2.1.0.jar" id="de.hasait.eclipse.ccg_feature" version="2.1.0">
+      <category name="ccg"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.common_feature_1.1.0.jar" id="de.hasait.eclipse.common_feature" version="1.1.0">
       <category name="common"/>
    </feature>
    <category-def name="common" label="Common"/>
