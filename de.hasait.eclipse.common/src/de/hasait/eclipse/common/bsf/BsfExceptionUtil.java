@@ -1,5 +1,5 @@
 /*
- * $Id: BsfExceptionUtil.java,v 1.1 2006-12-03 01:12:25 concentus Exp $
+ * $Id: BsfExceptionUtil.java,v 1.2 2007-06-22 08:36:20 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -18,19 +18,12 @@
 
 package de.hasait.eclipse.common.bsf;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.apache.bsf.BSFException;
-import org.jruby.RubyException;
-import org.jruby.exceptions.RaiseException;
-
-import de.hasait.eclipse.common.StringUtil;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 02.12.2006
  */
 public final class BsfExceptionUtil {
@@ -41,13 +34,13 @@ public final class BsfExceptionUtil {
 	public static Exception handleException(Exception exception) {
 		try {
 			throw exception;
-		} catch (RaiseException re) {
-			RubyException rubyException = re.getException();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			PrintStream pos = new PrintStream(bos);
-			pos.println(StringUtil.toString(rubyException.message));
-			rubyException.printBacktrace(pos);
-			return new Exception(bos.toString(), re);
+			// } catch (RaiseException re) {
+			// RubyException rubyException = re.getException();
+			// ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			// PrintStream pos = new PrintStream(bos);
+			// pos.println(StringUtil.toString(rubyException.message));
+			// rubyException.printBacktrace(pos);
+			// return new Exception(bos.toString(), re);
 		} catch (BSFException e) {
 			Throwable t = e.getTargetException();
 			if (t instanceof Exception) {
