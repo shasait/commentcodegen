@@ -1,5 +1,5 @@
 /*
- * $Id: JavaAstBsfBlockGenerator.java,v 1.3 2007-06-21 16:35:05 concentus Exp $
+ * $Id: JavaAstBsfBlockGenerator.java,v 1.4 2007-06-22 14:23:24 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -25,16 +25,19 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.ccg.util.IScriptExecuter;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
+
+	private final IScriptExecuter _scriptExecuter = new BsfExecuter();
 
 	/**
 	 * Constructor.
@@ -47,13 +50,22 @@ public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlo
 	public String generateBlock(final CompilationUnit compilationUnit, final XElement configElement,
 	      final ICcgComment comment, final XFile sourceFile, final Map sourceFileContext,
 	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws Exception {
-		BsfExecuter executer = new BsfExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
-		// TODO read default-indent from configuration or source
-		ContentBuffer out = new ContentBuffer("\t");
+		XFile scriptFile = sourceFile.getFile(configElement.getRequiredAttribute("file"));
+		_scriptExecuter.init(scriptFile);
+		_scriptExecuter.declareBean("configElement", configElement, XElement.class);
+		_scriptExecuter.declareBean("sourceFile", sourceFile, XFile.class);
+		_scriptExecuter.declareBean("sourceContext", sourceFileContext, Map.class);
+		_scriptExecuter.declareBean("generatorLookup", generatorLookup, ICcgGeneratorLookup.class);
+		_scriptExecuter.declareBean("monitor", monitor, IProgressMonitor.class);
+		_scriptExecuter.declareBean("compilationUnit", compilationUnit, CompilationUnit.class);
+
+		String indent = "\t"; // TODO read default-indent from configuration or source
+		ContentBuffer out = new ContentBuffer(indent);
 		out.i();
-		executer.declareBean("out", out, ContentBuffer.class);
-		executer.declareBean("compilationUnit", compilationUnit, CompilationUnit.class);
-		executer.execute();
-		return "\n" + out.getContent().toString() + "\n";
+		_scriptExecuter.declareBean("out", out, ContentBuffer.class);
+
+		_scriptExecuter.execute();
+
+		return "\n" + out.getContent().toString() + "\n" + indent;
 	}
 }
