@@ -95,6 +95,7 @@
       <blockGenerator tagnames="nop" class="de.hasait.eclipse.ccg.generator.generic.NopBlockGenerator"/>
       <blockGenerator tagnames="includefile" class="de.hasait.eclipse.ccg.generator.generic.IncludeFileBlockGenerator"/>
       <blockGenerator tagnames="bsf" class="de.hasait.eclipse.ccg.generator.generic.BsfBlockGenerator"/>
+      <blockGenerator tagnames="bsh" class="de.hasait.eclipse.ccg.generator.generic.BshBlockGenerator"/>
       <resourceGenerator tagnames="bsf" class="de.hasait.eclipse.ccg.generator.generic.BsfResourceGenerator"/>
       <resourceGenerator tagnames="bsh" class="de.hasait.eclipse.ccg.generator.generic.BshResourceGenerator"/>
    </extension>

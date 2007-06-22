@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.16 2007-06-22 08:52:07 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.17 2007-06-22 14:16:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -41,7 +41,7 @@ import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.generator.ICcgResourceGenerator;
 import de.hasait.eclipse.ccg.generator.MemoryCcgGeneratorLookup;
 import de.hasait.eclipse.ccg.generator.MultiCcgGeneratorLookup;
-import de.hasait.eclipse.ccg.generator.generic.ConfiguredBsfBlockGenerator;
+import de.hasait.eclipse.ccg.generator.generic.ConfiguredScriptBlockGenerator;
 import de.hasait.eclipse.ccg.parser.ExtensionPointCcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.parser.ICcgNonComment;
@@ -50,6 +50,9 @@ import de.hasait.eclipse.ccg.parser.ICcgParserLookup;
 import de.hasait.eclipse.ccg.parser.ICcgRoot;
 import de.hasait.eclipse.ccg.parser.ICcgTreeChild;
 import de.hasait.eclipse.ccg.properties.CcgProjectConfiguration;
+import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.ccg.util.BshExecuter;
+import de.hasait.eclipse.ccg.util.IScriptExecuter;
 import de.hasait.eclipse.common.ObjectUtil;
 import de.hasait.eclipse.common.OidGenerator;
 import de.hasait.eclipse.common.resource.XFile;
@@ -59,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -94,17 +97,22 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
 	 * File extension used for resource generator scripts.
 	 */
-	public static final String CCG_FILENAME_SUFFIX = "ccg.xml";
+	public static final String CCG_FILENAME_SUFFIX = ".ccg.xml";
 
 	/**
 	 * File extension used for resource generators.
 	 */
-	public static final String RESOURCE_GENERATOR_FILENAME_SUFFIX = "ccg-rg.xml";
+	public static final String RESOURCE_GENERATOR_FILENAME_SUFFIX = ".ccg-rg.js";
 
 	/**
-	 * File extension used for block generators.
+	 * File extension used for javascript block generators.
 	 */
-	public static final String BLOCK_GENERATOR_FILENAME_SUFFIX = "ccg-bg.xml";
+	public static final String JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX = ".ccg-bg.js";
+
+	/**
+	 * File extension used for beanshell block generators.
+	 */
+	public static final String BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX = ".ccg-bg.bsh";
 
 	/**
 	 * Root Tagname used for resource generator scripts.
@@ -147,7 +155,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 						if (resource instanceof IFile) {
 							if (resource.exists()) {
 								String fileName = resource.getName();
-								if (fileName.endsWith(BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+								if (fileName.endsWith(JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX)
+								      || fileName.endsWith(BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
 									doIncrementalBuild[0] = false;
 									return false;
 								}
@@ -222,22 +231,22 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		if (resource instanceof IFile) {
 			if (resource.exists()) {
 				String fileName = resource.getName();
-				if (fileName.endsWith(BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+				IScriptExecuter scriptExecuter = null;
+				if (fileName.endsWith(JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+					scriptExecuter = new BsfExecuter();
+				} else if (fileName.endsWith(BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
+					scriptExecuter = new BshExecuter();
+				}
+				if (scriptExecuter != null) {
 					XFile file = new XFile((IFile) resource, getProject());
 					try {
 						deleteMarkers(file.getRawFile());
-						String fileContent = file.read();
-						XElement fileElement = XElement.parse(fileContent);
-						if (BLOCK_GENERATOR_ELEMENT.equals(fileElement.getTagName())) {
-							String[] tagnames = fileElement.getRequiredAttribute(BLOCK_GENERATOR__TAGNAMES).split(",");
-							String scriptFileS = fileElement.getRequiredAttribute(BLOCK_GENERATOR__FILE);
-							XFile scriptFile = file.getFile(scriptFileS);
-							ICcgBlockGenerator blockGenerator = new ConfiguredBsfBlockGenerator(fileName, scriptFile);
-							_resourceToBlockGenerator.put(resource, blockGenerator);
-							for (String tagname : tagnames) {
-								_memoryCcgGeneratorLookup.putBlockGenerator(tagname, blockGenerator);
-							}
-						}
+						String tagname = fileName.substring(0, fileName.length()
+						      - JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX.length());
+						scriptExecuter.init(file);
+						ICcgBlockGenerator blockGenerator = new ConfiguredScriptBlockGenerator(fileName, scriptExecuter);
+						_resourceToBlockGenerator.put(resource, blockGenerator);
+						_memoryCcgGeneratorLookup.putBlockGenerator(tagname, blockGenerator);
 					} catch (Exception e) {
 						e.printStackTrace();
 						addMarker(file.getRawFile(), e, -1, IMarker.SEVERITY_ERROR);

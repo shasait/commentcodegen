@@ -1,5 +1,5 @@
 /*
- * $Id: BsfResourceGenerator.java,v 1.6 2007-06-22 14:16:39 concentus Exp $
+ * $Id: BshBlockGenerator.java,v 1.1 2007-06-22 14:16:40 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -18,19 +18,19 @@
 
 package de.hasait.eclipse.ccg.generator.generic;
 
-import de.hasait.eclipse.ccg.util.BsfExecuter;
+import de.hasait.eclipse.ccg.util.BshExecuter;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.1 $
  * @since 22.06.2007
  */
-public final class BsfResourceGenerator extends AbstractScriptResourceGenerator {
+public final class BshBlockGenerator extends AbstractScriptBlockGenerator {
 	/**
 	 * 
 	 */
-	public BsfResourceGenerator() {
-		super(new BsfExecuter());
+	public BshBlockGenerator() {
+		super(new BshExecuter());
 	}
 }

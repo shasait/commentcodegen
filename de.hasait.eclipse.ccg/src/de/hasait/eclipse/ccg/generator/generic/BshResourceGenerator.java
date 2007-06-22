@@ -1,7 +1,7 @@
 /*
- * $Id: BshResourceGenerator.java,v 1.2 2007-06-21 16:34:09 concentus Exp $
+ * $Id: BshResourceGenerator.java,v 1.3 2007-06-22 14:16:39 concentus Exp $
  * 
- * Copyright 2005 Sebastian Hasait
+ * Copyright 2007 Sebastian Hasait
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,39 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package de.hasait.eclipse.ccg.generator.generic;
 
-import java.util.Map;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-
-import de.hasait.eclipse.ccg.generator.AbstractCcgResourceGenerator;
-import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.util.BshExecuter;
-import de.hasait.eclipse.common.resource.XFile;
-import de.hasait.eclipse.common.resource.XFolder;
-import de.hasait.eclipse.common.xml.XElement;
 
 /**
+ * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
+ * @since 22.06.2007
  */
-public final class BshResourceGenerator extends AbstractCcgResourceGenerator {
-	private static final String DESCRIPTION = "Delegates the generation to beanshell";
-
+public final class BshResourceGenerator extends AbstractScriptResourceGenerator {
 	/**
-	 * Constructor.
+	 * 
 	 */
 	public BshResourceGenerator() {
-		super(DESCRIPTION);
-	}
-
-	public void generateResources(final XElement configElement, final XFile sourceFile, final XFolder targetBaseFolder,
-	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
-	      throws Exception {
-		BshExecuter executer = new BshExecuter(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
-		executer.set("targetBaseFolder", targetBaseFolder);
-		executer.set("monitor", monitor);
-		executer.execute();
+		super(new BshExecuter());
 	}
 }

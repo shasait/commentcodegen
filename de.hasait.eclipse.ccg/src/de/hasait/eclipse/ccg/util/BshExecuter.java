@@ -1,5 +1,5 @@
 /*
- * $Id: BshExecuter.java,v 1.1 2006-12-10 13:45:11 concentus Exp $
+ * $Id: BshExecuter.java,v 1.2 2007-06-22 14:16:43 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -17,61 +17,33 @@
  */
 package de.hasait.eclipse.ccg.util;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-
-import bsh.EvalError;
 import bsh.Interpreter;
-import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.common.resource.XFile;
-import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public final class BshExecuter {
-	private final String _script;
+public final class BshExecuter implements IScriptExecuter {
+	private String _script;
 
-	private final String _scriptName;
+	private Interpreter _manager;
 
-	private final IProgressMonitor _monitor;
-
-	private final Interpreter _interpreter;
-
-	public BshExecuter(final XElement configElement, final XFile sourceFile, final Map sourceFileContext,
-	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws IOException, CoreException,
-	      EvalError {
-		super();
-		String scriptFilePathS = configElement.getRequiredAttribute("file");
-		XFile scriptFile = sourceFile.getFile(scriptFilePathS);
+	public void init(final XFile scriptFile) throws Exception {
 		if (!scriptFile.exists()) {
 			throw new IllegalArgumentException("Script file does not exist: " + scriptFile);
 		}
 		_script = scriptFile.read();
-		_scriptName = scriptFile.getLocation().toOSString();
-		_monitor = monitor;
-		_interpreter = new Interpreter();
-		_interpreter.setClassLoader(getClass().getClassLoader());
-		_interpreter.set("configElement", configElement);
-		_interpreter.set("sourceFile", sourceFile);
-		_interpreter.set("sourceContext", sourceFileContext);
-		_interpreter.set("generatorLookup", generatorLookup);
-		_interpreter.set("scriptFile", scriptFile);
-		_interpreter.set("monitor", monitor);
+		_manager = new Interpreter();
+		_manager.setClassLoader(getClass().getClassLoader());
+		declareBean("scriptFile", scriptFile, XFile.class);
 	}
 
-	/**
-	 * @see Interpreter#set(String, Object)
-	 */
-	public void set(final String name, final Object object) throws EvalError {
-		_interpreter.set(name, object);
+	public void declareBean(final String name, final Object object, final Class type) throws Exception {
+		_manager.set(name, object);
 	}
 
 	public void execute() throws Exception {
-		_interpreter.eval(_script);
+		_manager.eval(_script);
 	}
 }
