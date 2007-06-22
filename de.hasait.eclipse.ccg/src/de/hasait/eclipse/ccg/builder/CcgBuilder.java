@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.15 2007-06-21 16:34:11 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.16 2007-06-22 08:52:07 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -59,7 +59,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -126,6 +126,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	 */
 	public static final String BLOCK_GENERATOR__FILE = "file";
 
+	private boolean _generatorsDirty = true;
+
 	@Override
 	protected final IProject[] build(final int kind, final Map args, final IProgressMonitor monitor)
 	      throws CoreException {
@@ -165,8 +167,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
-	protected final void fullBuild(final CcgProjectConfiguration configuration, final IProgressMonitor monitor)
-	      throws CoreException {
+	protected final void refreshGenerators() throws CoreException {
+		_generatorsDirty = false;
 		clearGenerators();
 		getProject().accept(new IResourceVisitor() {
 			public boolean visit(final IResource resource) {
@@ -174,6 +176,11 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				return true;
 			}
 		});
+	}
+
+	protected final void fullBuild(final CcgProjectConfiguration configuration, final IProgressMonitor monitor)
+	      throws CoreException {
+		refreshGenerators();
 		getProject().accept(new IResourceVisitor() {
 			public boolean visit(final IResource resource) {
 				executeGenerators(resource, configuration, monitor);
@@ -184,6 +191,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	protected final void incrementalBuild(final IResourceDelta buildDelta, final CcgProjectConfiguration configuration,
 	      final IProgressMonitor monitor) throws CoreException {
+		if (_generatorsDirty) {
+			refreshGenerators();
+		}
 		buildDelta.accept(new IResourceDeltaVisitor() {
 			public boolean visit(final IResourceDelta delta) throws CoreException {
 				IResource resource = delta.getResource();
