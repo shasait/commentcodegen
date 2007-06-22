@@ -2,7 +2,7 @@
 <feature
       id="de.hasait.eclipse.ccg.java_feature"
       label="de.hasait.eclipse.ccg.java_feature"
-      version="2.0.0"
+      version="2.1.0"
       provider-name="Sebastian Hasait">
 
    <description>
@@ -47,10 +47,10 @@ and limitations under the License.
          install-size="0"
          version="0.0.0"/>
 
-
    <plugin
          id="de.hasait.eclipse.ccg.javap"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
+
 </feature>
