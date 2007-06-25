@@ -26,10 +26,6 @@ See the License for the specific language governing permissions
 and limitations under the License.
    </license>
 
-   <url>
-      <discovery label="Sebastian Hasait Development Page" url="http://hasait.dyndns.org/development/"/>
-   </url>
-
    <requires>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>

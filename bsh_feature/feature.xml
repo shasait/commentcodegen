@@ -6,7 +6,7 @@
       provider-name="http://www.beanshell.org/">
 
    <description>
-      Provides the Beanshell as Eclipse Plug-in.
+      Provides the Beanshell Plug-in.
    </description>
 
    <copyright>
@@ -40,10 +40,6 @@ Patrick Niemeyer (pat@pat.net)
 Author of Learning Java, O&apos;Reilly &amp; Associates
 http://www.pat.net/~pat/
    </license>
-
-   <url>
-      <discovery label="Homepage" url="http://www.beanshell.org/"/>
-   </url>
 
    <plugin
          id="bsh"

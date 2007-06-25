@@ -6,7 +6,7 @@
       provider-name="Apache Software Foundation">
 
    <description>
-      Provides log4j as Eclipse Plug-in.
+      Provides the log4j Plug-in.
    </description>
 
    <copyright>
@@ -25,10 +25,6 @@ or implied.
 See the License for the specific language governing permissions
 and limitations under the License.
    </license>
-
-   <url>
-      <discovery label="Homepage" url="http://logging.apache.org/log4j/"/>
-   </url>
 
    <plugin
          id="org.apache.log4j"

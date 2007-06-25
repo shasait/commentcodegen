@@ -6,7 +6,7 @@
       provider-name="Mozilla Foundation">
 
    <description>
-      Provides Javascript Plug-in.
+      Provides the Javascript Plug-in.
    </description>
 
    <copyright>
@@ -16,10 +16,6 @@
    <license>
       Licensed under the MPL/GPL.
    </license>
-
-   <url>
-      <discovery label="Homepage" url="http://www.mozilla.org/rhino/"/>
-   </url>
 
    <plugin
          id="org.mozilla.javascript"

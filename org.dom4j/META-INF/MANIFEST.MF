@@ -4,7 +4,7 @@ Bundle-Name: dom4j Plug-in
 Bundle-SymbolicName: org.dom4j
 Bundle-Version: 1.6.1
 Bundle-ClassPath: dom4j-1.6.1.jar
-Bundle-Vendor: www.dom4j.org
+Bundle-Vendor: MetaStuff, Ltd.
 Bundle-Localization: plugin
 Export-Package: org.dom4j,
  org.dom4j.bean,
