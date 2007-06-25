@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.17 2007-06-22 14:16:43 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.18 2007-06-25 08:22:30 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -62,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -232,17 +232,18 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			if (resource.exists()) {
 				String fileName = resource.getName();
 				IScriptExecuter scriptExecuter = null;
+				String tagname = null;
 				if (fileName.endsWith(JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
 					scriptExecuter = new BsfExecuter();
+					tagname = fileName.substring(0, fileName.length() - JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX.length());
 				} else if (fileName.endsWith(BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
 					scriptExecuter = new BshExecuter();
+					tagname = fileName.substring(0, fileName.length() - BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX.length());
 				}
 				if (scriptExecuter != null) {
 					XFile file = new XFile((IFile) resource, getProject());
 					try {
 						deleteMarkers(file.getRawFile());
-						String tagname = fileName.substring(0, fileName.length()
-						      - JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX.length());
 						scriptExecuter.init(file);
 						ICcgBlockGenerator blockGenerator = new ConfiguredScriptBlockGenerator(fileName, scriptExecuter);
 						_resourceToBlockGenerator.put(resource, blockGenerator);
