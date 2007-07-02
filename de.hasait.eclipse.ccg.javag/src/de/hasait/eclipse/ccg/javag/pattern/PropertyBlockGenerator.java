@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyBlockGenerator.java,v 1.5 2007-07-02 15:11:56 concentus Exp $
+ * $Id: PropertyBlockGenerator.java,v 1.6 2007-07-02 15:23:26 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Bean Property";
@@ -60,6 +60,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 		String name = configElement.getRequiredStringAttribute("name");
 		String capName = StringUtil.capitalize(name);
 		String oldName = "old" + capName;
+		String manyName = configElement.getStringAttribute("pname", name + "s");
+		String capManyName = StringUtil.capitalize(manyName);
 		String cardinality = configElement.getStringAttribute("cardinality");
 		boolean many = !(cardinality == null || cardinality.equals("1"));
 		boolean bound = configElement.getBooleanAttribute("bound", false);
@@ -83,10 +85,10 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 		if (backref != null) {
 			capBackref = StringUtil.capitalize(backref);
 		}
-		String mName = "_" + name;
-		String pName = name;
+		String fieldName = "_" + name;
+		String parameterName = name;
 		if (many) {
-			mName = mName + "s";
+			fieldName = manyName;
 		}
 		String getterPrefix = (type.equals("boolean") || type.equals("Boolean") || type.equals("java.lang.Boolean")) ? "is"
 		      : "get";
@@ -103,17 +105,17 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			cb.javaDocStart();
 			cb.a("The single property field ").a(name).p(".");
 			cb.javaDocEnd();
-			cb.a("private ").a(type).a(" ").a(mName).p(";");
+			cb.a("private ").a(type).a(" ").a(fieldName).p(";");
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns the ").a(name).p(".");
+			cb.a("Return the ").a(name).p(".");
 			cb.javaDocEnd();
 			cb.a("public final ").a(type).a(" ").a(getterPrefix).a(capName).a("() ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return ").a(mName).p(";");
+			cb.a("return ").a(fieldName).p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -121,10 +123,10 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Sets the ").a(name).p(".");
+			cb.a("Set the ").a(name).p(".");
 			cb.javaDocEnd();
 			cb.a(setterVisibility).a(" final void set").a(capName).a("(");
-			cb.a("final ").a(type).a(" ").a(pName);
+			cb.a("final ").a(type).a(" ").a(parameterName);
 			cb.a(") ").pi("{");
 			if (bound || hooked || (backref != null)) {
 				cb.a(type).a(" ").a(oldName).p(";");
@@ -133,19 +135,19 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pi("synchronized (this) {");
 			}
 			if (beforeSet) {
-				cb.a("if (beforeSet").a(capName).a("(").a(pName).a(")) ").pi("{");
+				cb.a("if (beforeSet").a(capName).a("(").a(parameterName).a(")) ").pi("{");
 				cb.a("return").p(";");
 				cb.pu("}");
 			}
 			if (bound || hooked || (backref != null)) {
-				cb.a("if (").a(mName).a(" == ").a(pName).a(") ").pi("{");
+				cb.a("if (").a(fieldName).a(" == ").a(parameterName).a(") ").pi("{");
 				cb.a("return").p(";");
 				cb.pu("}");
-				cb.a(oldName).a(" = ").a(mName).p(";");
+				cb.a(oldName).a(" = ").a(fieldName).p(";");
 			}
 			if (hooked || (backref != null)) {
-				cb.a("if (").a(mName).a(" != null) ").pi("{");
-				cb.a(mName).a(" = null").p(";");
+				cb.a("if (").a(fieldName).a(" != null) ").pi("{");
+				cb.a(fieldName).a(" = null").p(";");
 				if (backref != null) {
 					if (backrefMany) {
 						cb.a(oldName).a(".remove").a(capBackref).a("(this)").p(";");
@@ -158,18 +160,18 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				}
 				cb.pu("}");
 			}
-			cb.a(mName).a(" = ").a(pName).p(";");
+			cb.a(fieldName).a(" = ").a(parameterName).p(";");
 			if (hooked || (backref != null)) {
-				cb.a("if (").a(mName).a(" != null) ").pi("{");
+				cb.a("if (").a(fieldName).a(" != null) ").pi("{");
 				if (backref != null) {
 					if (backrefMany) {
-						cb.a(pName).a(".add").a(capBackref).a("(this)").p(";");
+						cb.a(parameterName).a(".add").a(capBackref).a("(this)").p(";");
 					} else {
-						cb.a(pName).a(".set").a(capBackref).a("(this)").p(";");
+						cb.a(parameterName).a(".set").a(capBackref).a("(this)").p(";");
 					}
 				}
 				if (hooked) {
-					cb.a("new").a(capName).a("(").a(pName).a(")").p(";");
+					cb.a("new").a(capName).a("(").a(parameterName).a(")").p(";");
 				}
 				cb.pu("}");
 			}
@@ -177,10 +179,10 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			if (bound) {
-				cb.a("firePropertyChange(").a(nameConstant).a(", ").a(oldName).a(", ").a(pName).a(")").p(";");
+				cb.a("firePropertyChange(").a(nameConstant).a(", ").a(oldName).a(", ").a(parameterName).a(")").p(";");
 			}
 			if (afterSet) {
-				cb.a("afterSet").a(capName).a("(").a(pName).a(")").p(";");
+				cb.a("afterSet").a(capName).a("(").a(parameterName).a(")").p(";");
 			}
 			cb.pu("}");
 		} else {
@@ -188,18 +190,19 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			cb.javaDocStart();
 			cb.a("The many property field ").a(name).p(".");
 			cb.javaDocEnd();
-			cb.a("private final ").a(List.class.getName()).a(" ").a(mName).a(" = new ").a(ArrayList.class.getName()).a("()")
-			      .p(";");
+			cb.a("private final ").a(List.class.getName()).a(" ").a(fieldName).a(" = new ").a(ArrayList.class.getName())
+			      .a("()").p(";");
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns the array of all ").a(name).a("s").p(".");
+			cb.a("Return the array of all ").a(manyName).p(".");
 			cb.javaDocEnd();
-			cb.a("public final ").a(type).a("[] get").a(capName).a("s() ").pi("{");
+			cb.a("public final ").a(type).a("[] get").a(capManyName).a("() ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return (").a(type).a("[])").a(mName).a(".toArray(new ").a(type).a("[").a(mName).a(".size()])").p(";");
+			cb.a("return (").a(type).a("[]) ").a(fieldName).a(".toArray(new ").a(type).a("[").a(fieldName).a(".size()])")
+			      .p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -207,13 +210,13 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns the ").a(name).a(" at the specified index").p(".");
+			cb.a("Return the ").a(name).a(" at the specified index").p(".");
 			cb.javaDocEnd();
 			cb.a("public final ").a(type).a(" get").a(capName).a("(final int index) ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return (").a(type).a(")").a(mName).a(".get(index)").p(";");
+			cb.a("return (").a(type).a(") ").a(fieldName).a(".get(index)").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -221,13 +224,13 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns if the specified ").a(name).a(" is contained").p(".");
+			cb.a("Return if the specified ").a(name).a(" is contained").p(".");
 			cb.javaDocEnd();
-			cb.a("public final boolean contains").a(capName).a("(final ").a(type).a(" ").a(pName).a(") ").pi("{");
+			cb.a("public final boolean contains").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return ").a(mName).a(".contains(").a(pName).a(")").p(";");
+			cb.a("return ").a(fieldName).a(".contains(").a(parameterName).a(")").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -235,13 +238,13 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns how many ").a(name).a("s are contained").p(".");
+			cb.a("Return how many ").a(manyName).a(" are contained").p(".");
 			cb.javaDocEnd();
 			cb.a("public final int ").a(name).a("Size() ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return ").a(mName).a(".size()").p(";");
+			cb.a("return ").a(fieldName).a(".size()").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -249,13 +252,13 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns if ").a(name).a(" is empty").p(".");
+			cb.a("Return if ").a(name).a(" is empty").p(".");
 			cb.javaDocEnd();
 			cb.a("public final boolean is").a(capName).a("Empty() ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return ").a(mName).a(".isEmpty()").p(";");
+			cb.a("return ").a(fieldName).a(".isEmpty()").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -263,13 +266,13 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Returns an {@link Iterator} for all ").a(name).a("s").p(".");
+			cb.a("Return an {@link Iterator} for all ").a(manyName).p(".");
 			cb.javaDocEnd();
 			cb.a("public final ").a(Iterator.class.getName()).a(" ").a(name).a("Iterator() ").pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("return ").a(mName).a(".iterator()").p(";");
+			cb.a("return ").a(fieldName).a(".iterator()").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
@@ -277,86 +280,88 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Adds the specified ").a(name).p(".");
+			cb.a("Add the specified ").a(name).p(".");
 			cb.javaDocEnd();
-			cb.a(setterVisibility).a(" final void add").a(capName).a("(final ").a(type).a(" ").a(pName).a(") ").pi("{");
+			cb.a(setterVisibility).a(" final void add").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ")
+			      .pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("if (").a(mName).a(".contains(").a(pName).a(")) ").pi("{");
+			cb.a("if (").a(fieldName).a(".contains(").a(parameterName).a(")) ").pi("{");
 			cb.a("return").p(";");
 			cb.pu("}");
 			if (backref != null) {
 				if (backrefMany) {
-					cb.a(pName).a(".remove").a(capBackref).a("(this)").p(";");
+					cb.a(parameterName).a(".remove").a(capBackref).a("(this)").p(";");
 				} else {
-					cb.a(pName).a(".set").a(capBackref).a("(null)").p(";");
+					cb.a(parameterName).a(".set").a(capBackref).a("(null)").p(";");
 				}
 			}
-			cb.a(mName).a(".add(").a(pName).a(")").p(";");
+			cb.a(fieldName).a(".add(").a(parameterName).a(")").p(";");
 			if (backref != null) {
 				if (backrefMany) {
-					cb.a(pName).a(".add").a(capBackref).a("(this)").p(";");
+					cb.a(parameterName).a(".add").a(capBackref).a("(this)").p(";");
 				} else {
-					cb.a(pName).a(".set").a(capBackref).a("(this)").p(";");
+					cb.a(parameterName).a(".set").a(capBackref).a("(this)").p(";");
 				}
 			}
 			if (hooked) {
-				cb.a("new").a(capName).a("(").a(pName).a(")").p(";");
+				cb.a("new").a(capName).a("(").a(parameterName).a(")").p(";");
 			}
 			if (vSynchronized) {
 				cb.pu("}");
 			}
 			if (bound) {
-				cb.a("firePropertyChange(").a(nameConstant).a(", null, ").a(pName).a(")").p(";");
+				cb.a("firePropertyChange(").a(nameConstant).a(", null, ").a(parameterName).a(")").p(";");
 			}
 			cb.pu("}");
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Removes the specified ").a(name).p(".");
+			cb.a("Remove the specified ").a(name).p(".");
 			cb.javaDocEnd();
-			cb.a(setterVisibility).a(" final void remove").a(capName).a("(final ").a(type).a(" ").a(pName).a(") ").pi("{");
+			cb.a(setterVisibility).a(" final void remove").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ")
+			      .pi("{");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a("if (!").a(mName).a(".contains(").a(pName).a(")) ").pi("{");
+			cb.a("if (!").a(fieldName).a(".contains(").a(parameterName).a(")) ").pi("{");
 			cb.a("return").p(";");
 			cb.pu("}");
-			cb.a(mName).a(".remove(").a(pName).a(")").p(";");
+			cb.a(fieldName).a(".remove(").a(parameterName).a(")").p(";");
 			if (backref != null) {
 				if (backrefMany) {
-					cb.a(pName).a(".remove").a(capBackref).a("(this)").p(";");
+					cb.a(parameterName).a(".remove").a(capBackref).a("(this)").p(";");
 				} else {
-					cb.a(pName).a(".set").a(capBackref).a("(null)").p(";");
+					cb.a(parameterName).a(".set").a(capBackref).a("(null)").p(";");
 				}
 			}
 			if (hooked) {
-				cb.a("old").a(capName).a("(").a(pName).a(")").p(";");
+				cb.a("old").a(capName).a("(").a(parameterName).a(")").p(";");
 			}
 			if (vSynchronized) {
 				cb.pu("}");
 			}
 			if (bound) {
-				cb.a("firePropertyChange(").a(nameConstant).a(", ").a(pName).a(", null)").p(";");
+				cb.a("firePropertyChange(").a(nameConstant).a(", ").a(parameterName).a(", null)").p(";");
 			}
 			cb.pu("}");
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Remove all ").a(name).a("s").p(".");
+			cb.a("Remove all ").a(manyName).p(".");
 			cb.javaDocEnd();
-			cb.a(setterVisibility).a(" final void removeAll").a(capName).a("s() ").pi("{");
-			cb.a(type).a("[] ").a(name).a("s").p(";");
+			cb.a(setterVisibility).a(" final void removeAll").a(capManyName).a("() ").pi("{");
+			cb.a(type).a("[] ").a(manyName).p(";");
 			if (vSynchronized) {
 				cb.pi("synchronized (this) {");
 			}
-			cb.a(name).a("s = get").a(capName).a("s()").p(";");
+			cb.a(manyName).a(" = get").a(capManyName).a("()").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}
-			cb.a("for (int i=0; i<").a(name).a("s.length; i++) ").pi("{");
-			cb.a("remove").a(capName).a("(").a(name).a("s[i])").p(";");
+			cb.a("for (int i = 0; i < ").a(manyName).a(".length; i++) ").pi("{");
+			cb.a("remove").a(capName).a("(").a(manyName).a("[i])").p(";");
 			cb.pu("}");
 			cb.pu("}");
 		}
