@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyBlockGenerator.java,v 1.6 2007-07-02 15:23:26 concentus Exp $
+ * $Id: PropertyBlockGenerator.java,v 1.7 2007-07-02 15:34:52 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Bean Property";
@@ -85,11 +85,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 		if (backref != null) {
 			capBackref = StringUtil.capitalize(backref);
 		}
-		String fieldName = "_" + name;
+		String fieldName = "_" + (many ? manyName : name);
 		String parameterName = name;
-		if (many) {
-			fieldName = manyName;
-		}
 		String getterPrefix = (type.equals("boolean") || type.equals("Boolean") || type.equals("java.lang.Boolean")) ? "is"
 		      : "get";
 
