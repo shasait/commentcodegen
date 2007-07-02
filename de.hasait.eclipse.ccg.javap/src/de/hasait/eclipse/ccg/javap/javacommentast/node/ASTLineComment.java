@@ -1,5 +1,5 @@
 /*
- * $Id: ASTLineComment.java,v 1.3 2007-07-02 15:11:50 concentus Exp $
+ * $Id: ASTLineComment.java,v 1.4 2007-07-02 16:39:32 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.eclipse.ccg.parser.ICcgIndentSupport;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ASTLineComment extends BlockOrLineComment implements ICcgIndentSupport {
 	private String _indent;
@@ -66,7 +66,11 @@ public class ASTLineComment extends BlockOrLineComment implements ICcgIndentSupp
 
 	public String getSource() {
 		if (_indent != null) {
-			BufferedReader vReader = new BufferedReader(new StringReader(getCommentText()));
+			String commentText = getCommentText();
+			if (commentText == null) {
+				commentText = "";
+			}
+			BufferedReader vReader = new BufferedReader(new StringReader(commentText));
 			StringWriter vResult = new StringWriter();
 			PrintWriter vWriter = new PrintWriter(vResult);
 			try {
