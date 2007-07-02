@@ -1,5 +1,5 @@
 /*
- * $Id: AClass.java,v 1.3 2007-01-11 16:29:46 concentus Exp $
+ * $Id: AClass.java,v 1.4 2007-07-02 13:41:25 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -42,7 +42,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 13.12.2006
  */
 public class AClass extends AbstractCompilationUnit {
@@ -86,11 +86,11 @@ public class AClass extends AbstractCompilationUnit {
 
 		_model = pModel;
 
-		_name = pConfigElement.getRequiredAttribute("name");
-		_description = pConfigElement.getAttribute("description");
-		_abstract = pConfigElement.getAttributeAsBoolean("abstract", false);
-		_extends = pConfigElement.getAttribute("extends");
-		String vImplements = pConfigElement.getAttribute("implements");
+		_name = pConfigElement.getRequiredStringAttribute("name");
+		_description = pConfigElement.getStringAttribute("description");
+		_abstract = pConfigElement.getBooleanAttribute("abstract", false);
+		_extends = pConfigElement.getStringAttribute("extends");
+		String vImplements = pConfigElement.getStringAttribute("implements");
 		_implements = vImplements == null ? null : vImplements.split(",");
 
 		_targetFile = _model.getTargetFolder().getFile(_name + ".java");
@@ -98,7 +98,7 @@ public class AClass extends AbstractCompilationUnit {
 		XElement[] vPropertyElements = pConfigElement.getChildElements("property");
 		for (int vPropertyElementsI = 0; vPropertyElementsI < vPropertyElements.length; vPropertyElementsI++) {
 			XElement vPropertyElement = vPropertyElements[vPropertyElementsI];
-			String vCardinality = vPropertyElement.getAttribute("cardinality");
+			String vCardinality = vPropertyElement.getStringAttribute("cardinality");
 			AbstractAProperty vProperty;
 			if (vCardinality == null || vCardinality.equals("1")) {
 				vProperty = new ASingleProperty(this, vPropertyElement);
@@ -114,8 +114,8 @@ public class AClass extends AbstractCompilationUnit {
 		for (int vValidatorElementsI = 0; vValidatorElementsI < vValidatorElements.length; vValidatorElementsI++) {
 			XElement vValidatorElement = vValidatorElements[vValidatorElementsI];
 			String vValidatorExpression = vValidatorElement.getTextContent();
-			String vValidatorDescription = vValidatorElement.getRequiredAttribute("description");
-			String[] vValidatorBindings = vValidatorElement.getRequiredAttribute("bound").split(";");
+			String vValidatorDescription = vValidatorElement.getRequiredStringAttribute("description");
+			String[] vValidatorBindings = vValidatorElement.getRequiredStringAttribute("bound").split(";");
 			AValidator vValidator = new AValidator(this, "id" + vValidatorElementsI, vValidatorExpression,
 			      vValidatorDescription, vValidatorBindings);
 			addValidator(vValidator);
@@ -124,8 +124,8 @@ public class AClass extends AbstractCompilationUnit {
 		XElement[] vUpdaterElements = pConfigElement.getChildElements("updater");
 		for (int vUpdaterElementsI = 0; vUpdaterElementsI < vUpdaterElements.length; vUpdaterElementsI++) {
 			XElement vUpdaterElement = vUpdaterElements[vUpdaterElementsI];
-			String vName = vUpdaterElement.getAttribute("name");
-			String vListenTo = vUpdaterElement.getAttribute("listento");
+			String vName = vUpdaterElement.getStringAttribute("name");
+			String vListenTo = vUpdaterElement.getStringAttribute("listento");
 			String[] vListenToArray = vListenTo == null ? null : vListenTo.split(",");
 			String vCode = vUpdaterElement.getTextContent();
 			AUpdater vUpdater = new AUpdater(this, vName, vListenToArray, vCode);
@@ -135,9 +135,9 @@ public class AClass extends AbstractCompilationUnit {
 		XElement[] vAbstractMethodElements = pConfigElement.getChildElements("abstractmethod");
 		for (int vAbstractMethodElementsI = 0; vAbstractMethodElementsI < vAbstractMethodElements.length; vAbstractMethodElementsI++) {
 			XElement vAbstractMethodElement = vAbstractMethodElements[vAbstractMethodElementsI];
-			String vName = vAbstractMethodElement.getRequiredAttribute("name");
-			String vReturnType = vAbstractMethodElement.getAttribute("resulttype", "void");
-			String vParameters = vAbstractMethodElement.getAttribute("parameters");
+			String vName = vAbstractMethodElement.getRequiredStringAttribute("name");
+			String vReturnType = vAbstractMethodElement.getStringAttribute("resulttype", "void");
+			String vParameters = vAbstractMethodElement.getStringAttribute("parameters");
 			String[] vParametersArray = vParameters == null ? null : vParameters.split(",");
 			MAbstractMethod vAbstractMethod = new MAbstractMethod(vName, vReturnType, vParametersArray);
 			_abstractMethods.add(vAbstractMethod);

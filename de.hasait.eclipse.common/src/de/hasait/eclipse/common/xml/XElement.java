@@ -1,5 +1,5 @@
 /*
- * $Id: XElement.java,v 1.2 2007-01-01 22:12:02 concentus Exp $
+ * $Id: XElement.java,v 1.3 2007-07-02 13:41:21 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -18,164 +18,139 @@
 
 package de.hasait.eclipse.common.xml;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 01.12.2006
  */
 public final class XElement {
 	private final Element _element;
 
-	public XElement(Element element) {
+	/**
+	 * @param element
+	 */
+	public XElement(final Element element) {
 		super();
+		if (element == null) {
+			throw new IllegalArgumentException("element == null");
+		}
 		_element = element;
 	}
 
-	public static XElement parse(String xml) throws ParserConfigurationException, FactoryConfigurationError,
-	      SAXException, IOException {
+	/**
+	 * @param xml A String containing XML.
+	 * @return The RootElement.
+	 * @throws DocumentException
+	 * @throws FactoryConfigurationError
+	 * @throws DocumentException
+	 */
+	public static XElement parse(final String xml) throws DocumentException {
 		if (xml == null) {
 			throw new IllegalArgumentException("xml == null");
 		}
-		DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		byte[] bytes = xml.getBytes();
-		Document document = documentBuilder.parse(new ByteArrayInputStream(bytes));
-		return new XElement(document.getDocumentElement());
+
+		Document document = new SAXReader().read(new StringReader(xml));
+		return new XElement(document.getRootElement());
 	}
 
 	public String getTagName() {
-		return _element.getTagName();
+		return _element.getName();
 	}
 
 	public String getTextContent() {
-		return _element.getTextContent();
+		return _element.getText();
 	}
 
-	public boolean hasAttribute(String name) {
-		return _element.hasAttribute(name);
+	public boolean hasAttribute(final String name) {
+		return _element.attribute(name) != null;
 	}
 
-	public String getAttribute(String name) {
-		return getAttribute(name, null);
+	public String getStringAttribute(final String name) {
+		return _element.attributeValue(name);
 	}
 
-	public String getAttribute(String name, String defaultValue) {
+	public String getStringAttribute(final String name, final String defaultValue) {
+		return _element.attributeValue(name, defaultValue);
+	}
+
+	public String getRequiredStringAttribute(final String name) {
 		if (hasAttribute(name)) {
-			return _element.getAttribute(name);
-		}
-		return defaultValue;
-	}
-
-	public String getRequiredAttribute(String name) {
-		if (hasAttribute(name)) {
-			return getAttribute(name);
+			return getStringAttribute(name);
 		}
 		throw new IllegalArgumentException("attribute \"" + name + "\" required");
 	}
 
-	public Boolean getAttributeAsBoolean(String name) {
+	public Boolean getBooleanAttribute(final String name) {
 		if (hasAttribute(name)) {
-			return getRequiredAttributeAsBoolean(name) ? Boolean.TRUE : Boolean.FALSE;
+			return Boolean.valueOf(getRequiredBooleanAttribute(name));
 		}
 		return null;
 	}
 
-	public boolean getAttributeAsBoolean(String name, boolean defaultValue) {
+	public boolean getBooleanAttribute(final String name, final boolean defaultValue) {
 		if (hasAttribute(name)) {
-			return getRequiredAttributeAsBoolean(name);
+			return getRequiredBooleanAttribute(name);
 		}
 		return defaultValue;
 	}
 
-	public boolean getRequiredAttributeAsBoolean(String name) {
-		if (hasAttribute(name)) {
-			String value = _element.getAttribute(name);
-			return "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) || name.equals(value);
-		}
-		throw new IllegalArgumentException("attribute \"" + name + "\" required");
+	public boolean getRequiredBooleanAttribute(final String name) {
+		String value = getRequiredStringAttribute(name);
+		return "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) || name.equals(value);
 	}
 
-	public Integer getAttributeAsInteger(String name) {
+	public Integer getIntegerAttribute(final String name) {
 		if (hasAttribute(name)) {
-			return Integer.valueOf(getRequiredAttributeAsInteger(name));
+			return Integer.valueOf(getRequiredIntegerAttribute(name));
 		}
 		return null;
 	}
 
-	public int getAttributeAsInteger(String name, int defaultValue) {
+	public int getIntegerAttribute(final String name, final int defaultValue) {
 		if (hasAttribute(name)) {
-			return getRequiredAttributeAsInteger(name);
+			return getRequiredIntegerAttribute(name);
 		}
 		return defaultValue;
 	}
 
-	public int getRequiredAttributeAsInteger(String name) {
-		if (hasAttribute(name)) {
-			String value = _element.getAttribute(name);
-			return Integer.parseInt(value);
-		}
-		throw new IllegalArgumentException("attribute \"" + name + "\" required");
+	public int getRequiredIntegerAttribute(final String name) {
+		String value = getRequiredStringAttribute(name);
+		return Integer.parseInt(value);
 	}
 
 	/**
-	 * @param pTagName
-	 *           A tagName or tagName-Path.
+	 * @param tagNamePath
+	 *           A tagName or tagName-Path (e.g. elem/subelem/subsubelem).
 	 * @return All matching elements, maybe empty, but never <code>null</code>.
 	 */
-	public XElement[] getChildElements(String pTagName) {
-		List result = new ArrayList();
-		NodeList childNodes = _element.getChildNodes();
-		Node childNode;
-		String vTagName;
-		String vTagNameRemain;
-		if (pTagName == null) {
-			vTagName = null;
-			vTagNameRemain = null;
-		} else {
-			int vTagNameSlashI = pTagName.indexOf("/");
-			if (vTagNameSlashI > 0) {
-				vTagName = pTagName.substring(0, vTagNameSlashI);
-				vTagNameRemain = pTagName.substring(vTagNameSlashI + 1);
-			} else {
-				vTagName = pTagName;
-				vTagNameRemain = null;
-			}
+	public XElement[] getChildElements(final String tagNamePath) {
+		List<XElement> result = new ArrayList<XElement>();
+
+		Iterator elementI = _element.elementIterator(tagNamePath);
+
+		while (elementI.hasNext()) {
+			Element element = (Element) elementI.next();
+			result.add(new XElement(element));
 		}
-		for (int i = 0; i < childNodes.getLength(); i++) {
-			childNode = childNodes.item(i);
-			if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-				if (vTagName == null || ((Element) childNode).getTagName().equals(vTagName)) {
-					XElement childElement = new XElement((Element) childNode);
-					if (vTagNameRemain == null) {
-						result.add(childElement);
-					} else {
-						XElement[] childChildElements = childElement.getChildElements(vTagNameRemain);
-						for (int childChildElementsI = 0; childChildElementsI < childChildElements.length; childChildElementsI++) {
-							result.add(childChildElements[childChildElementsI]);
-						}
-					}
-				}
-			}
-		}
-		return (XElement[]) result.toArray(new XElement[result.size()]);
+		return result.toArray(new XElement[result.size()]);
 	}
 
+	/**
+	 * @return All child elements, maybe empty, but never <code>null</code>.
+	 */
 	public XElement[] getChildElements() {
 		return getChildElements(null);
 	}

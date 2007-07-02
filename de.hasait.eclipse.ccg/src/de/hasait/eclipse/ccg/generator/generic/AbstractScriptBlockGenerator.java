@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractScriptBlockGenerator.java,v 1.2 2007-06-22 14:23:25 concentus Exp $
+ * $Id: AbstractScriptBlockGenerator.java,v 1.3 2007-07-02 13:41:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -49,7 +49,7 @@ public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGener
 	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
 	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		XFile scriptFile = sourceFile.getFile(configElement.getRequiredAttribute("file"));
+		XFile scriptFile = sourceFile.getFile(configElement.getRequiredStringAttribute("file"));
 		_scriptExecuter.init(scriptFile);
 		_scriptExecuter.declareBean("configElement", configElement, XElement.class);
 		_scriptExecuter.declareBean("sourceFile", sourceFile, XFile.class);
@@ -64,6 +64,6 @@ public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGener
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.getContent().toString() + "\n" + indent;
+		return "\n" + out.toString() + "\n" + indent;
 	}
 }

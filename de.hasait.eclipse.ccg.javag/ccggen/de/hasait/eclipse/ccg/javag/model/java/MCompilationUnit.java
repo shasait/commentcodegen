@@ -108,7 +108,7 @@ public class MCompilationUnit extends AbstractMTypeContainer {
 		}
 		ContentBuffer vContent = new ContentBuffer();
 		writeCompilationUnit(vContent, vUserBlockContentByName);
-		getFile().write(vContent.getContent(), Boolean.TRUE, pMonitor);
+		getFile().write(vContent.toString(), Boolean.TRUE, pMonitor);
 	}
 
 	private void writeCompilationUnit(final ContentBuffer pContent, final Map pUserBlockContentByName) {

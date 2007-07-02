@@ -25,7 +25,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 13.12.2006
  */
 public class Application {
@@ -54,7 +54,7 @@ public class Application {
 		_sourceFile = pSourceFile;
 		_targetBaseFolder = pTargetBaseFolder;
 
-		_package = pConfigElement.getRequiredAttribute("package");
+		_package = pConfigElement.getRequiredStringAttribute("package");
 
 		_appGlobalCuContainer = new AbstractCuContainer(this, "app", "global");
 		addCuContainer(_appGlobalCuContainer);

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.4 2007-01-11 16:29:51 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.5 2007-07-02 13:41:29 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -37,7 +37,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
@@ -65,12 +65,12 @@ public abstract class AbstractCompilationUnit {
 	 */
 	public AbstractCompilationUnit(final AbstractCuContainer pCuContainer, final XElement pConfigElement,
 	      final String pNamePrefix, final String pNameSuffix) {
-		this(pCuContainer, pNamePrefix, pConfigElement.getRequiredAttribute("name"), pNameSuffix, pConfigElement
-		      .getAttribute("description"));
+		this(pCuContainer, pNamePrefix, pConfigElement.getRequiredStringAttribute("name"), pNameSuffix, pConfigElement
+		      .getStringAttribute("description"));
 		XElement[] vImportElements = pConfigElement.getChildElements("import");
 		for (int vImportElementsI = 0; vImportElementsI < vImportElements.length; vImportElementsI++) {
 			XElement vImportElement = vImportElements[vImportElementsI];
-			String vImportType = vImportElement.getRequiredAttribute("type");
+			String vImportType = vImportElement.getRequiredStringAttribute("type");
 			_imports.add(vImportType);
 		}
 	}
@@ -188,7 +188,7 @@ public abstract class AbstractCompilationUnit {
 		vContent.p("@author CCG " + getCuContainer().getApplication().getSourceFile().getFullPath().toString());
 		vContent.pu(" */");
 		writeTypes(vContent, vUserBlockContentByName, pMonitor);
-		getTargetFile().write(vContent.getContent(), Boolean.TRUE, pMonitor);
+		getTargetFile().write(vContent.toString(), Boolean.TRUE, pMonitor);
 	}
 
 	protected void writeAdditionalCuComment(final ContentBuffer pContent, final IProgressMonitor pMonitor) {

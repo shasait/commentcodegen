@@ -1,5 +1,5 @@
 /*
- * $Id: JavaAstBsfBlockGenerator.java,v 1.4 2007-06-22 14:23:24 concentus Exp $
+ * $Id: JavaAstBsfBlockGenerator.java,v 1.5 2007-07-02 13:41:32 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -50,7 +50,7 @@ public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlo
 	public String generateBlock(final CompilationUnit compilationUnit, final XElement configElement,
 	      final ICcgComment comment, final XFile sourceFile, final Map sourceFileContext,
 	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor) throws Exception {
-		XFile scriptFile = sourceFile.getFile(configElement.getRequiredAttribute("file"));
+		XFile scriptFile = sourceFile.getFile(configElement.getRequiredStringAttribute("file"));
 		_scriptExecuter.init(scriptFile);
 		_scriptExecuter.declareBean("configElement", configElement, XElement.class);
 		_scriptExecuter.declareBean("sourceFile", sourceFile, XFile.class);
@@ -66,6 +66,6 @@ public final class JavaAstBsfBlockGenerator extends AbstractJavaAstTagContentBlo
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.getContent().toString() + "\n" + indent;
+		return "\n" + out.toString() + "\n" + indent;
 	}
 }

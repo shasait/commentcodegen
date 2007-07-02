@@ -1,5 +1,5 @@
 /*
- * $Id: ASingleProperty.java,v 1.2 2007-01-11 16:29:46 concentus Exp $
+ * $Id: ASingleProperty.java,v 1.3 2007-07-02 13:41:25 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -43,9 +43,9 @@ public class ASingleProperty extends AbstractAProperty {
 		XElement[] vSyncElements = pConfigElement.getChildElements("sync");
 		for (int vSyncElementsI = 0; vSyncElementsI < vSyncElements.length; vSyncElementsI++) {
 			XElement vSyncElement = vSyncElements[vSyncElementsI];
-			String vSyncFrom = vSyncElement.getRequiredAttribute("from");
-			String vSyncTo = vSyncElement.getRequiredAttribute("to");
-			boolean vSyncBound = vSyncElement.getAttributeAsBoolean("bound", false);
+			String vSyncFrom = vSyncElement.getRequiredStringAttribute("from");
+			String vSyncTo = vSyncElement.getRequiredStringAttribute("to");
+			boolean vSyncBound = vSyncElement.getBooleanAttribute("bound", false);
 			addSync(vSyncFrom, vSyncTo, vSyncBound);
 		}
 	}

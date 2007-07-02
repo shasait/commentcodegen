@@ -1,5 +1,5 @@
 /*
- * $Id: XFile.java,v 1.2 2006-12-30 18:30:17 concentus Exp $
+ * $Id: XFile.java,v 1.3 2007-07-02 13:41:20 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,9 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.dom4j.DocumentException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -34,7 +32,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.xml.sax.SAXException;
 
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.IOUtil;
@@ -43,7 +40,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 01.12.2006
  */
 public class XFile extends XResource {
@@ -114,8 +111,7 @@ public class XFile extends XResource {
 		}
 	}
 
-	public final XElement parseXml() throws ParserConfigurationException, FactoryConfigurationError, SAXException,
-	      IOException, CoreException {
+	public final XElement parseXml() throws DocumentException, CoreException {
 		return XElement.parse(read());
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: JavaModelWriter.java,v 1.2 2007-06-21 16:34:39 concentus Exp $
+ * $Id: JavaModelWriter.java,v 1.3 2007-07-02 13:41:42 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -41,7 +41,7 @@ import de.hasait.eclipse.common.resource.XFolder;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 20.02.2007
  */
 public class JavaModelWriter {
@@ -169,12 +169,12 @@ public class JavaModelWriter {
 				writeAbstractMDeclaredType(vType, vContext);
 			}
 		}
-		pContext._targetFile.write(vContentBuffer.getContent(), Boolean.TRUE, pContext._monitor);
+		pContext._targetFile.write(vContentBuffer.toString(), Boolean.TRUE, pContext._monitor);
 	}
 
 	public final void writeAbstractMDeclaredType(final AbstractMDeclaredType pMDeclaredType,
 	      final WriteCompilationUnitContext pContext) throws CoreException {
-		pMDeclaredType.get
+		// pMDeclaredType.get
 
 	}
 }

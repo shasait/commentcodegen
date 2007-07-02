@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileBlockGenerator.java,v 1.3 2007-06-21 16:34:09 concentus Exp $
+ * $Id: IncludeFileBlockGenerator.java,v 1.4 2007-07-02 13:41:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
@@ -46,7 +46,7 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
 	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		String includeFilePathS = configElement.getRequiredAttribute("file");
+		String includeFilePathS = configElement.getRequiredStringAttribute("file");
 		XElement[] replaceElements = configElement.getChildElements("replace");
 		Map<String, String> replacements = new HashMap<String, String>();
 		XElement replacement;
@@ -55,12 +55,12 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 			replacement = replaceElements[i];
 			String search;
 			if (replacement.hasAttribute("s")) {
-				search = replacement.getAttribute("s");
+				search = replacement.getStringAttribute("s");
 			} else {
 				search = "${" + anon + "}";
 				anon++;
 			}
-			String replace = replacement.getAttribute("r", "");
+			String replace = replacement.getStringAttribute("r", "");
 			replacements.put(search, replace);
 		}
 		return StringUtil.replaceAll(sourceFile.getFile(includeFilePathS).read(), replacements);

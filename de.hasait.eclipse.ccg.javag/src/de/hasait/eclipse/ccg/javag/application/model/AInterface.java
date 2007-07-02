@@ -1,5 +1,5 @@
 /*
- * $Id: AInterface.java,v 1.3 2007-01-11 16:29:46 concentus Exp $
+ * $Id: AInterface.java,v 1.4 2007-07-02 13:41:25 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 09.01.2007
  */
 public class AInterface extends AbstractCompilationUnit {
@@ -47,7 +47,7 @@ public class AInterface extends AbstractCompilationUnit {
 	 */
 	public AInterface(final AbstractCuContainer pCuContainer, final XElement pConfigElement) {
 		super(pCuContainer, pConfigElement, "I", null);
-		String vExtends = pConfigElement.getAttribute("extends");
+		String vExtends = pConfigElement.getStringAttribute("extends");
 		_extends = vExtends == null ? null : vExtends.split(",");
 		_code = pConfigElement.getTextContent();
 	}

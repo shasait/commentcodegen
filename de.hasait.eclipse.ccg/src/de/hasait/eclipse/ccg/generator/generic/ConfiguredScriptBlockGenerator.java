@@ -1,5 +1,5 @@
 /*
- * $Id: ConfiguredScriptBlockGenerator.java,v 1.1 2007-06-22 14:16:40 concentus Exp $
+ * $Id: ConfiguredScriptBlockGenerator.java,v 1.2 2007-07-02 13:41:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private final IScriptExecuter _scriptExecuter;
@@ -65,6 +65,6 @@ public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenera
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.getContent().toString() + "\n" + indent;
+		return "\n" + out.toString() + "\n" + indent;
 	}
 }

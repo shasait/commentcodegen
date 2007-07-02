@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractScriptResourceGenerator.java,v 1.1 2007-06-22 14:16:40 concentus Exp $
+ * $Id: AbstractScriptResourceGenerator.java,v 1.2 2007-07-02 13:41:40 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class AbstractScriptResourceGenerator extends AbstractCcgResourceGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -48,7 +48,7 @@ public abstract class AbstractScriptResourceGenerator extends AbstractCcgResourc
 	public final void generateResources(final XElement configElement, final XFile sourceFile,
 	      final XFolder targetBaseFolder, final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup,
 	      final IProgressMonitor monitor) throws Exception {
-		XFile scriptFile = sourceFile.getFile(configElement.getRequiredAttribute("file"));
+		XFile scriptFile = sourceFile.getFile(configElement.getRequiredStringAttribute("file"));
 		_scriptExecuter.init(scriptFile);
 		_scriptExecuter.declareBean("configElement", configElement, XElement.class);
 		_scriptExecuter.declareBean("sourceFile", sourceFile, XFile.class);

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAProperty.java,v 1.4 2007-01-15 22:28:31 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.5 2007-07-02 13:41:25 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
 public abstract class AbstractAProperty {
@@ -50,14 +50,14 @@ public abstract class AbstractAProperty {
 
 		pProperty.setBeanName(_clazz.getFullName());
 
-		pProperty.setName(pConfigElement.getRequiredAttribute("name"));
-		pProperty.setDescription(pConfigElement.getAttribute("description"));
-		pProperty.setType(pConfigElement.getRequiredAttribute("type"));
-		_backref = pConfigElement.getAttribute("backref");
-		pProperty.setBound(pConfigElement.getAttributeAsBoolean("bound", false));
-		pProperty.setFinal(pConfigElement.getAttributeAsBoolean("final", false));
-		pProperty.setRequired(pConfigElement.getAttributeAsBoolean("required", false));
-		pProperty.setAbstract(pConfigElement.getAttributeAsBoolean("abstract", false));
+		pProperty.setName(pConfigElement.getRequiredStringAttribute("name"));
+		pProperty.setDescription(pConfigElement.getStringAttribute("description"));
+		pProperty.setType(pConfigElement.getRequiredStringAttribute("type"));
+		_backref = pConfigElement.getStringAttribute("backref");
+		pProperty.setBound(pConfigElement.getBooleanAttribute("bound", false));
+		pProperty.setFinal(pConfigElement.getBooleanAttribute("final", false));
+		pProperty.setRequired(pConfigElement.getBooleanAttribute("required", false));
+		pProperty.setAbstract(pConfigElement.getBooleanAttribute("abstract", false));
 		String vInitialValue;
 		XElement[] vValueElements = pConfigElement.getChildElements("value");
 		if (vValueElements.length > 0) {
@@ -68,11 +68,11 @@ public abstract class AbstractAProperty {
 			}
 			vInitialValue = vInitialValueBuffer.toString();
 		} else {
-			vInitialValue = pConfigElement.getAttribute("value");
+			vInitialValue = pConfigElement.getStringAttribute("value");
 		}
 		pProperty.setInitialValue(vInitialValue);
-		pProperty.setReadVisibility(MVisibility.get(pConfigElement.getAttribute("readvisibility", "public")));
-		pProperty.setWriteVisibility(MVisibility.get(pConfigElement.getAttribute("writevisibility", "public")));
+		pProperty.setReadVisibility(MVisibility.get(pConfigElement.getStringAttribute("readvisibility", "public")));
+		pProperty.setWriteVisibility(MVisibility.get(pConfigElement.getStringAttribute("writevisibility", "public")));
 
 		if (pProperty.isBound()) {
 			getClazz().addImport(getClazz().getCuContainer().getApplication()._applicationContextCu.getQualifiedName());

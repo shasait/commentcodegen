@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.7 2007-01-15 20:39:47 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.8 2007-07-02 13:41:19 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -25,9 +25,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
- * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @since 16.11.2006
  */
 public class ContentBuffer {
@@ -41,7 +40,7 @@ public class ContentBuffer {
 
 	private boolean _indentNeeded;
 
-	public ContentBuffer(String defaultIndent) {
+	public ContentBuffer(final String defaultIndent) {
 		super();
 		updateIndent();
 		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
@@ -56,7 +55,7 @@ public class ContentBuffer {
 		return _defaultIndent;
 	}
 
-	public final void setDefaultIndent(String defaultIndent) {
+	public final void setDefaultIndent(final String defaultIndent) {
 		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
 	}
 
@@ -168,7 +167,8 @@ public class ContentBuffer {
 		_buffer = new StringBuffer();
 	}
 
-	public final String getContent() {
+	@Override
+	public final String toString() {
 		return _buffer.toString();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.5 2007-01-10 18:04:17 concentus Exp $
+ * $Id: Dialog.java,v 1.6 2007-07-02 13:41:29 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -63,7 +63,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 13.12.2006
  */
 public class Dialog extends AbstractCompilationUnit {
@@ -87,12 +87,12 @@ public class Dialog extends AbstractCompilationUnit {
 		for (int vPresentationModelPropertyElementsI = 0; vPresentationModelPropertyElementsI < vPresentationModelPropertyElements.length; vPresentationModelPropertyElementsI++) {
 			XElement vPresentationModelPropertyElement = vPresentationModelPropertyElements[vPresentationModelPropertyElementsI];
 			MSingleProperty vPresentationModelProperty = new MSingleProperty();
-			vPresentationModelProperty.setFinal(vPresentationModelPropertyElement.getAttributeAsBoolean("final", false));
-			vPresentationModelProperty.setRequired(vPresentationModelPropertyElement.getAttributeAsBoolean("required",
+			vPresentationModelProperty.setFinal(vPresentationModelPropertyElement.getBooleanAttribute("final", false));
+			vPresentationModelProperty.setRequired(vPresentationModelPropertyElement.getBooleanAttribute("required",
 			      false));
-			vPresentationModelProperty.setType(vPresentationModelPropertyElement.getRequiredAttribute("type"));
-			vPresentationModelProperty.setName(vPresentationModelPropertyElement.getRequiredAttribute("name"));
-			vPresentationModelProperty.setInitialValue(vPresentationModelPropertyElement.getAttribute("value"));
+			vPresentationModelProperty.setType(vPresentationModelPropertyElement.getRequiredStringAttribute("type"));
+			vPresentationModelProperty.setName(vPresentationModelPropertyElement.getRequiredStringAttribute("name"));
+			vPresentationModelProperty.setInitialValue(vPresentationModelPropertyElement.getStringAttribute("value"));
 			vPresentationModelProperty.setBound(true);
 			_presentationModelProperties.add(vPresentationModelProperty);
 		}
@@ -100,7 +100,7 @@ public class Dialog extends AbstractCompilationUnit {
 		XElement[] vPresentationModelActionElements = pConfigElement.getChildElements("presentationmodel/action");
 		for (int vPresentationModelActionElementsI = 0; vPresentationModelActionElementsI < vPresentationModelActionElements.length; vPresentationModelActionElementsI++) {
 			XElement vPresentationModelActionElement = vPresentationModelActionElements[vPresentationModelActionElementsI];
-			String vActionName = vPresentationModelActionElement.getRequiredAttribute("name");
+			String vActionName = vPresentationModelActionElement.getRequiredStringAttribute("name");
 			PresentationModelAction vAction = new PresentationModelAction(vActionName);
 			_presentationModelActions.add(vAction);
 		}

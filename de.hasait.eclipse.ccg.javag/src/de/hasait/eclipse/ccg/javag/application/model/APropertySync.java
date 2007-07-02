@@ -1,5 +1,5 @@
 /*
- * $Id: APropertySync.java,v 1.4 2007-01-15 08:54:38 concentus Exp $
+ * $Id: APropertySync.java,v 1.5 2007-07-02 13:41:28 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -28,7 +28,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 10.01.2007
  */
 public class APropertySync {
@@ -110,11 +110,11 @@ public class APropertySync {
 			      + ";");
 			vAttachedCode.pu("}");
 			vAttachedCode.p();
-			vClazz.addAttachedCode(vAttachedCode.getContent());
+			vClazz.addAttachedCode(vAttachedCode.toString());
 			vAttachedCode.c();
 			// constructor body code attachment
 			vAttachedCode.p(vUpdateMethodName + "()" + ";");
-			vClazz.addConstructorBodyAttachCode(vAttachedCode.getContent());
+			vClazz.addConstructorBodyAttachCode(vAttachedCode.toString());
 			vAttachedCode.c();
 			// beforeChange code attachment
 			vAttachedCode.pi("if (" + vParentMSingleProperty.getFieldName() + " != null) {");
@@ -122,7 +122,7 @@ public class APropertySync {
 			      .p(vAppContextName + ".DEFAULT.ED.removeChangeListener(" + vParentMSingleProperty.getFieldName() + ", "
 			            + vFromMSingleProperty.getNameConstantQualifiedName() + ", " + vChangeListenerInstanceName + ");");
 			vAttachedCode.pu("}");
-			_property.getProperty().addBeforeChangeCode(vAttachedCode.getContent());
+			_property.getProperty().addBeforeChangeCode(vAttachedCode.toString());
 			vAttachedCode.c();
 			// afterChange code attachment
 			vAttachedCode.pi("if (" + vParentMSingleProperty.getFieldName() + " != null) {");
@@ -131,7 +131,7 @@ public class APropertySync {
 			            + vFromMSingleProperty.getNameConstantQualifiedName() + ", " + vChangeListenerInstanceName + ");");
 			vAttachedCode.pu("}");
 			vAttachedCode.p(vUpdateMethodName + "()" + ";");
-			_property.getProperty().addAfterChangeCode(vAttachedCode.getContent());
+			_property.getProperty().addAfterChangeCode(vAttachedCode.toString());
 			vAttachedCode.c();
 		}
 		return false;
