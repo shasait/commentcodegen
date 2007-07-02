@@ -30,7 +30,7 @@
    <feature url="features/de.hasait.eclipse.common_feature_2.0.0.jar" id="de.hasait.eclipse.common_feature" version="2.0.0">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.2.1.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.2.1">
+   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.2.2.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.2.2">
       <category name="ccg"/>
    </feature>
    <category-def name="common" label="Common"/>
