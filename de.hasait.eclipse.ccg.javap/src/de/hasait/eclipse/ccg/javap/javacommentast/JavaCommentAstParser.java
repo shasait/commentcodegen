@@ -1,5 +1,5 @@
 /*
- * $Id: JavaCommentAstParser.java,v 1.3 2007-02-21 00:03:11 concentus Exp $
+ * $Id: JavaCommentAstParser.java,v 1.4 2007-07-02 15:11:49 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.StringUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class JavaCommentAstParser implements ICcgParser {
 	private static final String[] FILE_EXTENSIONS = new String[] { "java", "cpp", "c" };
@@ -43,6 +43,7 @@ public class JavaCommentAstParser implements ICcgParser {
 		mergeComments(compilationUnit);
 		mergeNonComments(compilationUnit);
 		mergeLineComments(compilationUnit);
+		detectLineCommentPrefixes(compilationUnit);
 		return compilationUnit;
 	}
 
@@ -54,23 +55,23 @@ public class JavaCommentAstParser implements ICcgParser {
 		return get(source);
 	}
 
-	public static void mergeComments(SimpleNode simpleNode) {
+	public static void mergeComments(final SimpleNode simpleNode) {
 		int index = 0;
-		Node child;
+		Node child1;
 		Node child2;
-		ASTComment comment;
+		ASTComment comment1;
 		ASTComment comment2;
 		while (index < simpleNode.jjtGetNumChildren() - 1) {
-			child = simpleNode.jjtGetChild(index);
+			child1 = simpleNode.jjtGetChild(index);
 			child2 = simpleNode.jjtGetChild(index + 1);
-			if (child instanceof ASTComment && child2 instanceof ASTComment) {
-				comment = (ASTComment) child;
+			if (child1 instanceof ASTComment && child2 instanceof ASTComment) {
+				comment1 = (ASTComment) child1;
 				comment2 = (ASTComment) child2;
-				comment.setSource(comment.getSource() + comment2.getSource());
+				comment1.setSource(comment1.getSource() + comment2.getSource());
 				simpleNode.jjtRemoveChild(index + 1);
 			} else {
-				if (child instanceof SimpleNode) {
-					mergeComments((SimpleNode) child);
+				if (child1 instanceof SimpleNode) {
+					mergeComments((SimpleNode) child1);
 				}
 				if (child2 instanceof SimpleNode) {
 					mergeComments((SimpleNode) child2);
@@ -80,23 +81,23 @@ public class JavaCommentAstParser implements ICcgParser {
 		}
 	}
 
-	public static void mergeNonComments(SimpleNode simpleNode) {
+	public static void mergeNonComments(final SimpleNode simpleNode) {
 		int index = 0;
-		Node child;
+		Node child1;
 		Node child2;
-		ASTNonComment nonComment;
+		ASTNonComment nonComment1;
 		ASTNonComment nonComment2;
 		while (index < simpleNode.jjtGetNumChildren() - 1) {
-			child = simpleNode.jjtGetChild(index);
+			child1 = simpleNode.jjtGetChild(index);
 			child2 = simpleNode.jjtGetChild(index + 1);
-			if (child instanceof ASTNonComment && child2 instanceof ASTNonComment) {
-				nonComment = (ASTNonComment) child;
+			if (child1 instanceof ASTNonComment && child2 instanceof ASTNonComment) {
+				nonComment1 = (ASTNonComment) child1;
 				nonComment2 = (ASTNonComment) child2;
-				nonComment.setSource(nonComment.getSource() + nonComment2.getSource());
+				nonComment1.setSource(nonComment1.getSource() + nonComment2.getSource());
 				simpleNode.jjtRemoveChild(index + 1);
 			} else {
-				if (child instanceof SimpleNode) {
-					mergeNonComments((SimpleNode) child);
+				if (child1 instanceof SimpleNode) {
+					mergeNonComments((SimpleNode) child1);
 				}
 				if (child2 instanceof SimpleNode) {
 					mergeNonComments((SimpleNode) child2);
@@ -138,9 +139,9 @@ public class JavaCommentAstParser implements ICcgParser {
 						vNonComment1Source = vNonComment1Source.substring(0, vNonComment1Source.length()
 						      - vNonComment2Source.length());
 						vNonComment1.setSource(vNonComment1Source);
-						vLineComment1.setLinePrefix(vNonComment2Source);
+						vLineComment1.setIndent(vNonComment2Source);
 					}
-					if (vLineComment1.getLinePrefix() != null && vLineComment1.getLinePrefix().equals(vNonComment2Source)) {
+					if (vLineComment1.getIndent() != null && vLineComment1.getIndent().equals(vNonComment2Source)) {
 						vLineComment1.setCommentText(StringUtil.join(new String[] { vLineComment1.getCommentText(),
 						      vLineComment2.getCommentText() }, "\n"));
 						pSimpleNode.jjtRemoveChild(vChildI + 2);
@@ -149,6 +150,42 @@ public class JavaCommentAstParser implements ICcgParser {
 							pSimpleNode.jjtRemoveChild(vChildI);
 						}
 						vModified = true;
+					}
+				}
+			}
+			if (!vModified) {
+				vChildI++;
+			}
+		}
+	}
+
+	private static void detectLineCommentPrefixes(final SimpleNode pSimpleNode) {
+		int vChildI = 0;
+		Node vChild1;
+		Node vChild2;
+		ASTNonComment vNonComment1;
+		ASTLineComment vLineComment1;
+		while (vChildI < pSimpleNode.jjtGetNumChildren() - 1) {
+			vChild1 = pSimpleNode.jjtGetChild(vChildI);
+			vChild2 = pSimpleNode.jjtGetChild(vChildI + 1);
+			boolean vModified = false;
+			if (vChild1 instanceof ASTNonComment && vChild2 instanceof ASTLineComment) {
+				vNonComment1 = (ASTNonComment) vChild1;
+				vLineComment1 = (ASTLineComment) vChild2;
+				String vNonComment1Source = vNonComment1.getSource();
+				int lastIndexOfNewline = vNonComment1Source.lastIndexOf("\n");
+				// 
+				if (lastIndexOfNewline >= 0) {
+					String suffix = vNonComment1Source.substring(lastIndexOfNewline + 1);
+					if (suffix.length() > 0) {
+						if (StringUtil.containsOnlyTheseChars(suffix, " \t")) {
+							// remove suffix from nonComment
+							vNonComment1Source = vNonComment1Source
+							      .substring(0, vNonComment1Source.length() - suffix.length());
+							vNonComment1.setSource(vNonComment1Source);
+							vLineComment1.setIndent(suffix);
+							vModified = true;
+						}
 					}
 				}
 			}

@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyBlockGenerator.java,v 1.4 2007-07-02 13:41:29 concentus Exp $
+ * $Id: PropertyBlockGenerator.java,v 1.5 2007-07-02 15:11:56 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
+import de.hasait.eclipse.ccg.parser.ICcgIndentSupport;
 import de.hasait.eclipse.common.JavaContentBuffer;
 import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.resource.XFile;
@@ -34,7 +35,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Bean Property";
@@ -49,8 +50,11 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
 	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		String indent = configElement.getStringAttribute("indent", "");
+		String indent = configElement.getStringAttribute("indent", "\t");
 		JavaContentBuffer cb = new JavaContentBuffer(indent);
+		if (comment instanceof ICcgIndentSupport) {
+			cb.i(((ICcgIndentSupport) comment).getIndent());
+		}
 
 		String type = configElement.getRequiredStringAttribute("type");
 		String name = configElement.getRequiredStringAttribute("name");
@@ -92,16 +96,16 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 		cb.javaDocStart();
 		cb.a("Property ").a(name).p();
 		cb.javaDocEnd();
-		cb.a("public static final String ").a(nameConstant).a(" = \"").a(name).a(many ? "s" : "\"").p(";");
-		cb.p();
+		cb.a("public static final String ").a(nameConstant).a(" = \"").a(name).a(many ? "s" : "").a("\"").p(";");
 
 		if (!many) {
+			cb.p();
 			cb.javaDocStart();
 			cb.a("The single property field ").a(name).p(".");
 			cb.javaDocEnd();
 			cb.a("private ").a(type).a(" ").a(mName).p(";");
-			cb.p();
 
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns the ").a(name).p(".");
 			cb.javaDocEnd();
@@ -115,6 +119,7 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			}
 			cb.pu("}");
 
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Sets the ").a(name).p(".");
 			cb.javaDocEnd();
@@ -179,11 +184,14 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			}
 			cb.pu("}");
 		} else {
+			cb.p();
 			cb.javaDocStart();
 			cb.a("The many property field ").a(name).p(".");
 			cb.javaDocEnd();
-			cb.a("private final ").a(List.class.getName()).a(" ").a(mName).a(" = ").a(ArrayList.class.getName()).a("()")
+			cb.a("private final ").a(List.class.getName()).a(" ").a(mName).a(" = new ").a(ArrayList.class.getName()).a("()")
 			      .p(";");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns the array of all ").a(name).a("s").p(".");
 			cb.javaDocEnd();
@@ -196,6 +204,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns the ").a(name).a(" at the specified index").p(".");
 			cb.javaDocEnd();
@@ -208,6 +218,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns if the specified ").a(name).a(" is contained").p(".");
 			cb.javaDocEnd();
@@ -220,6 +232,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns how many ").a(name).a("s are contained").p(".");
 			cb.javaDocEnd();
@@ -232,6 +246,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns if ").a(name).a(" is empty").p(".");
 			cb.javaDocEnd();
@@ -244,6 +260,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Returns an {@link Iterator} for all ").a(name).a("s").p(".");
 			cb.javaDocEnd();
@@ -256,6 +274,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.pu("}");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Adds the specified ").a(name).p(".");
 			cb.javaDocEnd();
@@ -291,6 +311,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.a("firePropertyChange(").a(nameConstant).a(", null, ").a(pName).a(")").p(";");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Removes the specified ").a(name).p(".");
 			cb.javaDocEnd();
@@ -319,6 +341,8 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 				cb.a("firePropertyChange(").a(nameConstant).a(", ").a(pName).a(", null)").p(";");
 			}
 			cb.pu("}");
+
+			cb.p();
 			cb.javaDocStart();
 			cb.a("Remove all ").a(name).a("s").p(".");
 			cb.javaDocEnd();
@@ -336,6 +360,7 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			cb.pu("}");
 			cb.pu("}");
 		}
+		cb.p();
 
 		return cb.toString();
 	}

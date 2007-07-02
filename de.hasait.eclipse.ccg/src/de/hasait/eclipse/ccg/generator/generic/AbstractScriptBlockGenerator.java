@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractScriptBlockGenerator.java,v 1.3 2007-07-02 13:41:40 concentus Exp $
+ * $Id: AbstractScriptBlockGenerator.java,v 1.4 2007-07-02 15:12:00 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -64,6 +64,6 @@ public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGener
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.toString() + "\n" + indent;
+		return "\n" + out.toString() + "\n";
 	}
 }

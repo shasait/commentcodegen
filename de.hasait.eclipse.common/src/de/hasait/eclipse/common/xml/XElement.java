@@ -1,5 +1,5 @@
 /*
- * $Id: XElement.java,v 1.3 2007-07-02 13:41:21 concentus Exp $
+ * $Id: XElement.java,v 1.4 2007-07-02 15:11:54 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -33,7 +33,7 @@ import org.dom4j.io.SAXReader;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 01.12.2006
  */
 public final class XElement {
@@ -51,7 +51,8 @@ public final class XElement {
 	}
 
 	/**
-	 * @param xml A String containing XML.
+	 * @param xml
+	 *           A String containing XML.
 	 * @return The RootElement.
 	 * @throws DocumentException
 	 * @throws FactoryConfigurationError
@@ -139,7 +140,7 @@ public final class XElement {
 	public XElement[] getChildElements(final String tagNamePath) {
 		List<XElement> result = new ArrayList<XElement>();
 
-		Iterator elementI = _element.elementIterator(tagNamePath);
+		Iterator elementI = tagNamePath == null ? _element.elementIterator() : _element.elementIterator(tagNamePath);
 
 		while (elementI.hasNext()) {
 			Element element = (Element) elementI.next();

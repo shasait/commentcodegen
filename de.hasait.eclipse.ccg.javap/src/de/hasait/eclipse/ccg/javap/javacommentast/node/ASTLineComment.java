@@ -1,5 +1,5 @@
 /*
- * $Id: ASTLineComment.java,v 1.2 2007-01-06 00:43:04 concentus Exp $
+ * $Id: ASTLineComment.java,v 1.3 2007-07-02 15:11:50 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -26,13 +26,14 @@ import java.io.StringWriter;
 import de.hasait.eclipse.ccg.javap.javacommentast.gen.JavaCommentParser;
 import de.hasait.eclipse.ccg.javap.javacommentast.gen.JavaCommentParserTreeConstants;
 import de.hasait.eclipse.ccg.parser.ICcgComment;
+import de.hasait.eclipse.ccg.parser.ICcgIndentSupport;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-public class ASTLineComment extends BlockOrLineComment {
-	private String _linePrefix;
+public class ASTLineComment extends BlockOrLineComment implements ICcgIndentSupport {
+	private String _indent;
 
 	public ASTLineComment(int id) {
 		super(id);
@@ -55,30 +56,23 @@ public class ASTLineComment extends BlockOrLineComment {
 		return lineComment;
 	}
 
-	/**
-	 * @return the linePrefix
-	 */
-	public final String getLinePrefix() {
-		return _linePrefix;
+	public final String getIndent() {
+		return _indent;
 	}
 
-	/**
-	 * @param pLinePrefix
-	 *           the linePrefix to set
-	 */
-	public final void setLinePrefix(final String pLinePrefix) {
-		_linePrefix = pLinePrefix;
+	public final void setIndent(final String indent) {
+		_indent = indent;
 	}
 
 	public String getSource() {
-		if (_linePrefix != null) {
+		if (_indent != null) {
 			BufferedReader vReader = new BufferedReader(new StringReader(getCommentText()));
 			StringWriter vResult = new StringWriter();
 			PrintWriter vWriter = new PrintWriter(vResult);
 			try {
 				String vLine;
 				while ((vLine = vReader.readLine()) != null) {
-					vWriter.append(_linePrefix).append("//").println(vLine);
+					vWriter.append(_indent).append("//").println(vLine);
 				}
 			} catch (IOException e) {
 				// cannot happen

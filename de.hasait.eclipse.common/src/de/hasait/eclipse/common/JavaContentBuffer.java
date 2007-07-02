@@ -1,5 +1,5 @@
 /*
- * $Id: JavaContentBuffer.java,v 1.1 2007-07-02 13:41:19 concentus Exp $
+ * $Id: JavaContentBuffer.java,v 1.2 2007-07-02 15:11:54 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -20,7 +20,7 @@ package de.hasait.eclipse.common;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 02.07.2007
  */
 public class JavaContentBuffer extends ContentBuffer {
@@ -43,7 +43,7 @@ public class JavaContentBuffer extends ContentBuffer {
 	}
 
 	public final void blockCommentStart() {
-		blockCommentStart("");
+		pi("/*", " * ");
 	}
 
 	public final void blockCommentEnd(final String line) {
@@ -59,7 +59,7 @@ public class JavaContentBuffer extends ContentBuffer {
 	}
 
 	public final void javaDocStart() {
-		javaDocCommentStart("");
+		pi("/**", " * ");
 	}
 
 	public final void javaDocCommentEnd(final String line) {
