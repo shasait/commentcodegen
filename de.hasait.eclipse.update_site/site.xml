@@ -21,14 +21,17 @@
    <feature url="features/org.mozilla.javascript_feature_1.6.5.jar" id="org.mozilla.javascript_feature" version="1.6.5">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.1.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.1.0">
-      <category name="ccg"/>
-   </feature>
-   <feature url="features/de.hasait.eclipse.common_feature_1.1.0.jar" id="de.hasait.eclipse.common_feature" version="1.1.0">
+   <feature url="features/org.dom4j_feature_1.6.1.jar" id="org.dom4j_feature" version="1.6.1">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg_feature_2.1.1.jar" id="de.hasait.eclipse.ccg_feature" version="2.1.1">
+   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.2.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.2.0">
       <category name="ccg"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.ccg_feature_2.2.0.jar" id="de.hasait.eclipse.ccg_feature" version="2.2.0">
+      <category name="ccg"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.common_feature_2.0.0.jar" id="de.hasait.eclipse.common_feature" version="2.0.0">
+      <category name="common"/>
    </feature>
    <category-def name="common" label="Common"/>
    <category-def name="ccg" label="CommonCodeGen"/>
