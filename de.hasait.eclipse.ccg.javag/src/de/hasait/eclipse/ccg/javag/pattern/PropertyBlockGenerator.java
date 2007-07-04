@@ -1,5 +1,5 @@
 /*
- * $Id: PropertyBlockGenerator.java,v 1.7 2007-07-02 15:34:52 concentus Exp $
+ * $Id: PropertyBlockGenerator.java,v 1.8 2007-07-04 19:34:42 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -35,7 +35,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Bean Property";
@@ -95,7 +95,7 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 		cb.javaDocStart();
 		cb.a("Property ").a(name).p();
 		cb.javaDocEnd();
-		cb.a("public static final String ").a(nameConstant).a(" = \"").a(name).a(many ? "s" : "").a("\"").p(";");
+		cb.a("public static final String ").a(nameConstant).a(" = \"").a(name).a("\"").p(";");
 
 		if (!many) {
 			cb.p();
@@ -192,7 +192,7 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 
 			cb.p();
 			cb.javaDocStart();
-			cb.a("Return the array of all ").a(manyName).p(".");
+			cb.a("Return an array with all ").a(manyName).p(".");
 			cb.javaDocEnd();
 			cb.a("public final ").a(type).a("[] get").a(capManyName).a("() ").pi("{");
 			if (vSynchronized) {
@@ -200,6 +200,20 @@ public final class PropertyBlockGenerator extends AbstractCcgBlockGenerator {
 			}
 			cb.a("return (").a(type).a("[]) ").a(fieldName).a(".toArray(new ").a(type).a("[").a(fieldName).a(".size()])")
 			      .p(";");
+			if (vSynchronized) {
+				cb.pu("}");
+			}
+			cb.pu("}");
+
+			cb.p();
+			cb.javaDocStart();
+			cb.a("Return a list with all ").a(manyName).p(".");
+			cb.javaDocEnd();
+			cb.a("public final ").a(List.class.getName()).a(" get").a(capName).a("List() ").pi("{");
+			if (vSynchronized) {
+				cb.pi("synchronized (this) {");
+			}
+			cb.a("return new ").a(ArrayList.class.getName()).a("(").a(fieldName).a(")").p(";");
 			if (vSynchronized) {
 				cb.pu("}");
 			}

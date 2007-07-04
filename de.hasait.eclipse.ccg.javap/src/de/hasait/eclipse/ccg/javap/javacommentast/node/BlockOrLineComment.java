@@ -1,5 +1,5 @@
 /*
- * $Id: BlockOrLineComment.java,v 1.2 2007-01-06 00:43:04 concentus Exp $
+ * $Id: BlockOrLineComment.java,v 1.3 2007-07-04 19:34:46 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,7 +23,7 @@ import de.hasait.eclipse.ccg.parser.ICcgComment;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public abstract class BlockOrLineComment extends SourceNode implements ICcgComment {
 	public BlockOrLineComment(final int pId) {
@@ -84,7 +84,7 @@ public abstract class BlockOrLineComment extends SourceNode implements ICcgComme
 
 	public String getCommentText() {
 		ICcgComment vComment = getComment();
-		return vComment == null ? null : vComment.getCommentText();
+		return vComment == null ? "" : vComment.getCommentText();
 	}
 
 	public void setCommentText(final String pCommentText) {
