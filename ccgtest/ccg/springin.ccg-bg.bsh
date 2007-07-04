@@ -1,12 +1,12 @@
 import de.hasait.eclipse.common.StringUtil;
 
-name = configElement.getRequiredAttribute("name");
+name = configElement.getRequiredStringAttribute("name");
 fname = "_" + name;
 cname = StringUtil.capitalize(name);
 
-type = configElement.getRequiredAttribute("type");
+type = configElement.getRequiredStringAttribute("type");
 
-required = configElement.getAttributeAsBoolean("required", false);
+required = configElement.getBooleanAttribute("required", false);
 
 out.p("private " + type + " " + fname + ";");
 out.p();
