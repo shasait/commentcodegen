@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.7 2007-06-22 08:35:57 concentus Exp $
+ * $Id: StringUtil.java,v 1.8 2007-07-04 19:35:26 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -280,5 +280,28 @@ public final class StringUtil {
 			result.append(inputChar);
 		}
 		return result.toString();
+	}
+
+	/**
+	 * @param text
+	 * @return [line, remainingText]
+	 */
+	public static String[] readLine(final String text) {
+		if (text == null) {
+			return new String[] { null, null };
+		}
+		int irn = text.indexOf("\r\n");
+		int ir = text.indexOf("\r");
+		int in = text.indexOf("\n");
+		if (irn >= 0 && (ir < 0 || irn <= ir) && (in < 0 || irn <= in)) {
+			return new String[] { text.substring(0, irn), text.substring(irn + 2) };
+		}
+		if (ir >= 0 && (in < 0 || ir <= in)) {
+			return new String[] { text.substring(0, ir), text.substring(ir + 1) };
+		}
+		if (in >= 0) {
+			return new String[] { text.substring(0, in), text.substring(in + 1) };
+		}
+		return new String[] { text, null };
 	}
 }
