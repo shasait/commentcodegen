@@ -1,5 +1,5 @@
 /*
- * $Id: XFile.java,v 1.3 2007-07-02 13:41:20 concentus Exp $
+ * $Id: XFile.java,v 1.4 2007-08-09 15:01:28 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -40,7 +40,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 01.12.2006
  */
 public class XFile extends XResource {
@@ -63,10 +63,6 @@ public class XFile extends XResource {
 	 */
 	public final IFile getRawFile() {
 		return _file;
-	}
-
-	public final ContentBuffer createContentBuffer() {
-		return new ContentBuffer();
 	}
 
 	public final XFile getFile(String path) {

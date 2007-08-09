@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.10 2007-08-09 14:20:14 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.11 2007-08-09 15:01:27 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -26,31 +26,43 @@ import java.util.LinkedList;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  * @since 16.11.2006
  */
 public final class ContentBuffer implements IContentBuffer {
+	private String _newline;
+
+	private String _defaultIndent;
+
 	private StringBuffer _buffer = new StringBuffer();
 
 	private final LinkedList<String> _indents = new LinkedList<String>();
 
 	private String _indent;
 
-	private String _defaultIndent;
-
 	private boolean _indentNeeded;
+
+	/**
+	 * @param defaultIndent
+	 * @param newline
+	 */
+	public ContentBuffer(final String defaultIndent, final String newline) {
+		super();
+
+		setNewline(newline);
+
+		setDefaultIndent(defaultIndent);
+
+		updateIndent();
+
+		_indentNeeded = true;
+	}
 
 	/**
 	 * @param defaultIndent
 	 */
 	public ContentBuffer(final String defaultIndent) {
-		super();
-		updateIndent();
-		if (defaultIndent == null) {
-			throw new IllegalArgumentException("defaultIndent == null");
-		}
-		_defaultIndent = defaultIndent;
-		_indentNeeded = true;
+		this(defaultIndent, "\n");
 	}
 
 	/**
@@ -60,12 +72,33 @@ public final class ContentBuffer implements IContentBuffer {
 		this("\t");
 	}
 
+	/**
+	 * @return the newline
+	 */
+	public final String getNewline() {
+		return _newline;
+	}
+
+	/**
+	 * @param newline
+	 *           the newline to set
+	 */
+	public final void setNewline(final String newline) {
+		if (newline == null) {
+			throw new IllegalArgumentException("newline == null");
+		}
+		_newline = newline;
+	}
+
 	public String getDefaultIndent() {
 		return _defaultIndent;
 	}
 
 	public void setDefaultIndent(final String defaultIndent) {
-		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
+		if (defaultIndent == null) {
+			throw new IllegalArgumentException("defaultIndent == null");
+		}
+		_defaultIndent = defaultIndent;
 	}
 
 	private void updateIndent() {
@@ -110,7 +143,7 @@ public final class ContentBuffer implements IContentBuffer {
 	}
 
 	private void bn() {
-		_buffer.append("\n");
+		_buffer.append(_newline);
 		_indentNeeded = true;
 	}
 

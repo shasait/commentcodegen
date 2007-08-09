@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractScriptBlockGenerator.java,v 1.4 2007-07-02 15:12:00 concentus Exp $
+ * $Id: AbstractScriptBlockGenerator.java,v 1.5 2007-08-09 15:01:03 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Delegates the generation to a script";
@@ -58,12 +58,13 @@ public abstract class AbstractScriptBlockGenerator extends AbstractCcgBlockGener
 		_scriptExecuter.declareBean("monitor", monitor, IProgressMonitor.class);
 
 		String indent = "\t"; // TODO read default-indent from configuration or source
-		ContentBuffer out = new ContentBuffer(indent);
+		String newline = System.getProperty("line.separator"); // TODO read newline from configuration or source
+		ContentBuffer out = new ContentBuffer(indent, newline);
 		out.i();
 		_scriptExecuter.declareBean("out", out, ContentBuffer.class);
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.toString() + "\n";
+		return newline + out.toString() + newline;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: ConfiguredScriptBlockGenerator.java,v 1.3 2007-07-02 15:12:00 concentus Exp $
+ * $Id: ConfiguredScriptBlockGenerator.java,v 1.4 2007-08-09 15:01:03 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private final IScriptExecuter _scriptExecuter;
@@ -53,7 +53,8 @@ public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenera
 	      throws Exception {
 
 		String indent = "\t"; // TODO read default-indent from configuration or source
-		ContentBuffer out = new ContentBuffer(indent);
+		String newline = System.getProperty("line.separator"); // TODO read newline from configuration or source
+		ContentBuffer out = new ContentBuffer(indent, newline);
 		out.i();
 
 		_scriptExecuter.declareBean("out", out, ContentBuffer.class);
@@ -65,6 +66,6 @@ public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenera
 
 		_scriptExecuter.execute();
 
-		return "\n" + out.toString() + "\n";
+		return newline + out.toString() + newline;
 	}
 }

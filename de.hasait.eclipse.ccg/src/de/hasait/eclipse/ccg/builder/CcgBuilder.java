@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.20 2007-08-09 14:20:03 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.21 2007-08-09 15:01:03 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -62,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -158,7 +158,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 							return false;
 						}
 						IResource resource = delta.getResource();
-						if (!isPrefixOf(getProject(), generatorFolderPaths, resource)) {
+						if (!mayBecomePrefixOf(getProject(), generatorFolderPaths, resource)) {
 							return false;
 						}
 						if (resource instanceof IFile) {
@@ -324,6 +324,19 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		for (int pathI = 0; pathI < paths.length; pathI++) {
 			IFolder folder = base.getFolder(paths[pathI]);
 			if (folder.getFullPath().isPrefixOf(resource.getFullPath())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean mayBecomePrefixOf(final IProject base, final String[] paths, final IResource resource) {
+		for (int pathI = 0; pathI < paths.length; pathI++) {
+			IFolder folder = base.getFolder(paths[pathI]);
+			if (folder.getFullPath().isPrefixOf(resource.getFullPath())) {
+				return true;
+			}
+			if (resource.getFullPath().isPrefixOf(folder.getFullPath())) {
 				return true;
 			}
 		}
