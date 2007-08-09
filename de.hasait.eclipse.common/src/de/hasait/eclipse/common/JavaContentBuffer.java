@@ -1,5 +1,5 @@
 /*
- * $Id: JavaContentBuffer.java,v 1.2 2007-07-02 15:11:54 concentus Exp $
+ * $Id: JavaContentBuffer.java,v 1.3 2007-08-09 14:20:14 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -20,50 +20,43 @@ package de.hasait.eclipse.common;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 02.07.2007
  */
-public class JavaContentBuffer extends ContentBuffer {
+public class JavaContentBuffer extends ContentBufferDelegate {
 	/**
 	 * 
 	 */
-	public JavaContentBuffer() {
-		super();
+	public JavaContentBuffer(final IContentBuffer delegate) {
+		super(delegate);
 	}
 
-	/**
-	 * @param defaultIndent
-	 */
-	public JavaContentBuffer(final String defaultIndent) {
-		super(defaultIndent);
-	}
-
-	public final void blockCommentStart(final String line) {
-		pi("/* " + line, " * ");
+	public final void blockCommentStart(final String lines) {
+		pi("/* " + lines, " * ");
 	}
 
 	public final void blockCommentStart() {
 		pi("/*", " * ");
 	}
 
-	public final void blockCommentEnd(final String line) {
-		pu(line + " */");
+	public final void blockCommentEnd(final String lines) {
+		up(lines + " */");
 	}
 
 	public final void blockCommentEnd() {
 		blockCommentEnd("");
 	}
 
-	public final void javaDocCommentStart(final String line) {
-		pi("/** " + line, " * ");
+	public final void javaDocCommentStart(final String lines) {
+		pi("/** " + lines, " * ");
 	}
 
 	public final void javaDocStart() {
 		pi("/**", " * ");
 	}
 
-	public final void javaDocCommentEnd(final String line) {
-		pu(line + " */");
+	public final void javaDocCommentEnd(final String lines) {
+		up(lines + " */");
 	}
 
 	public final void javaDocEnd() {

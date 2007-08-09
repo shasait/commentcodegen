@@ -169,7 +169,7 @@ public class MClass extends AbstractMType {
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassEnd");
 		pContent.p();
 		//
-		pContent.pu("}");
+		pContent.up("}");
 	}
 	// @ccg.userblock.end
 	

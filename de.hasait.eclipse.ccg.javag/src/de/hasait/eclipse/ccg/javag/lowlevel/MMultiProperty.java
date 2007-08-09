@@ -1,5 +1,5 @@
 /*
- * $Id: MMultiProperty.java,v 1.5 2007-01-15 20:38:10 concentus Exp $
+ * $Id: MMultiProperty.java,v 1.6 2007-08-09 14:20:20 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.ContentBuffer;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 04.01.2007
  */
 public class MMultiProperty extends AbstractMProperty {
@@ -122,8 +122,8 @@ public class MMultiProperty extends AbstractMProperty {
 			      getParameterVarName()).a(".").a("length").a("; ").a(indexVarName).a("++").a(")").pi(" {");
 			pContent.a(getFieldName()).a(".").a("add(").a(getParameterVarName()).a("[").a(indexVarName).a("]").a(")").p(
 			      ";");
-			pContent.pu("}");
-			pContent.pu("}");
+			pContent.up("}");
+			pContent.up("}");
 		}
 		if (isRequired()) {
 			writeRequiredCheck(pContent);
@@ -175,7 +175,7 @@ public class MMultiProperty extends AbstractMProperty {
 			pContent.p();
 			pContent.p("@param " + getParameterVarName() + " The value to remove from property " + getName() + ".");
 			pContent.p("@see " + getCollectionClass() + "#remove(Object)");
-			pContent.pu(" */");
+			pContent.up(" */");
 			if (isAbstract()) {
 				pContent.p(getWriteVisibility().getId() + " abstract void " + getRemoveMethodName() + "(final " + getType()
 				      + " " + getParameterVarName() + ");");
@@ -184,7 +184,7 @@ public class MMultiProperty extends AbstractMProperty {
 				      + " " + getParameterVarName() + ") {");
 				pContent.pi("if (!" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
 				pContent.p("return;");
-				pContent.pu("}");
+				pContent.up("}");
 				if (isRequired()) {
 					writeRequiredCheckPreRemove(pContent);
 				}
@@ -197,9 +197,9 @@ public class MMultiProperty extends AbstractMProperty {
 				if (getBackrefProperty() != null) {
 					pContent.pi("if (" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ") {");
 					pContent.p(getBackrefProperty().getRemoverCall(getParameterVarName(), "this") + ";");
-					pContent.pu("}");
+					pContent.up("}");
 				}
-				pContent.pu("}");
+				pContent.up("}");
 			}
 			pContent.p();
 		}
@@ -225,7 +225,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p();
 		pContent.p("@param " + getParameterVarName() + " The additional value for property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass() + "#add(Object)");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getWriteVisibility().getId() + " abstract void " + getAddMethodName() + "(final " + getType() + " "
 			      + getParameterVarName() + ");");
@@ -234,11 +234,11 @@ public class MMultiProperty extends AbstractMProperty {
 			      + getParameterVarName() + ") {");
 			pContent.pi("if (" + getFieldName() + ".contains(" + getParameterVarName() + ")) {");
 			pContent.p("return;");
-			pContent.pu("}");
+			pContent.up("}");
 			if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
 				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
 				pContent.p("throw new IllegalArgumentException(\"backref != this\");");
-				pContent.pu("}");
+				pContent.up("}");
 			}
 			writeBeforeChangeCode(pContent);
 			pContent.p(getFieldName() + ".add(" + getParameterVarName() + ");");
@@ -249,9 +249,9 @@ public class MMultiProperty extends AbstractMProperty {
 			if (getBackrefProperty() != null && !getBackrefProperty().isFinal()) {
 				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
 				pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
-				pContent.pu("}");
+				pContent.up("}");
 			}
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -266,13 +266,13 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.pi("/**", " * ");
 		pContent.p("@return Is property " + getName() + " emtpy?");
 		pContent.p("@see " + getCollectionClass() + "#isEmpty()");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " final abstract is" + getCapName() + "Empty();");
 		} else {
 			pContent.pi(getReadVisibility().getId() + " final boolean is" + getCapName() + "Empty() {");
 			pContent.p("return " + getFieldName() + ".isEmpty();");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -287,13 +287,13 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.pi("/**", " * ");
 		pContent.p("@return The number of values of property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass() + "#size()");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract int " + getName() + "Size();");
 		} else {
 			pContent.pi(getReadVisibility().getId() + " final int " + getName() + "Size() {");
 			pContent.p("return " + getFieldName() + ".size();");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -308,7 +308,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.pi("/**", " * ");
 		pContent.p("@return An {@link Iterator} over all values of property " + getName() + ".");
 		pContent.p("@see " + getCollectionClass() + "#iterator()");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract Iterator " + getName()
 			      + "Iterator();");
@@ -316,7 +316,7 @@ public class MMultiProperty extends AbstractMProperty {
 			pContent.pi(getReadVisibility().getId() + " final Iterator " + getName()
 			      + "Iterator() {");
 			pContent.p("return " + getFieldName() + ".iterator();");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -332,7 +332,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@param pObject The object to check for containment.");
 		pContent.p("@return Does this property contain the specified object?");
 		pContent.p("@see " + getCollectionClass() + "#contains(Object)");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract boolean contains" + getCapName()
 			      + "(final Object pObject);");
@@ -340,7 +340,7 @@ public class MMultiProperty extends AbstractMProperty {
 			pContent.pi(getReadVisibility().getId() + " final boolean contains" + getCapName()
 			      + "(final Object pObject) {");
 			pContent.p("return " + getFieldName() + ".contains(pObject);");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -362,7 +362,7 @@ public class MMultiProperty extends AbstractMProperty {
 		pContent.p("@param index The index, which must be valid.");
 		pContent.p("@return The value of property " + getName() + " at the specified index.");
 		pContent.p("@see " + getCollectionClass() + "#get(int)");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract " + getType() + " get" + getCapName()
 			      + "(final int index);");
@@ -370,7 +370,7 @@ public class MMultiProperty extends AbstractMProperty {
 			pContent.pi(getReadVisibility().getId() + " final " + getType() + " get" + getCapName()
 			      + "(final int index) {");
 			pContent.p("return (" + getType() + ") " + getFieldName() + ".get(index);");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -379,13 +379,13 @@ public class MMultiProperty extends AbstractMProperty {
 		String vCheck = getFieldName() + "." + "isEmpty()";
 		pContent.a("if (").a(vCheck).a(")").pi(" {");
 		pContent.p("throw new IllegalArgumentException(\"" + vCheck + "\");");
-		pContent.pu("}");
+		pContent.up("}");
 	}
 
 	private void writeRequiredCheckPreRemove(final ContentBuffer pContent) {
 		String vCheck = getFieldName() + "." + "size()" + " <= " + "1";
 		pContent.a("if (").a(vCheck).a(")").pi(" {");
 		pContent.p("throw new IllegalArgumentException(\"" + vCheck + "\");");
-		pContent.pu("}");
+		pContent.up("}");
 	}
 }

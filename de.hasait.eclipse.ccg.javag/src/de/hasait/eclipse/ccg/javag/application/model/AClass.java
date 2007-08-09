@@ -1,5 +1,5 @@
 /*
- * $Id: AClass.java,v 1.4 2007-07-02 13:41:25 concentus Exp $
+ * $Id: AClass.java,v 1.5 2007-08-09 14:20:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -42,7 +42,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * @since 13.12.2006
  */
 public class AClass extends AbstractCompilationUnit {
@@ -310,7 +310,7 @@ public class AClass extends AbstractCompilationUnit {
 				AClass subBean = (AClass) subBeansI.next();
 				pContent.p("<li>" + subBean.getJavaDocFullName() + "</li>");
 			}
-			pContent.pu("</ul>");
+			pContent.up("</ul>");
 		}
 	}
 
@@ -425,7 +425,7 @@ public class AClass extends AbstractCompilationUnit {
 			String vAttachedCode = (String) vAttachedCodeI.next();
 			pContent.p(vAttachedCode);
 		}
-		pContent.pu("}");
+		pContent.up("}");
 		pContent.p();
 		//
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassAfterConstructor");
@@ -450,17 +450,17 @@ public class AClass extends AbstractCompilationUnit {
 				AValidator vValidator = vValidators[vValidatorI];
 				pContent.a("if (").a(vValidator.getExpression()).pi(") {");
 				pContent.a("_validationMessages.remove(").a(vValidator.getMessageConstantName()).p(");");
-				pContent.pui("} else {");
+				pContent.upi("} else {");
 				pContent.a("_validationMessages.add(").a(vValidator.getMessageConstantName()).p(");");
-				pContent.pu("}");
+				pContent.up("}");
 			}
 			pContent.p("return _validationMessages.isEmpty();");
-			pContent.pu("}");
+			pContent.up("}");
 			pContent.p();
 		}
 		writeAttachedCode(pContent, pMonitor);
 		pContent.p();
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "ClassEnd");
-		pContent.pu("}");
+		pContent.up("}");
 	}
 }

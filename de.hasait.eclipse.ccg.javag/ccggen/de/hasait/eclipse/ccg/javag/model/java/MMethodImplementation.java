@@ -88,7 +88,7 @@ public class MMethodImplementation {
 		}
 		pContent.a(")").pi(" {");
 		getCode().write(pContent, pUserBlockContentByName);
-		pContent.pu("}");
+		pContent.up("}");
 	}
 	// @ccg.userblock.end
 	

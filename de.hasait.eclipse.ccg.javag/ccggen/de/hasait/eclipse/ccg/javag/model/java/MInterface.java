@@ -96,7 +96,7 @@ public class MInterface extends AbstractMType {
 		// userblock InterfaceEnd
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "InterfaceEnd");
 		pContent.p();
-		pContent.pu("}");
+		pContent.up("}");
 	}
 	// @ccg.userblock.end
 	

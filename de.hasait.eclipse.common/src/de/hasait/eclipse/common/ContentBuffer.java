@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBuffer.java,v 1.9 2007-07-02 15:11:54 concentus Exp $
+ * $Id: ContentBuffer.java,v 1.10 2007-08-09 14:20:14 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -26,13 +26,13 @@ import java.util.LinkedList;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  * @since 16.11.2006
  */
-public class ContentBuffer {
+public final class ContentBuffer implements IContentBuffer {
 	private StringBuffer _buffer = new StringBuffer();
 
-	private final LinkedList _indents = new LinkedList();
+	private final LinkedList<String> _indents = new LinkedList<String>();
 
 	private String _indent;
 
@@ -40,22 +40,31 @@ public class ContentBuffer {
 
 	private boolean _indentNeeded;
 
+	/**
+	 * @param defaultIndent
+	 */
 	public ContentBuffer(final String defaultIndent) {
 		super();
 		updateIndent();
-		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
+		if (defaultIndent == null) {
+			throw new IllegalArgumentException("defaultIndent == null");
+		}
+		_defaultIndent = defaultIndent;
 		_indentNeeded = true;
 	}
 
+	/**
+	 * Create with tab as defaultIndent.
+	 */
 	public ContentBuffer() {
-		this(null);
+		this("\t");
 	}
 
-	public final String getDefaultIndent() {
+	public String getDefaultIndent() {
 		return _defaultIndent;
 	}
 
-	public final void setDefaultIndent(final String defaultIndent) {
+	public void setDefaultIndent(final String defaultIndent) {
 		_defaultIndent = defaultIndent == null ? "\t" : defaultIndent;
 	}
 
@@ -67,54 +76,54 @@ public class ContentBuffer {
 		_indent = indent.toString();
 	}
 
-	public final String getIndent() {
+	public String getIndent() {
 		return _indent;
 	}
 
-	public final String i(String newIndent) {
+	public String i(final String newIndent) {
 		_indents.addLast(newIndent);
 		updateIndent();
 		return _indent;
 	}
 
-	public final String i() {
+	public String i() {
 		return i(_defaultIndent);
 	}
 
-	public final String u() {
-		String oldIndent = (String) _indents.removeLast();
+	public String u() {
+		String oldIndent = _indents.removeLast();
 		updateIndent();
 		return oldIndent;
 	}
 
-	protected final void bi() {
+	private void bi() {
 		if (_indentNeeded) {
 			_buffer.append(_indent);
 			_indentNeeded = false;
 		}
 	}
 
-	public final ContentBuffer a(String text) {
+	public ContentBuffer a(final String text) {
 		bi();
 		_buffer.append(text);
 		return this;
 	}
 
-	protected final void bn() {
+	private void bn() {
 		_buffer.append("\n");
 		_indentNeeded = true;
 	}
 
-	public final void p(final String pLines) {
-		if (pLines.length() == 0) {
+	public void p(final String lines) {
+		if (lines.length() == 0) {
 			// a("");
 			bn();
 		} else {
-			BufferedReader vLineReader = new BufferedReader(new StringReader(pLines));
-			String vLine;
+			BufferedReader lineReader = new BufferedReader(new StringReader(lines));
+			String line;
 			try {
-				while ((vLine = vLineReader.readLine()) != null) {
-					a(vLine);
+				while ((line = lineReader.readLine()) != null) {
+					a(line);
 					bn();
 				}
 			} catch (IOException e) {
@@ -123,15 +132,15 @@ public class ContentBuffer {
 		}
 	}
 
-	public final void pni(final String pLines) {
-		if (pLines.length() == 0) {
+	public void pni(final String lines) {
+		if (lines.length() == 0) {
 			bn();
 		} else {
-			BufferedReader vLineReader = new BufferedReader(new StringReader(pLines));
-			String vLine;
+			BufferedReader lineReader = new BufferedReader(new StringReader(lines));
+			String line;
 			try {
-				while ((vLine = vLineReader.readLine()) != null) {
-					_buffer.append(vLine);
+				while ((line = lineReader.readLine()) != null) {
+					_buffer.append(line);
 					bn();
 				}
 			} catch (IOException e) {
@@ -140,35 +149,44 @@ public class ContentBuffer {
 		}
 	}
 
-	public final void p() {
+	public void p() {
 		p("");
 	}
 
-	public final void pi(String line, String indent) {
-		p(line);
+	public void pi(final String lines, final String indent) {
+		p(lines);
 		i(indent);
 	}
 
-	public final void pi(String line) {
-		pi(line, _defaultIndent);
+	public void pi(final String lines) {
+		pi(lines, _defaultIndent);
 	}
 
-	public final void pu(String line) {
+	public void up(final String lines) {
 		u();
-		p(line);
+		p(lines);
 	}
 
-	public final void pui(String line) {
+	public void upi(final String lines) {
 		u();
-		pi(line);
+		pi(lines);
 	}
 
-	public final void c() {
+	public void c() {
 		_buffer = new StringBuffer();
 	}
 
-	@Override
-	public final String toString() {
+	public void ci() {
+		_indents.clear();
+		updateIndent();
+	}
+
+	public String getContent() {
 		return _buffer.toString();
+	}
+
+	@Override
+	public String toString() {
+		return getContent();
 	}
 }

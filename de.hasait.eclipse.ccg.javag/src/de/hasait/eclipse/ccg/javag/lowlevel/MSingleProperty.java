@@ -1,5 +1,5 @@
 /*
- * $Id: MSingleProperty.java,v 1.5 2007-01-15 20:37:46 concentus Exp $
+ * $Id: MSingleProperty.java,v 1.6 2007-08-09 14:20:19 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 04.01.2007
  */
 public class MSingleProperty extends AbstractMProperty {
@@ -111,7 +111,7 @@ public class MSingleProperty extends AbstractMProperty {
 			if (getBackrefProperty() != null) {
 				pContent.pi("if (" + getFieldName() + " != null) {");
 				pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
-				pContent.pu("}");
+				pContent.up("}");
 			}
 		}
 	}
@@ -157,7 +157,7 @@ public class MSingleProperty extends AbstractMProperty {
 		}
 		pContent.p();
 		pContent.p("@param " + getParameterVarName() + " The new value for property " + getName() + ".");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getWriteVisibility().getId() + " abstract void " + getSetMethodName() + "(final " + getType() + " "
 			      + getParameterVarName() + ");");
@@ -169,11 +169,11 @@ public class MSingleProperty extends AbstractMProperty {
 			}
 			pContent.pi("if (" + getFieldName() + " == " + getParameterVarName() + ") {");
 			pContent.p("return;");
-			pContent.pu("}");
+			pContent.up("}");
 			if (getBackrefProperty() != null && getBackrefProperty().isFinal()) {
 				pContent.pi("if (!(" + getBackrefProperty().getContainsCall(getParameterVarName(), "this") + ")) {");
 				pContent.p("throw new IllegalArgumentException(\"backref != this\");");
-				pContent.pu("}");
+				pContent.up("}");
 			}
 			if (isBound() || (getBackrefProperty() != null && !getBackrefProperty().isFinal())) {
 				pContent.p(getType() + " " + getLocalVarName() + " = " + getFieldName() + ";");
@@ -188,13 +188,13 @@ public class MSingleProperty extends AbstractMProperty {
 				pContent.pi("if (" + getLocalVarName() + " != null) {");
 				pContent.pi("if (" + getBackrefProperty().getContainsCall(getLocalVarName(), "this") + ") {");
 				pContent.p(getBackrefProperty().getRemoverCall(getLocalVarName(), "this") + ";");
-				pContent.pu("}");
-				pContent.pu("}");
+				pContent.up("}");
+				pContent.up("}");
 				pContent.pi("if (" + getParameterVarName() + " != null) {");
 				pContent.p(getBackrefProperty().getAdderCall(getParameterVarName(), "this") + ";");
-				pContent.pu("}");
+				pContent.up("}");
 			}
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -214,13 +214,13 @@ public class MSingleProperty extends AbstractMProperty {
 		}
 		pContent.p();
 		pContent.p("@return The value of property " + getName() + ".");
-		pContent.pu(" */");
+		pContent.up(" */");
 		if (isAbstract()) {
 			pContent.p(getReadVisibility().getId() + " abstract " + getType() + " " + getGetMethodName() + "();");
 		} else {
 			pContent.pi(getReadVisibility().getId() + " final " + getType() + " " + getGetMethodName() + "() {");
 			pContent.p("return " + getFieldName() + ";");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 		pContent.p();
 	}
@@ -230,7 +230,7 @@ public class MSingleProperty extends AbstractMProperty {
 			String vCheck = pVarName + " == " + "null";
 			pContent.a("if (").a(vCheck).a(")").pi(" {");
 			pContent.p("throw new IllegalArgumentException(\"" + vCheck + "\");");
-			pContent.pu("}");
+			pContent.up("}");
 		}
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AUpdater.java,v 1.3 2007-07-02 13:41:28 concentus Exp $
+ * $Id: AUpdater.java,v 1.4 2007-08-09 14:20:18 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -26,7 +26,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * @since 10.01.2007
  */
 public class AUpdater {
@@ -98,7 +98,7 @@ public class AUpdater {
 				vAttachedCode.p("super." + getUpdateMethodName() + "();");
 			}
 			vAttachedCode.p(_code);
-			vAttachedCode.pu("}");
+			vAttachedCode.up("}");
 			vAttachedCode.p();
 			_clazz.addAttachedCode(vAttachedCode.toString());
 			if (vTopMostClass != _clazz) {
@@ -106,7 +106,7 @@ public class AUpdater {
 				vAttachedCode.p("/** Extended by " + _clazz.getJavaDocLink() + " */");
 				vAttachedCode.pi("protected void " + getUpdateMethodName() + "() {");
 				vAttachedCode.p("// nop");
-				vAttachedCode.pu("}");
+				vAttachedCode.up("}");
 				vTopMostClass.addAttachedCode(vAttachedCode.toString());
 			}
 		}

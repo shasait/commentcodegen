@@ -1,5 +1,5 @@
 /*
- * $Id: APropertySync.java,v 1.5 2007-07-02 13:41:28 concentus Exp $
+ * $Id: APropertySync.java,v 1.6 2007-08-09 14:20:18 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -28,7 +28,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 10.01.2007
  */
 public class APropertySync {
@@ -99,8 +99,8 @@ public class APropertySync {
 			      + " = new ModelEventDispatcher.IChangeListener() {");
 			vAttachedCode.pi("public void handle(ModelEventDispatcher.AbstractChange pChange) {");
 			vAttachedCode.p(vUpdateMethodName + "()" + ";");
-			vAttachedCode.pu("}");
-			vAttachedCode.pu("};");
+			vAttachedCode.up("}");
+			vAttachedCode.up("};");
 			vAttachedCode.p();
 			vAttachedCode.pi("public void " + vUpdateMethodName + "() {");
 			vAttachedCode.p(vParentMSingleProperty.getType() + " " + vParentMSingleProperty.getLocalVarName() + " = "
@@ -108,7 +108,7 @@ public class APropertySync {
 			vAttachedCode.p(vToMSingleProperty.getAdderCall(null, vParentMSingleProperty.getLocalVarName()
 			      + " == null ? null : " + vFromMSingleProperty.getGetCall(vParentMSingleProperty.getLocalVarName()))
 			      + ";");
-			vAttachedCode.pu("}");
+			vAttachedCode.up("}");
 			vAttachedCode.p();
 			vClazz.addAttachedCode(vAttachedCode.toString());
 			vAttachedCode.c();
@@ -121,7 +121,7 @@ public class APropertySync {
 			vAttachedCode
 			      .p(vAppContextName + ".DEFAULT.ED.removeChangeListener(" + vParentMSingleProperty.getFieldName() + ", "
 			            + vFromMSingleProperty.getNameConstantQualifiedName() + ", " + vChangeListenerInstanceName + ");");
-			vAttachedCode.pu("}");
+			vAttachedCode.up("}");
 			_property.getProperty().addBeforeChangeCode(vAttachedCode.toString());
 			vAttachedCode.c();
 			// afterChange code attachment
@@ -129,7 +129,7 @@ public class APropertySync {
 			vAttachedCode
 			      .p(vAppContextName + ".DEFAULT.ED.addChangeListener(" + vParentMSingleProperty.getFieldName() + ", "
 			            + vFromMSingleProperty.getNameConstantQualifiedName() + ", " + vChangeListenerInstanceName + ");");
-			vAttachedCode.pu("}");
+			vAttachedCode.up("}");
 			vAttachedCode.p(vUpdateMethodName + "()" + ";");
 			_property.getProperty().addAfterChangeCode(vAttachedCode.toString());
 			vAttachedCode.c();

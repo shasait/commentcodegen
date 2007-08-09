@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.5 2007-07-02 13:41:29 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.6 2007-08-09 14:20:18 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -37,7 +37,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
@@ -186,7 +186,7 @@ public abstract class AbstractCompilationUnit {
 		}
 		writeAdditionalCuComment(vContent, pMonitor);
 		vContent.p("@author CCG " + getCuContainer().getApplication().getSourceFile().getFullPath().toString());
-		vContent.pu(" */");
+		vContent.up(" */");
 		writeTypes(vContent, vUserBlockContentByName, pMonitor);
 		getTargetFile().write(vContent.toString(), Boolean.TRUE, pMonitor);
 	}

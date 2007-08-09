@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.6 2007-07-02 13:41:29 concentus Exp $
+ * $Id: Dialog.java,v 1.7 2007-08-09 14:20:18 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -63,7 +63,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @since 13.12.2006
  */
 public class Dialog extends AbstractCompilationUnit {
@@ -132,15 +132,15 @@ public class Dialog extends AbstractCompilationUnit {
 		// constructor body
 		pContent.p("super();");
 		pContent.p("_presentationModel = pPresentationModel;");
-		pContent.pu("}");
+		pContent.up("}");
 		pContent.p();
 		// modelToUi
 		pContent.pi("public final void presentationModelToUi() {");
-		pContent.pu("}");
+		pContent.up("}");
 		pContent.p();
 		// uiToModel
 		pContent.pi("public final void uiToPresentationModel() {");
-		pContent.pu("}");
+		pContent.up("}");
 		pContent.p();
 		// write abstract presentation model class
 		pContent.a("public ");
@@ -185,7 +185,7 @@ public class Dialog extends AbstractCompilationUnit {
 			AbstractMProperty vPresentationModelProperty = (AbstractMProperty) vPresentationModelPropertiesI.next();
 			vPresentationModelProperty.writeConstructorBody(pContent);
 		}
-		pContent.pu("}");
+		pContent.up("}");
 		pContent.p();
 		// presentation model field accessors
 		for (Iterator vPresentationModelPropertiesI = _presentationModelProperties.iterator(); vPresentationModelPropertiesI
@@ -201,10 +201,10 @@ public class Dialog extends AbstractCompilationUnit {
 			pContent.p("public abstract void " + vPresentationModelAction.getName() + "();");
 			pContent.p();
 		}
-		pContent.pu("}");
+		pContent.up("}");
 		//
 		CodeUtils.writeUserBlock(pContent, pUserBlockContentByName, "DialogEnd");
-		pContent.pu("}");
+		pContent.up("}");
 	}
 
 	private static class PresentationModelAction {

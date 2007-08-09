@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.19 2007-08-09 10:27:18 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.20 2007-08-09 14:20:03 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -62,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -191,7 +191,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		clearGenerators();
 		CcgProjectConfiguration configuration = CcgProjectConfiguration.getProjectConfiguration(getProject());
 		final String[] generatorFolderPaths = configuration.getGeneratorFolderPaths();
-		XProject project = new XProject(getProject());
+		XProject project = new XProject(getProject(), getProject());
 		for (int pathI = 0; pathI < generatorFolderPaths.length; pathI++) {
 			String path = generatorFolderPaths[pathI];
 			XFolder baseFolder = project.getFolder(path);

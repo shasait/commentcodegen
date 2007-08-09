@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAddNatureAction.java,v 1.1 2006-11-08 16:16:41 concentus Exp $
+ * $Id: AbstractAddNatureAction.java,v 1.2 2007-08-09 14:20:15 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.eclipse.common.NatureUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class AbstractAddNatureAction implements IObjectActionDelegate {
 	private final String _natureId;
@@ -42,16 +42,14 @@ public abstract class AbstractAddNatureAction implements IObjectActionDelegate {
 		_natureId = natureId;
 	}
 
-	public final void run(IAction action) {
+	public final void run(final IAction action) {
 		if (_selection instanceof IStructuredSelection) {
-			Object element = ((IStructuredSelection) _selection)
-					.getFirstElement();
+			Object element = ((IStructuredSelection) _selection).getFirstElement();
 			IProject project = null;
 			if (element instanceof IProject) {
 				project = (IProject) element;
 			} else if (element instanceof IAdaptable) {
-				project = (IProject) ((IAdaptable) element)
-						.getAdapter(IProject.class);
+				project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
 			}
 			if (project != null) {
 				try {
@@ -63,11 +61,11 @@ public abstract class AbstractAddNatureAction implements IObjectActionDelegate {
 		}
 	}
 
-	public final void selectionChanged(IAction action, ISelection selection) {
+	public final void selectionChanged(final IAction action, final ISelection selection) {
 		_selection = selection;
 	}
 
-	public final void setActivePart(IAction action, IWorkbenchPart targetPart) {
+	public final void setActivePart(final IAction action, final IWorkbenchPart targetPart) {
 		// ignore
 	}
 }

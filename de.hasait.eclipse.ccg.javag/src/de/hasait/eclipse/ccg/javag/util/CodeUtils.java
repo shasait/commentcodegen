@@ -1,5 +1,5 @@
 /*
- * $Id: CodeUtils.java,v 1.5 2007-06-21 16:35:05 concentus Exp $
+ * $Id: CodeUtils.java,v 1.6 2007-08-09 14:20:19 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -31,7 +31,7 @@ import de.hasait.eclipse.common.StringUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 18.12.2006
  */
 public final class CodeUtils {
@@ -143,7 +143,7 @@ public final class CodeUtils {
 					writeMethodInvocation(pContent, pInstance, methodName, parameterNames);
 					pContent.a(";");
 					pContent.p();
-					pContent.pu("}");
+					pContent.up("}");
 					pContent.p();
 				}
 			}

@@ -25,7 +25,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @since 13.12.2006
  */
 public class Application {
@@ -64,14 +64,14 @@ public class Application {
 				pContent.pi("public final class ApplicationContext {");
 				pContent.pi("private ApplicationContext() {");
 				pContent.p("super();");
-				pContent.pu("}");
+				pContent.up("}");
 				pContent.p();
 				pContent.p("public static final ApplicationContext DEFAULT = new ApplicationContext();");
 				pContent.p();
 				pContent.p("public final ModelEventDispatcher ED = new ModelEventDispatcher();");
 				pContent.p();
 				pContent.p();
-				pContent.pu("}");
+				pContent.up("}");
 			}
 		};
 		_appGlobalCuContainer.addCompilationUnit(_applicationContextCu);
