@@ -1,5 +1,5 @@
 /*
- * $Id: CcgProjectConfiguration.java,v 1.1 2006-12-03 21:43:18 concentus Exp $
+ * $Id: CcgProjectConfiguration.java,v 1.2 2007-08-09 10:27:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -32,7 +32,7 @@ import de.hasait.eclipse.common.fieldeditor.StringListFieldEditor;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 03.12.2006
  */
 public final class CcgProjectConfiguration {
@@ -50,6 +50,12 @@ public final class CcgProjectConfiguration {
 
 	private static final String SOURCE_FOLDER_PATHS_DEFAULT_VALUE = "/ccg";
 
+	private static final String GENERATOR_FOLDER_PATHS_TITLE = "&Generatorfolders:";
+
+	private static final String GENERATOR_FOLDER_PATHS_KEY = "generatorFolders";
+
+	private static final String GENERATOR_FOLDER_PATHS_DEFAULT_VALUE = "/ccg";
+
 	private final PreferenceStore _preferenceStore;
 
 	private CcgProjectConfiguration(final String filename) {
@@ -57,6 +63,7 @@ public final class CcgProjectConfiguration {
 		_preferenceStore = new PreferenceStore(filename);
 		_preferenceStore.setDefault(OUTPUT_FOLDER_PATH_KEY, OUTPUT_FOLDER_PATH_DEFAULT_VALUE);
 		_preferenceStore.setDefault(SOURCE_FOLDER_PATHS_KEY, SOURCE_FOLDER_PATHS_DEFAULT_VALUE);
+		_preferenceStore.setDefault(GENERATOR_FOLDER_PATHS_KEY, GENERATOR_FOLDER_PATHS_DEFAULT_VALUE);
 		try {
 			_preferenceStore.load();
 		} catch (IOException e) {
@@ -64,7 +71,7 @@ public final class CcgProjectConfiguration {
 		}
 	}
 
-	public static final CcgProjectConfiguration getProjectConfiguration(IProject project) {
+	public static final CcgProjectConfiguration getProjectConfiguration(final IProject project) {
 		String filename = project.getFile(PREFERENCE_FILENAME).getLocation().toOSString();
 		return new CcgProjectConfiguration(filename);
 	}
@@ -83,7 +90,7 @@ public final class CcgProjectConfiguration {
 		return _preferenceStore.getString(OUTPUT_FOLDER_PATH_KEY);
 	}
 
-	public FieldEditor createOutputFolderPathFieldEditor(Composite parent) {
+	public FieldEditor createOutputFolderPathFieldEditor(final Composite parent) {
 		return new StringFieldEditor(OUTPUT_FOLDER_PATH_KEY, OUTPUT_FOLDER_PATH_TITLE, parent);
 	}
 
@@ -94,8 +101,19 @@ public final class CcgProjectConfiguration {
 		return _preferenceStore.getString(SOURCE_FOLDER_PATHS_KEY).split(";");
 	}
 
-	public FieldEditor createSourceFolderPathsFieldEditor(Composite parent) {
+	public FieldEditor createSourceFolderPathsFieldEditor(final Composite parent) {
 		return new StringListFieldEditor(SOURCE_FOLDER_PATHS_KEY, SOURCE_FOLDER_PATHS_TITLE, parent);
+	}
+
+	/**
+	 * @return the generatorFolderPaths
+	 */
+	public String[] getGeneratorFolderPaths() {
+		return _preferenceStore.getString(GENERATOR_FOLDER_PATHS_KEY).split(";");
+	}
+
+	public FieldEditor createGeneratorFolderPathsFieldEditor(final Composite parent) {
+		return new StringListFieldEditor(GENERATOR_FOLDER_PATHS_KEY, GENERATOR_FOLDER_PATHS_TITLE, parent);
 	}
 
 	/**

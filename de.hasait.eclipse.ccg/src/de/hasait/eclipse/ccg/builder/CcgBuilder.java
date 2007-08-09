@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.18 2007-06-25 08:22:30 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.19 2007-08-09 10:27:18 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -62,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -140,6 +140,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	protected final IProject[] build(final int kind, final Map args, final IProgressMonitor monitor)
 	      throws CoreException {
 		CcgProjectConfiguration configuration = CcgProjectConfiguration.getProjectConfiguration(getProject());
+		final String[] generatorFolderPaths = configuration.getGeneratorFolderPaths();
 		if (kind == FULL_BUILD) {
 			fullBuild(configuration, monitor);
 		} else {
@@ -149,15 +150,24 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			} else {
 				// check if IncrementalBuild is possible, i.e. no generators have changed.
 				final boolean[] doIncrementalBuild = new boolean[] { true };
+				final boolean[] skipAll = new boolean[] { false };
+				// TODO check configured generatorFolders
 				buildDelta.accept(new IResourceDeltaVisitor() {
 					public boolean visit(final IResourceDelta delta) throws CoreException {
+						if (skipAll[0]) {
+							return false;
+						}
 						IResource resource = delta.getResource();
+						if (!isPrefixOf(getProject(), generatorFolderPaths, resource)) {
+							return false;
+						}
 						if (resource instanceof IFile) {
 							if (resource.exists()) {
 								String fileName = resource.getName();
 								if (fileName.endsWith(JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX)
 								      || fileName.endsWith(BEANSHELL_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
 									doIncrementalBuild[0] = false;
+									skipAll[0] = true;
 									return false;
 								}
 							}
@@ -179,12 +189,19 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 	protected final void refreshGenerators() throws CoreException {
 		_generatorsDirty = false;
 		clearGenerators();
-		getProject().accept(new IResourceVisitor() {
-			public boolean visit(final IResource resource) {
-				addGenerator(resource);
-				return true;
-			}
-		});
+		CcgProjectConfiguration configuration = CcgProjectConfiguration.getProjectConfiguration(getProject());
+		final String[] generatorFolderPaths = configuration.getGeneratorFolderPaths();
+		XProject project = new XProject(getProject());
+		for (int pathI = 0; pathI < generatorFolderPaths.length; pathI++) {
+			String path = generatorFolderPaths[pathI];
+			XFolder baseFolder = project.getFolder(path);
+			baseFolder.getRawFolder().accept(new IResourceVisitor() {
+				public boolean visit(final IResource resource) {
+					addGenerator(resource);
+					return true;
+				}
+			});
+		}
 	}
 
 	protected final void fullBuild(final CcgProjectConfiguration configuration, final IProgressMonitor monitor)
@@ -303,9 +320,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private boolean isPrefixOf(IProject base, String[] paths, IResource resource) {
-		for (int i = 0; i < paths.length; i++) {
-			IFolder folder = base.getFolder(paths[i]);
+	private boolean isPrefixOf(final IProject base, final String[] paths, final IResource resource) {
+		for (int pathI = 0; pathI < paths.length; pathI++) {
+			IFolder folder = base.getFolder(paths[pathI]);
 			if (folder.getFullPath().isPrefixOf(resource.getFullPath())) {
 				return true;
 			}
@@ -339,6 +356,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	private boolean executeBlockGenerators(final XFile sourceFile, final ICcgRoot root, final Map sourceFileContext,
 	      final IProgressMonitor monitor) throws Exception {
+		String oldSource = root.getSource();
 		int index = 0;
 		while (index < root.childNodesSize()) {
 			ICcgTreeChild child = root.getChildNode(index);
@@ -349,9 +367,6 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 					String block = "";
 					XElement mconfigElement = XElement.parse("<ccg>" + command + "</ccg>");
 					XElement[] configChildElements = mconfigElement.getChildElements();
-					if (configChildElements.length == 0) {
-						return false;
-					}
 					for (int configChildElementsI = 0; configChildElementsI < configChildElements.length; configChildElementsI++) {
 						XElement configElement = configChildElements[configChildElementsI];
 						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getTagName());
@@ -391,7 +406,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			}
 			index++;
 		}
-		return true;
+
+		return !ObjectUtil.equals(oldSource, root.getSource());
 	}
 
 	private void addMarker(IFile file, Exception exception, int lineNumber, int severity) {

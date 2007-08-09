@@ -3,7 +3,7 @@
 <plugin
    id="de.hasait.eclipse.ccg.javag"
    name="JavaGenerator Plug-in"
-   version="2.2.2"
+   version="2.3.0"
    provider-name="Sebastian Hasait"
    class="de.hasait.eclipse.ccg.javag.JavagPlugin">
 
@@ -25,10 +25,6 @@
    </requires>
    
    <extension point="de.hasait.eclipse.ccg.generators">
-      <blockGenerator tagnames="javaastbsf" class="de.hasait.eclipse.ccg.javag.JavaAstBsfBlockGenerator" />
-      <blockGenerator tagnames="eventsupport" class="de.hasait.eclipse.ccg.javag.pattern.EventSupportBlockGenerator" />
-      <blockGenerator tagnames="memberdelegate" class="de.hasait.eclipse.ccg.javag.pattern.MemberDelegateBlockGenerator"/>
-      <blockGenerator tagnames="property" class="de.hasait.eclipse.ccg.javag.pattern.PropertyBlockGenerator"/>
       <resourceGenerator tagnames="application" class="de.hasait.eclipse.ccg.javag.application.ApplicationResourceGenerator"/>
    </extension>
 

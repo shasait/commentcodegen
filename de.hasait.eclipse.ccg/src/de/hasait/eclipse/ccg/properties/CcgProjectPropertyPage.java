@@ -1,5 +1,5 @@
 /*
- * $Id: CcgProjectPropertyPage.java,v 1.2 2007-01-02 16:21:07 concentus Exp $
+ * $Id: CcgProjectPropertyPage.java,v 1.3 2007-08-09 10:27:17 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -36,7 +36,7 @@ import org.eclipse.ui.dialogs.PropertyPage;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 03.12.2006
  */
 public class CcgProjectPropertyPage extends PropertyPage {
@@ -56,7 +56,7 @@ public class CcgProjectPropertyPage extends PropertyPage {
 	/**
 	 * @see PreferencePage#createContents(Composite)
 	 */
-	protected Control createContents(Composite parent) {
+	protected Control createContents(final Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
@@ -71,11 +71,12 @@ public class CcgProjectPropertyPage extends PropertyPage {
 
 		addFieldEditor(_configuration.createOutputFolderPathFieldEditor(composite));
 		addFieldEditor(_configuration.createSourceFolderPathsFieldEditor(composite));
+		addFieldEditor(_configuration.createGeneratorFolderPathsFieldEditor(composite));
 
 		return composite;
 	}
 
-	protected final void addFieldEditor(FieldEditor fieldEditor) {
+	protected final void addFieldEditor(final FieldEditor fieldEditor) {
 		_fieldEditors.add(fieldEditor);
 		fieldEditor.setPage(this);
 		fieldEditor.setPreferenceStore(getPreferenceStore());
