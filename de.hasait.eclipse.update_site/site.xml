@@ -24,13 +24,13 @@
    <feature url="features/org.dom4j_feature_1.6.1.jar" id="org.dom4j_feature" version="1.6.1">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.common_feature_2.0.1.jar" id="de.hasait.eclipse.common_feature" version="2.0.1">
+   <feature url="features/de.hasait.eclipse.common_feature_2.1.0.jar" id="de.hasait.eclipse.common_feature" version="2.1.0">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.3.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.3.0">
+   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.3.1.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.3.1">
       <category name="ccg"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg_feature_2.3.0.jar" id="de.hasait.eclipse.ccg_feature" version="2.3.0">
+   <feature url="features/de.hasait.eclipse.ccg_feature_2.3.1.jar" id="de.hasait.eclipse.ccg_feature" version="2.3.1">
       <category name="ccg"/>
    </feature>
    <category-def name="common" label="Common"/>
