@@ -1,0 +1,64 @@
+import de.hasait.eclipse.common.StringUtil;
+
+name = configElement.getRequiredStringAttribute("name");
+fname = "_" + name;
+cname = StringUtil.capitalize(name);
+
+ctype = configElement.getRequiredStringAttribute("type");
+
+description = configElement.getStringAttribute("description", "Keine weitere Beschreibung angegeben");
+
+premethod = configElement.getStringAttribute("premethod");
+postmethod = configElement.getStringAttribute("postmethod");
+
+required = configElement.getBooleanAttribute("required", false);
+array = configElement.getBooleanAttribute("array", false);
+
+value = configElement.getStringAttribute("value");
+
+if (array) {
+	type = ctype + "[]";
+} else {
+	type = ctype;
+}
+
+description = ((required && (value == null)) ? "required; " : "") + description;
+
+out.a("private " + type + " " + fname);
+if (value != null) {
+	out.a(" = " + value);
+}
+out.p(";");
+out.p();
+out.pi("/**", " * ");
+out.p("@param " + name + " " + description);
+out.up(" */");
+out.pi("public final void set" + cname + "(final " + type + " " + name + ") {");
+if (premethod != null) {
+	out.pi("if (!" + premethod + "(" + name + ")) {");
+	out.p("return;");
+	out.up("}");
+}
+out.a(fname).a(" = ");
+if (array) {
+	if (!"Object[]".equals(type)) {
+		out.a("(" + type + ") ");
+	}
+	out.a("ArrayUtils.clone(" + name + ")");
+} else {
+	out.a(name);
+}
+out.p(";");
+if (postmethod != null) {
+	out.p(postmethod + "();");
+}
+out.up("}");
+out.p();
+out.pi("protected final " + type + " use" + cname + "() {");
+if (required) {
+	out.pi("if (" + fname + " == null) {");
+	out.p("throw new IllegalArgumentException(\"" + name + " == null\");");
+	out.up("}");
+}
+out.p("return " + fname + ";");
+out.up("}");

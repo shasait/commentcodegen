@@ -1,0 +1,465 @@
+import de.hasait.eclipse.common.StringUtil;
+import de.hasait.eclipse.common.JavaContentBuffer;
+
+out = new JavaContentBuffer(out);
+
+String type = configElement.getRequiredStringAttribute("type");
+String name = configElement.getRequiredStringAttribute("name");
+String value = configElement.getStringAttribute("value");
+String capName = StringUtil.capitalize(name);
+String oldName = "old" + capName;
+String manyName = configElement.getStringAttribute("manyname", name + "s");
+String capManyName = StringUtil.capitalize(manyName);
+String cardinality = configElement.getStringAttribute("cardinality");
+boolean many = !(cardinality == null || cardinality.equals("1"));
+boolean bound = configElement.getBooleanAttribute("bound", false);
+boolean afterChanged = configElement.getBooleanAttribute("afterchanged", false);
+boolean beforeSet = configElement.getBooleanAttribute("beforeset", false);
+boolean hooked = configElement.getBooleanAttribute("hooked", false);
+boolean required = configElement.getBooleanAttribute("required", false);
+String use = configElement.getStringAttribute("use", "protected");
+boolean vSynchronized = configElement.getBooleanAttribute("synchronized", false);
+boolean readonly = configElement.getBooleanAttribute("readonly", false);
+String backref = configElement.getStringAttribute("backref");
+String vBackrefCardinality = configElement.getStringAttribute("backrefcardinality");
+boolean backrefMany = !(vBackrefCardinality == null || vBackrefCardinality.equals("1"));
+
+String setterVisibility = null;
+if (readonly) {
+	setterVisibility = "protected";
+} else {
+	setterVisibility = "public";
+}
+String capBackref = null;
+;
+if (backref != null) {
+	capBackref = StringUtil.capitalize(backref);
+}
+String fieldName = "_" + (many ? manyName : name);
+String parameterName = name;
+String getterPrefix = (type.equals("boolean") || type.equals("Boolean") || type.equals("java.lang.Boolean")) ? "is"
+      : "get";
+
+String nameConstant = "PROPERTYNAME_" + name.toUpperCase();
+
+out.javaDocStart();
+out.a("Property ").a(name).a(".").p();
+out.javaDocEnd();
+out.a("public static final String ").a(nameConstant).a(" = \"").a(name).a("\"").p(";");
+
+if (!many) {
+	out.p();
+	out.javaDocStart();
+	out.a("The single property field ").a(name).p(".");
+	out.javaDocEnd();
+	out.a("private ").a(type).a(" ").a(fieldName);
+	if (value != null) {
+		out.a(" = ").a(value);
+	}
+	out.p(";");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return the ").a(name).p(".");
+	out.javaDocEnd();
+	out.a("public final ").a(type).a(" ").a(getterPrefix).a(capName).a("() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return ").a(fieldName).p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Set the ").a(name).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void set").a(capName);
+	if (readonly) {
+		out.a("Internal");
+	}
+	out.a("(").a("final ").a(type).a(" ").a(parameterName);
+	out.a(") ").pi("{");
+	if (bound) {
+		out.a(type).a(" ").a(oldName).p(";");
+	}
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	if (beforeSet) {
+		out.a("if (!before").a(capName).a("Set(").a(parameterName).a(")) ").pi("{");
+		out.a("return").p(";");
+		out.up("}");
+	}
+	if (bound) {
+		out.a(oldName).a(" = ").a(fieldName).p(";");
+	}
+	out.a("if (!doSet").a(capName).a("(").a(parameterName).a(")) ").pi("{");
+	out.a("return").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", ").a(oldName).a(", ").a(parameterName).a(")").p(";");
+	}
+	out.up("}");
+
+	out.p();
+	out.a("private boolean doSet").a(capName).a("(");
+	out.a("final ").a(type).a(" ").a(parameterName);
+	out.a(") ").pi("{");
+	out.a("if (").a(fieldName).a(" == ").a(parameterName).a(") ").pi("{");
+	out.a("return false").p(";");
+	out.up("}");
+	if (hooked || (backref != null)) {
+		out.a("if (").a(fieldName).a(" != null) ").pi("{");
+		if (hooked || (backref != null)) {
+			out.a(type).a(" ").a(oldName).a(" = ").a(fieldName).p(";");
+		}
+		out.a(fieldName).a(" = null").p(";");
+		if (backref != null) {
+			if (backrefMany) {
+				out.a(oldName).a(".remove").a(capBackref).a("(this)").p(";");
+			} else {
+				out.a(oldName).a(".set").a(capBackref).a("(null)").p(";");
+			}
+		}
+		if (hooked) {
+			out.a("old").a(capName).a("(").a(oldName).a(")").p(";");
+		}
+		out.up("}");
+	}
+	out.a(fieldName).a(" = ").a(parameterName).p(";");
+	if (hooked || (backref != null)) {
+		out.a("if (").a(fieldName).a(" != null) ").pi("{");
+		if (backref != null) {
+			if (backrefMany) {
+				out.a(parameterName).a(".add").a(capBackref).a("(this)").p(";");
+			} else {
+				out.a(parameterName).a(".set").a(capBackref).a("(this)").p(";");
+			}
+		}
+		if (hooked) {
+			out.a("new").a(capName).a("(").a(parameterName).a(")").p(";");
+		}
+		out.up("}");
+	}
+	out.a("return true").p(";");
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return the ").a(name).p(".");
+	out.javaDocEnd();
+	out.a("protected final ").a(type).a(" use").a(capName).a("() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	if (required) {
+		out.a("if (").a(fieldName).a(" == null) ").pi("{");
+		out.a("throw new ").a(IllegalArgumentException.class.getName()).a("(\"").a(fieldName).a(" == null").a("\")").p(";");
+		out.up("}");
+	}
+	out.a("return ").a(fieldName).p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+} else {
+	out.p();
+	out.javaDocStart();
+	out.a("The many property field ").a(name).p(".");
+	out.javaDocEnd();
+	out.a("private final ").a(List.class.getName()).a(" ").a(fieldName).a(" = ");
+	if (value != null) {
+		out.a(value);
+	} else {
+		out.a("new ").a(ArrayList.class.getName()).a("()");
+	}
+	out.p(";");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return an array with all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a("public final ").a(type).a("[] get").a(capManyName).a("() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return (").a(type).a("[]) ").a(fieldName).a(".toArray(new ").a(type).a("[").a(fieldName).a(".size()])")
+	      .p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return a list with all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a("public final ").a(List.class.getName()).a(" get").a(capName).a("List() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return new ").a(ArrayList.class.getName()).a("(").a(fieldName).a(")").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return the ").a(name).a(" at the specified index").p(".");
+	out.javaDocEnd();
+	out.a("public final ").a(type).a(" get").a(capName).a("(final int index) ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return (").a(type).a(") ").a(fieldName).a(".get(index)").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return if the specified ").a(name).a(" is contained").p(".");
+	out.javaDocEnd();
+	out.a("public final boolean contains").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return ").a(fieldName).a(".contains(").a(parameterName).a(")").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return how many ").a(manyName).a(" are contained").p(".");
+	out.javaDocEnd();
+	out.a("public final int ").a(name).a("Size() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return ").a(fieldName).a(".size()").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return if ").a(name).a(" is empty").p(".");
+	out.javaDocEnd();
+	out.a("public final boolean is").a(capManyName).a("Empty() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return ").a(fieldName).a(".isEmpty()").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Return an {@link ").a(Iterator.class.getName()).a("} for all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a("public final ").a(Iterator.class.getName()).a(" ").a(manyName).a("Iterator() ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("return ").a(fieldName).a(".iterator()").p(";");
+	if (vSynchronized) {
+		out.up("}");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Add the specified ").a(name).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void add").a(capName);
+	if (readonly) {
+		out.a("Internal");
+	}
+	out.a("(final ").a(type).a(" ").a(parameterName).a(") ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("if (!doAdd").a(capName).a("(").a(parameterName).a(")) ").pi("{");
+	out.a("return").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capManyName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", null, ").a(parameterName).a(")").p(";");
+	}
+	out.up("}");
+
+	out.p();
+	out.a("private boolean doAdd").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ")
+	      .pi("{");
+	out.a("if (").a(fieldName).a(".contains(").a(parameterName).a(")) ").pi("{");
+	out.a("return false").p(";");
+	out.up("}");
+	if (backref != null) {
+		if (backrefMany) {
+			out.a(parameterName).a(".remove").a(capBackref).a("(this)").p(";");
+		} else {
+			out.a(parameterName).a(".set").a(capBackref).a("(null)").p(";");
+		}
+	}
+	out.a(fieldName).a(".add(").a(parameterName).a(")").p(";");
+	if (backref != null) {
+		if (backrefMany) {
+			out.a(parameterName).a(".add").a(capBackref).a("(this)").p(";");
+		} else {
+			out.a(parameterName).a(".set").a(capBackref).a("(this)").p(";");
+		}
+	}
+	if (hooked) {
+		out.a("new").a(capName).a("(").a(parameterName).a(")").p(";");
+	}
+	out.a("return true").p(";");
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Add all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void add").a(capManyName);
+	if (readonly) {
+		out.a("Internal");
+	}
+	out.a("(final ").a(type).a("[] ").a(manyName).a(") ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("for (int i = 0; i < ").a(manyName).a(".length; i++) ").pi("{");
+	out.a("doAdd").a(capName).a("(").a(manyName).a("[i])").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capManyName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", ").a("null, null)").p(";");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Remove the specified ").a(name).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void remove").a(capName);
+	if (readonly) {
+		out.a("Internal");
+	}
+	out.a("(final ").a(type).a(" ").a(parameterName).a(") ").pi("{");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("if (doRemove").a(capName).a("(").a(parameterName).a(")) ").pi("{");
+	out.a("return").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capManyName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", ").a(parameterName).a(", null)").p(";");
+	}
+	out.up("}");
+
+	out.p();
+	out.a("private boolean doRemove").a(capName).a("(final ").a(type).a(" ").a(parameterName).a(") ")
+	      .pi("{");
+	out.a("if (!").a(fieldName).a(".contains(").a(parameterName).a(")) ").pi("{");
+	out.a("return false").p(";");
+	out.up("}");
+	if (hooked) {
+		out.a("old").a(capName).a("(").a(parameterName).a(")").p(";");
+	}
+	out.a(fieldName).a(".remove(").a(parameterName).a(")").p(";");
+	if (backref != null) {
+		if (backrefMany) {
+			out.a(parameterName).a(".remove").a(capBackref).a("(this)").p(";");
+		} else {
+			out.a(parameterName).a(".set").a(capBackref).a("(null)").p(";");
+		}
+	}
+	out.a("return true").p(";");
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Remove all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void remove").a(capManyName);
+	if (readonly) {
+		out.a("Internal");
+	}
+	out.a("() ").pi("{");
+	out.a(type).a("[] ").a(manyName).p(";");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a(manyName).a(" = get").a(capManyName).a("()").p(";");
+	out.a("for (int i = 0; i < ").a(manyName).a(".length; i++) ").pi("{");
+	out.a("doRemove").a(capName).a("(").a(manyName).a("[i])").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capManyName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", ").a("null, null)").p(";");
+	}
+	out.up("}");
+
+	out.p();
+	out.javaDocStart();
+	out.a("Set all ").a(manyName).p(".");
+	out.javaDocEnd();
+	out.a(setterVisibility).a(" final void set").a(capManyName).a("(final ").a(type).a("[] ").a(manyName).a(") ").pi("{");
+	out.a(type).a("[] old").a(capManyName).p(";");
+	if (vSynchronized) {
+		out.pi("synchronized (this) {");
+	}
+	out.a("old").a(capManyName).a(" = get").a(capManyName).a("()").p(";");
+	out.a("for (int i = 0; i < old").a(capManyName).a(".length; i++) ").pi("{");
+	out.a("doRemove").a(capName).a("(old").a(capManyName).a("[i])").p(";");
+	out.up("}");
+	out.a("for (int i = 0; i < ").a(manyName).a(".length; i++) ").pi("{");
+	out.a("doAdd").a(capName).a("(").a(manyName).a("[i])").p(";");
+	out.up("}");
+	if (afterChanged) {
+		out.a("after").a(capManyName).a("Changed()").p(";");
+	}
+	if (vSynchronized) {
+		out.up("}");
+	}
+	if (bound) {
+		out.a("firePropertyChange(").a(nameConstant).a(", ").a("null, null)").p(";");
+	}
+	out.up("}");	
+}
