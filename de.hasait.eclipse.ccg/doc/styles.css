@@ -1,9 +1,81 @@
 BODY.page {
-	width: 100%;
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
 	overflow: auto;
+	background-color: #FFFFF0;
+}
+
+DIV.header {
+	position: fixed;
+	top: 0px;
+	width: 600pt;
+	background-color: #F0F0C0;
+	border-bottom: 2pt solid #D0D0B0;
+	padding-top: 8pt;
+	padding-left: 8pt;
+	padding-right: 8pt;
+}
+
+DIV.title {
+	font-size: 18pt;
+	font-weight: normal;
+	font-family: sans-serif;
+	padding-bottom: 4pt;
+}
+
+DIV.navarea {
+}
+
+A.navlinkint {
+	border: 1px solid #D0D0B0;
+}
+
+A.navlinkext {
+	border: 1px solid #D0B0B0;
+}
+
+A.navlinkcur {
+	background-color: #D0D0B0;
+	border: 1px solid #D0D0B0;
+}
+
+A.navlinkcur:HOVER {
+	color: #000080;
+}
+
+A {
+	color: #000080;
+	text-decoration: none;
+}
+
+A:HOVER {
+	color: #800000;
+}
+
+DIV.content {
+	width: 600pt;
+	padding-top: 60pt;
+	padding-left: 8pt;
+	padding-right: 8pt;
+	padding-bottom: 40pt;
+}
+
+DIV.footer {
+	position: fixed;
+	bottom: 0px;
+	width: 600pt;
+	background-color: #C0C0F0;
+	border-top: 2pt solid #D0D0F0;
+	padding-top: 4pt;
+	padding-bottom: 4pt;
+	padding-left: 8pt;
+	padding-right: 8pt;
+}
+
+DIV.version {
+	font-size: 10pt;
+	font-family: monospace;
 }
 
 DIV.h1 {
@@ -11,7 +83,7 @@ DIV.h1 {
 	font-size: 18pt;
 	font-weight: normal;
 	font-family: serif;
-	margin: 10px 0px 0px 10px;
+	margin-top: 12pt;
 }
 
 DIV.h2 {
@@ -19,7 +91,7 @@ DIV.h2 {
 	font-size: 16pt;
 	font-weight: normal;
 	font-family: serif;
-	margin: 10px 0px 0px 10px;
+	margin-top: 10pt;
 }
 
 DIV.h3 {
@@ -27,7 +99,7 @@ DIV.h3 {
 	font-size: 14pt;
 	font-weight: bold;
 	font-family: serif;
-	margin: 10px 0px 0px 10px;
+	margin-top: 8pt;
 }
 
 DIV.p {
@@ -35,12 +107,12 @@ DIV.p {
 	font-size: 12pt;
 	font-weight: normal;
 	font-family: serif;
-	margin: 10px 0px 0px 10px;
+	margin-top: 4pt;
 }
 
 DIV.name {
 	display: inline;
-	background-color: #F0F0FF;;
+	background-color: #F0F0FF;
 	border: 1px solid #808080;
 }
 
@@ -48,8 +120,8 @@ PRE.code {
 	display: block;
 	font-size: 12pt;
 	font-weight: normal;
-	color: #0000A0;
-	background-color: #F0F0C0;
+	color: #808080;
+	background-color: #FFFFFF;
 	border: 1px solid #808080;
 	padding: 5px;;
 }
@@ -59,73 +131,14 @@ DIV.code {
 	font-weight: normal;
 	font-family: monospace;
 	color: #0000A0;
-	background-color: #F0F0C0;;
+	background-color: #FFFFFF;
 	border: 1px solid #808080;
 }
 
+SPAN.codehl {
+	color: #F00000;
+}
+
 SPAN.codenew {
-	color: #800080;
-}
-
-A.nav {
-	color: #000000;
-	border: 1px outset #808080;
-	text-decoration: none;
-	background-color: #C0C0F0;
-	padding: 3px;
-}
-
-A.nav:HOVER {
-	color: #000000;
-	border: 2px outset #808080;
-	text-decoration: none;
-	background-color: #D0D0F0;
-	padding: 2px;
-}
-
-A.navcurrent {
-	color: #804080;
-	border: 1px outset #808080;
-	text-decoration: none;
-	background-color: #F0D0F0;
-	padding: 3px;
-}
-
-TABLE.page {
-	width: 100%;
-	height: 100%;
-	margin: 0px;
-	padding: 0px;
-}
-
-TD.header {
-	background-color: #F0F0C0;
-	padding-bottom: 5px;
-	border: 2px outset #F0F0C0;
-}
-
-TR.content {
-	height: 100%;
-}
-
-TD.content {
-	width: 100%;
-	height: 100%;
-	background-color: #FFFFF0;
-	height: 100%;
-}
-
-DIV.content {
-	width: 100%;
-	height: 100%;
-	overflow: auto;
-	display: block;
-}
-
-TD.footer {
-	font-size: 10pt;
-	font-family: monospace;
-	background-color: #C0C0F0;
-	padding: 5px;;
-	border: 2px outset #C0C0F0;
+	color: #0000F0;
 }
