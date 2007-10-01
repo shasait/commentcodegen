@@ -7,38 +7,39 @@
 </head>
 
 <body class="page">
-<table class="page"><tr><td class="header">
-<div class="h1">CommentCodeGen (CCG) - Introduction</div>
-<div class="p">
-<a class="nav" href="http://sourceforge.net/projects/commentcodegen">sourceforge project page</a>
-<a class="nav" href="index.html">Overview</a>
-<a class="navcurrent" href="Introduction.html">Introduction</a>
-<a class="nav" href="GettingStarted.html">Getting Started</a>
-<a class="nav" href="EclipseDevelopmentSetup.html">Eclipse Development Setup</a>
-</div>
-</td></tr><tr class="content"><td class="content"><div class="content">
+	<div class="header">
+		<div class="title">CommentCodeGen (CCG) - Introduction</div>
+		<div class="navarea">
+			<a class="navlinkext" href="http://sourceforge.net/projects/commentcodegen">sourceforge project page</a>
+			<a class="navlinkint" href="index.html">Overview</a>
+			<a class="navlinkcur" href="Introduction.html">Introduction</a>
+			<a class="navlinkint" href="GettingStarted.html">Getting Started</a>
+			<a class="navlinkint" href="EclipseDevelopmentSetup.html">Eclipse Development Setup</a>
+		</div>
+	</div>
+	<div class="content">
 <div class="p">This is a <a href="www.eclipse.org">eclipse</a> plugin to
-generate code. Its special in the way you specifiy what code to
-generate.<br />
-You add special comments to your code and after each of these comments the code is generated.
-This way you can easily add complex properties to your Java classes or include template files.
-On rebuilding of the file the generated code is updated to reflect changes of the comment or
-other external resources influencing the generation result.</div>
+generate code. You use comments to tell the plugin what code to generate.
+The generated code is inserted directly after the comment and updated
+everytime you change the comment.<br />
+So you can skip stupid code and write instead a few lines of comment.
+Your code becomes more understandable because reading und understanding a few lines
+of high-level comment is easier than reading hundred lines of code.<br />
+You can add new generator-templates by simply putting the generator-scriptfile into the ccg folder
+within your project.<br />
+
+</div>
 <div class="h3">You write the following comment:<pre class="code">
 public class Folder {
-   /*
-    * My comments about the following property...
-    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
-    */
+   // [c]
+   // &lt;property name=&quot;file&quot; type=&quot;File&quot; /&gt;
+   // [/c]
 }
 </pre>After save and build the following code will be appended (new code is highlighted):<pre class="code">
 public class Folder {
-   /*
-    * My comments about the following property...
-    * [c]&lt;JavaProperty name=&quot;file&quot; type=&quot;File&quot; /&gt;[/c]
-<span class="codenew">    * [bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]</span> 
-    */
-<span class="codenew">   /**
+   // [c]
+   // &lt;property name=&quot;file&quot; type=&quot;File&quot; /&gt;
+   // [/c]<span class="codenew">[bs]da0cefbcc0a8000a01652e619a0c7d76[/bs]</span><span class="codenew">   /**
     * Property file
     */
    public static final String PROPERTYNAME_FILE = "file";
@@ -224,9 +225,10 @@ public class Folder {
 </div>
 <hr />
 <div class="p">Have fun... questions to Sebastian Hasait (hasait at web.de)</div>
-</div></td></tr><tr>
-<td class="footer">$Id: Introduction.html,v 1.1 2006-11-08 20:54:47 concentus Exp $</td>
-</tr></table>
+	</div>
+	<div class="footer">
+		<div class="version">$Id: Introduction.html,v 1.2 2007-10-01 11:39:41 concentus Exp $</div>
+	</div>
 </body>
 
 </html>

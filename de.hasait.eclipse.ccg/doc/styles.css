@@ -31,8 +31,16 @@ A.navlinkint {
 	border: 1px solid #D0D0B0;
 }
 
+A.navlinkint:HOVER {
+	background-color: #FFFFD0;
+}
+
 A.navlinkext {
 	border: 1px solid #D0B0B0;
+}
+
+A.navlinkext:HOVER {
+	background-color: #FFFFD0;
 }
 
 A.navlinkcur {
