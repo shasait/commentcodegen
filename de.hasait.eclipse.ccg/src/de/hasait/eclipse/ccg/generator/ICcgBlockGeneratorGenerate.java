@@ -1,5 +1,5 @@
 /*
- * $Id: ICcgBlockGeneratorGenerate.java,v 1.4 2006-12-03 01:09:45 concentus Exp $
+ * $Id: ICcgBlockGeneratorGenerate.java,v 1.5 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
@@ -29,14 +28,12 @@ import de.hasait.eclipse.common.xml.XElement;
  * Generates a code block.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public interface ICcgBlockGeneratorGenerate {
 	/**
 	 * @param configElement
 	 *           The generators XML configuration.
-	 * @param comment
-	 *           The comment containing the XML configuration.
 	 * @param sourceFile
 	 *           The source file containing the comment.
 	 * @param sourceFileContext
@@ -49,6 +46,6 @@ public interface ICcgBlockGeneratorGenerate {
 	 * @throws Exception
 	 *            Give me your exceptions...
 	 */
-	String generateBlock(XElement configElement, ICcgComment comment, XFile sourceFile, Map sourceFileContext,
+	String generateBlock(XElement configElement, XFile sourceFile, Map sourceFileContext,
 	      ICcgGeneratorLookup generatorLookup, IProgressMonitor monitor) throws Exception;
 }

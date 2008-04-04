@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCcgTagContentGeneratorAdapter.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
+ * $Id: AbstractCcgTagContentGeneratorAdapter.java,v 1.2 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -21,13 +21,12 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class AbstractCcgTagContentGeneratorAdapter extends AbstractCcgGenerator implements ICcgBlockGenerator {
 	private final ICcgBlockGeneratorGenerate _generator;
@@ -41,9 +40,9 @@ public abstract class AbstractCcgTagContentGeneratorAdapter extends AbstractCcgG
 		_generator = generator;
 	}
 
-	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
-	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	public final String generateBlock(final XElement configElement, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		return _generator.generateBlock(configElement, comment, sourceFile, sourceFileContext, generatorLookup, monitor);
+		return _generator.generateBlock(configElement, sourceFile, sourceFileContext, generatorLookup, monitor);
 	}
 }

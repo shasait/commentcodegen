@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCcgBlockGeneratorDelegate.java,v 1.1 2007-06-21 16:34:10 concentus Exp $
+ * $Id: AbstractCcgBlockGeneratorDelegate.java,v 1.2 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
@@ -30,7 +29,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * Delegates generation to an instance of {@link ICcgBlockGeneratorGenerate}.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 10.11.2006
  */
 public abstract class AbstractCcgBlockGeneratorDelegate extends AbstractCcgBlockGenerator {
@@ -45,9 +44,9 @@ public abstract class AbstractCcgBlockGeneratorDelegate extends AbstractCcgBlock
 		_generate = generate;
 	}
 
-	public final String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
-	      final Map sourceContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	public final String generateBlock(final XElement configElement, final XFile sourceFile, final Map sourceContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
-		return _generate.generateBlock(configElement, comment, sourceFile, sourceContext, generatorLookup, monitor);
+		return _generate.generateBlock(configElement, sourceFile, sourceContext, generatorLookup, monitor);
 	}
 }

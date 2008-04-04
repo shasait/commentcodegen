@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileBlockGenerator.java,v 1.4 2007-07-02 13:41:40 concentus Exp $
+ * $Id: IncludeFileBlockGenerator.java,v 1.5 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -24,14 +24,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.common.StringUtil;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
@@ -43,8 +42,8 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 		super(DESCRIPTION);
 	}
 
-	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
-	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	public String generateBlock(final XElement configElement, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
 		String includeFilePathS = configElement.getRequiredStringAttribute("file");
 		XElement[] replaceElements = configElement.getChildElements("replace");

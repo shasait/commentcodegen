@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.21 2007-08-09 15:01:03 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.22 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -62,7 +62,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.21 $
+ * @version $Revision: 1.22 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -250,6 +250,9 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				String fileName = resource.getName();
 				IScriptExecuter scriptExecuter = null;
 				String tagname = null;
+				// TODO 1 Make this code extensible,
+				// i.e. ExtensionPoint for Generator-Factories based on IFiles.
+				// This allows the javag-Plugin to provide a ConfiguredScriptBlockGenerator with access to the JDT.
 				if (fileName.endsWith(JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX)) {
 					scriptExecuter = new BsfExecuter();
 					tagname = fileName.substring(0, fileName.length() - JAVASCRIPT_BLOCK_GENERATOR_FILENAME_SUFFIX.length());
@@ -376,6 +379,7 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 			if (child instanceof ICcgComment) {
 				ICcgComment blockStartComment = (ICcgComment) child;
 				String command = blockStartComment.getCommand();
+				// TODO 1 Support the case where a comment contains both blockStart and blockEnd
 				if (command != null) {
 					String block = "";
 					XElement mconfigElement = XElement.parse("<ccg>" + command + "</ccg>");
@@ -386,8 +390,8 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 						if (generator == null) {
 							throw new IllegalArgumentException("Unknown generator: " + configElement.getTagName());
 						}
-						block += generator.generateBlock(configElement, blockStartComment, sourceFile, sourceFileContext,
-						      _generatorLookup, monitor);
+						block += generator.generateBlock(configElement, sourceFile, sourceFileContext, _generatorLookup,
+						      monitor);
 					}
 					String blockId = blockStartComment.getBlockStart();
 					ICcgComment blockEndComment = null;

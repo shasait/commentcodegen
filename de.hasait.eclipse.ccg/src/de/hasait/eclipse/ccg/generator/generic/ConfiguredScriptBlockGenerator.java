@@ -1,5 +1,5 @@
 /*
- * $Id: ConfiguredScriptBlockGenerator.java,v 1.4 2007-08-09 15:01:03 concentus Exp $
+ * $Id: ConfiguredScriptBlockGenerator.java,v 1.5 2008-04-04 13:13:21 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 
 import de.hasait.eclipse.ccg.generator.AbstractCcgBlockGenerator;
 import de.hasait.eclipse.ccg.generator.ICcgGeneratorLookup;
-import de.hasait.eclipse.ccg.parser.ICcgComment;
 import de.hasait.eclipse.ccg.util.IScriptExecuter;
 import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.resource.XFile;
@@ -31,7 +30,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenerator {
 	private final IScriptExecuter _scriptExecuter;
@@ -48,8 +47,8 @@ public final class ConfiguredScriptBlockGenerator extends AbstractCcgBlockGenera
 		_scriptExecuter = scriptExecuter;
 	}
 
-	public String generateBlock(final XElement configElement, final ICcgComment comment, final XFile sourceFile,
-	      final Map sourceFileContext, final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
+	public String generateBlock(final XElement configElement, final XFile sourceFile, final Map sourceFileContext,
+	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
 
 		String indent = "\t"; // TODO read default-indent from configuration or source
