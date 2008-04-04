@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBufferDelegate.java,v 1.1 2007-08-09 14:20:14 concentus Exp $
+ * $Id: ContentBufferDelegate.java,v 1.2 2008-04-04 13:31:32 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,7 +20,7 @@ package de.hasait.eclipse.common;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 16.11.2006
  */
 public class ContentBufferDelegate {
@@ -68,6 +68,27 @@ public class ContentBufferDelegate {
 	public final String getDefaultIndent() {
 		return _delegate.getDefaultIndent();
 	}
+
+	/**
+	 * @see de.hasait.eclipse.common.IContentBuffer#setDefaultIndent(java.lang.String)
+	 */
+	public final void setDefaultIndent(final String defaultIndent) {
+		_delegate.setDefaultIndent(defaultIndent);
+	}
+
+	/**
+    * @see de.hasait.eclipse.common.IContentBuffer#getNewline()
+    */
+   public final String getNewline() {
+	   return _delegate.getNewline();
+   }
+
+	/**
+    * @see de.hasait.eclipse.common.IContentBuffer#setNewline(java.lang.String)
+    */
+   public final void setNewline(String newline) {
+	   _delegate.setNewline(newline);
+   }
 
 	/**
 	 * @see de.hasait.eclipse.common.IContentBuffer#getIndent()
@@ -123,13 +144,6 @@ public class ContentBufferDelegate {
 	 */
 	public final void pni(final String lines) {
 		_delegate.pni(lines);
-	}
-
-	/**
-	 * @see de.hasait.eclipse.common.IContentBuffer#setDefaultIndent(java.lang.String)
-	 */
-	public final void setDefaultIndent(final String defaultIndent) {
-		_delegate.setDefaultIndent(defaultIndent);
 	}
 
 	/**

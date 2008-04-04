@@ -1,5 +1,5 @@
 /*
- * $Id: IContentBuffer.java,v 1.1 2007-08-09 14:20:13 concentus Exp $
+ * $Id: IContentBuffer.java,v 1.2 2008-04-04 13:31:32 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -22,7 +22,7 @@ package de.hasait.eclipse.common;
  * A smart {@link String} buffer for creating Text with indent, like sourceCode.
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 09.08.2007
  */
 public interface IContentBuffer {
@@ -36,6 +36,17 @@ public interface IContentBuffer {
 	 *           The defaultIndent to set.
 	 */
 	public void setDefaultIndent(final String defaultIndent);
+
+	/**
+	 * @return The newline.
+	 */
+	public String getNewline();
+
+	/**
+	 * @param newline
+	 *           The newline to set.
+	 */
+	public void setNewline(final String newline);
 
 	/**
 	 * @return The current indent.
