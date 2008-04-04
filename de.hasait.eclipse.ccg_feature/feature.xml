@@ -2,7 +2,7 @@
 <feature
       id="de.hasait.eclipse.ccg_feature"
       label="de.hasait.eclipse.ccg_feature"
-      version="2.3.2"
+      version="2.4.0"
       provider-name="Sebastian Hasait">
 
    <description>
