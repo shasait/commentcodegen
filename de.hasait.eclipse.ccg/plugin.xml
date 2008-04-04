@@ -18,6 +18,7 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="de.hasait.eclipse.common"/>
+      <import plugin="org.eclipse.jdt.core" optional="true"/>
    </requires>
    <extension-point id="generators" name="CommentCodeGen Generators" schema="schema/generators.exsd"/>
    <extension-point id="parsers" name="CommentCodeGen Parsers" schema="schema/parsers.exsd"/>
