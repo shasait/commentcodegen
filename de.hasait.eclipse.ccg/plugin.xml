@@ -3,7 +3,7 @@
 <plugin
    id="de.hasait.eclipse.ccg"
    name="CommentCodeGen Plug-in"
-   version="2.4.0"
+   version="2.5.0"
    provider-name="Sebastian Hasait"
    class="de.hasait.eclipse.ccg.CcgPlugin">
 
@@ -59,7 +59,7 @@
   				id="de.hasait.eclipse.ccg.addCcgNatureAction">
   				<enablement>
   					<not>
-  						<objectState name="projectNature" value="de.hasait.eclipse.ccg.ccgNature"/>
+  						<objectState name="projectNature" value="de.hasait.eclipse.ccg.nature"/>
   					</not>
   				</enablement>
   			</action>
@@ -70,7 +70,7 @@
   				enablesFor="1"
   				id="de.hasait.eclipse.ccg.removeCcgNatureAction">
   				<enablement>
-  						<objectState name="projectNature" value="de.hasait.eclipse.ccg.ccgNature"/>
+  						<objectState name="projectNature" value="de.hasait.eclipse.ccg.nature"/>
   				</enablement>
   			</action>
       </objectContribution>

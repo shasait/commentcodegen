@@ -1,5 +1,5 @@
 /*
- * $Id: CcgBuilder.java,v 1.22 2008-04-04 13:13:21 concentus Exp $
+ * $Id: CcgBuilder.java,v 1.23 2008-04-08 11:24:35 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -58,11 +58,12 @@ import de.hasait.eclipse.common.OidGenerator;
 import de.hasait.eclipse.common.resource.XFile;
 import de.hasait.eclipse.common.resource.XFolder;
 import de.hasait.eclipse.common.resource.XProject;
+import de.hasait.eclipse.common.xml.XDocument;
 import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.22 $
+ * @version $Revision: 1.23 $
  */
 public class CcgBuilder extends IncrementalProjectBuilder {
 	/**
@@ -348,16 +349,16 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 
 	private void executeResourceGenerators(final XFile sourceFile, final Map sourceFileContext,
 	      final CcgProjectConfiguration configuration, final IProgressMonitor monitor) throws Exception {
-		XElement sourceElement = sourceFile.parseXml();
-		if (CCG_ELEMENT.equals(sourceElement.getTagName())) {
+		XElement sourceElement = sourceFile.parseXml().getRootElement();
+		if (sourceElement != null && CCG_ELEMENT.equals(sourceElement.getName())) {
 			// contains our tag - continue...
 			XFolder targetBaseFolder = new XProject(getProject(), getProject()).getFolder(configuration
 			      .getOutputFolderPath());
 			// each childElement of root represents a generator...
-			XElement[] configElements = sourceElement.getChildElements();
+			XElement[] configElements = sourceElement.getElements();
 			for (int configElementsI = 0; configElementsI < configElements.length; configElementsI++) {
 				XElement configElement = configElements[configElementsI];
-				String configElementTagName = configElement.getTagName();
+				String configElementTagName = configElement.getName();
 				ICcgResourceGenerator generator = _generatorLookup.findResourceGenerator(configElementTagName);
 				if (generator != null) {
 					// found a generator for tagName - execute...
@@ -382,13 +383,13 @@ public class CcgBuilder extends IncrementalProjectBuilder {
 				// TODO 1 Support the case where a comment contains both blockStart and blockEnd
 				if (command != null) {
 					String block = "";
-					XElement mconfigElement = XElement.parse("<ccg>" + command + "</ccg>");
-					XElement[] configChildElements = mconfigElement.getChildElements();
+					XElement mconfigElement = XDocument.parse("<ccg>" + command + "</ccg>").getRequiredRootElement();
+					XElement[] configChildElements = mconfigElement.getElements();
 					for (int configChildElementsI = 0; configChildElementsI < configChildElements.length; configChildElementsI++) {
 						XElement configElement = configChildElements[configChildElementsI];
-						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getTagName());
+						ICcgBlockGenerator generator = _generatorLookup.findBlockGenerator(configElement.getName());
 						if (generator == null) {
-							throw new IllegalArgumentException("Unknown generator: " + configElement.getTagName());
+							throw new IllegalArgumentException("Unknown generator: " + configElement.getName());
 						}
 						block += generator.generateBlock(configElement, sourceFile, sourceFileContext, _generatorLookup,
 						      monitor);

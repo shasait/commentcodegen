@@ -1,5 +1,5 @@
 /*
- * $Id: IncludeFileBlockGenerator.java,v 1.5 2008-04-04 13:13:21 concentus Exp $
+ * $Id: IncludeFileBlockGenerator.java,v 1.6 2008-04-08 11:24:35 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,7 +30,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	private static final String DESCRIPTION = "Include file generator - includes the file specified as parameter with optional replacing keywords";
@@ -46,7 +46,7 @@ public final class IncludeFileBlockGenerator extends AbstractCcgBlockGenerator {
 	      final ICcgGeneratorLookup generatorLookup, final IProgressMonitor monitor)
 	      throws Exception {
 		String includeFilePathS = configElement.getRequiredStringAttribute("file");
-		XElement[] replaceElements = configElement.getChildElements("replace");
+		XElement[] replaceElements = configElement.getElements("replace");
 		Map<String, String> replacements = new HashMap<String, String>();
 		XElement replacement;
 		int anon = 0;
