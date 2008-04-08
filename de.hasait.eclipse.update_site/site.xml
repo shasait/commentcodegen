@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/de.hasait.eclipse.charreplacer_feature_1.0.3.jar" id="de.hasait.eclipse.charreplacer_feature" version="1.0.3">
-      <category name="other"/>
-   </feature>
-   <feature url="features/de.hasait.eclipse.depsearch_feature_1.0.0.2.jar" id="de.hasait.eclipse.depsearch_feature" version="1.0.0.2">
-      <category name="other"/>
-   </feature>
    <feature url="features/bsh_feature_2.0.4.jar" id="bsh_feature" version="2.0.4">
       <category name="common"/>
    </feature>
@@ -24,16 +18,15 @@
    <feature url="features/org.dom4j_feature_1.6.1.jar" id="org.dom4j_feature" version="1.6.1">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.3.1.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.3.1">
-      <category name="ccg"/>
-   </feature>
-   <feature url="features/de.hasait.eclipse.common_feature_2.2.0.jar" id="de.hasait.eclipse.common_feature" version="2.2.0">
+   <feature url="features/de.hasait.eclipse.common_feature_2.4.0.jar" id="de.hasait.eclipse.common_feature" version="2.4.0">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.ccg_feature_2.4.0.jar" id="de.hasait.eclipse.ccg_feature" version="2.4.0">
+   <feature url="features/de.hasait.eclipse.ccg.java_feature_2.4.0.jar" id="de.hasait.eclipse.ccg.java_feature" version="2.4.0">
+      <category name="ccg"/>
+   </feature>
+   <feature url="features/de.hasait.eclipse.ccg_feature_2.5.0.jar" id="de.hasait.eclipse.ccg_feature" version="2.5.0">
       <category name="ccg"/>
    </feature>
    <category-def name="common" label="Common"/>
-   <category-def name="ccg" label="CommonCodeGen"/>
-   <category-def name="other" label="Other"/>
+   <category-def name="ccg" label="CommentCodeGen"/>
 </site>
