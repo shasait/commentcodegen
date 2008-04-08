@@ -1,5 +1,5 @@
 /*
- * $Id: AClass.java,v 1.5 2007-08-09 14:20:18 concentus Exp $
+ * $Id: AClass.java,v 1.6 2008-04-08 11:19:38 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -42,7 +42,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 13.12.2006
  */
 public class AClass extends AbstractCompilationUnit {
@@ -95,7 +95,7 @@ public class AClass extends AbstractCompilationUnit {
 
 		_targetFile = _model.getTargetFolder().getFile(_name + ".java");
 
-		XElement[] vPropertyElements = pConfigElement.getChildElements("property");
+		XElement[] vPropertyElements = pConfigElement.getElements("property");
 		for (int vPropertyElementsI = 0; vPropertyElementsI < vPropertyElements.length; vPropertyElementsI++) {
 			XElement vPropertyElement = vPropertyElements[vPropertyElementsI];
 			String vCardinality = vPropertyElement.getStringAttribute("cardinality");
@@ -110,10 +110,10 @@ public class AClass extends AbstractCompilationUnit {
 			addProperty(vProperty);
 		}
 
-		XElement[] vValidatorElements = pConfigElement.getChildElements("validator");
+		XElement[] vValidatorElements = pConfigElement.getElements("validator");
 		for (int vValidatorElementsI = 0; vValidatorElementsI < vValidatorElements.length; vValidatorElementsI++) {
 			XElement vValidatorElement = vValidatorElements[vValidatorElementsI];
-			String vValidatorExpression = vValidatorElement.getTextContent();
+			String vValidatorExpression = vValidatorElement.getText();
 			String vValidatorDescription = vValidatorElement.getRequiredStringAttribute("description");
 			String[] vValidatorBindings = vValidatorElement.getRequiredStringAttribute("bound").split(";");
 			AValidator vValidator = new AValidator(this, "id" + vValidatorElementsI, vValidatorExpression,
@@ -121,18 +121,18 @@ public class AClass extends AbstractCompilationUnit {
 			addValidator(vValidator);
 		}
 
-		XElement[] vUpdaterElements = pConfigElement.getChildElements("updater");
+		XElement[] vUpdaterElements = pConfigElement.getElements("updater");
 		for (int vUpdaterElementsI = 0; vUpdaterElementsI < vUpdaterElements.length; vUpdaterElementsI++) {
 			XElement vUpdaterElement = vUpdaterElements[vUpdaterElementsI];
 			String vName = vUpdaterElement.getStringAttribute("name");
 			String vListenTo = vUpdaterElement.getStringAttribute("listento");
 			String[] vListenToArray = vListenTo == null ? null : vListenTo.split(",");
-			String vCode = vUpdaterElement.getTextContent();
+			String vCode = vUpdaterElement.getText();
 			AUpdater vUpdater = new AUpdater(this, vName, vListenToArray, vCode);
 			_updaters.add(vUpdater);
 		}
 
-		XElement[] vAbstractMethodElements = pConfigElement.getChildElements("abstractmethod");
+		XElement[] vAbstractMethodElements = pConfigElement.getElements("abstractmethod");
 		for (int vAbstractMethodElementsI = 0; vAbstractMethodElementsI < vAbstractMethodElements.length; vAbstractMethodElementsI++) {
 			XElement vAbstractMethodElement = vAbstractMethodElements[vAbstractMethodElementsI];
 			String vName = vAbstractMethodElement.getRequiredStringAttribute("name");

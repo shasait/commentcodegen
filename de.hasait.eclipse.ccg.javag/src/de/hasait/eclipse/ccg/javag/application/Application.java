@@ -25,7 +25,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @since 13.12.2006
  */
 public class Application {
@@ -96,14 +96,14 @@ public class Application {
 		};
 		_appGlobalCuContainer.addCompilationUnit(_modelEventDispatcherCu);
 
-		XElement[] vModelElements = pConfigElement.getChildElements("model");
+		XElement[] vModelElements = pConfigElement.getElements("model");
 		for (int vModelElementsI = 0; vModelElementsI < vModelElements.length; vModelElementsI++) {
 			XElement vModelElement = vModelElements[vModelElementsI];
 			AModel vModel = new AModel(this, vModelElement);
 			addCuContainer(vModel);
 		}
 
-		XElement[] vViewElements = pConfigElement.getChildElements("view");
+		XElement[] vViewElements = pConfigElement.getElements("view");
 		for (int vViewElementsI = 0; vViewElementsI < vViewElements.length; vViewElementsI++) {
 			XElement vViewElement = vViewElements[vViewElementsI];
 			View vView = new View(this, vViewElement);

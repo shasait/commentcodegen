@@ -1,5 +1,5 @@
 /*
- * $Id: View.java,v 1.2 2007-01-06 00:39:00 concentus Exp $
+ * $Id: View.java,v 1.3 2008-04-08 11:19:42 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * type="Konto" value="view.kontoSelection.selection" /> </results> </dialog> </dialogs>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 13.12.2006
  */
 public class View extends AbstractCuContainer {
@@ -44,7 +44,7 @@ public class View extends AbstractCuContainer {
 	public View(final Application pApplication, final XElement pConfigElement) {
 		super(pApplication, pConfigElement, "view");
 
-		XElement[] vDialogElements = pConfigElement.getChildElements("dialog");
+		XElement[] vDialogElements = pConfigElement.getElements("dialog");
 		for (int vDialogElementsI = 0; vDialogElementsI < vDialogElements.length; vDialogElementsI++) {
 			XElement vDialogElement = vDialogElements[vDialogElementsI];
 			Dialog vDialog = new Dialog(this, vDialogElement);

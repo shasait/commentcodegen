@@ -1,5 +1,5 @@
 /*
- * $Id: AModel.java,v 1.1 2007-01-10 18:04:15 concentus Exp $
+ * $Id: AModel.java,v 1.2 2008-04-08 11:19:38 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -24,21 +24,21 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 13.12.2006
  */
 public class AModel extends AbstractCuContainer {
 	public AModel(final Application pApplication, final XElement pConfigElement) {
 		super(pApplication, pConfigElement, "model");
 
-		XElement[] vClassElements = pConfigElement.getChildElements("class");
+		XElement[] vClassElements = pConfigElement.getElements("class");
 		for (int vClassElementsI = 0; vClassElementsI < vClassElements.length; vClassElementsI++) {
 			XElement vClassElement = vClassElements[vClassElementsI];
 			AClass vClass = new AClass(this, vClassElement);
 			addCompilationUnit(vClass);
 		}
 
-		XElement[] vInterfaceElements = pConfigElement.getChildElements("interface");
+		XElement[] vInterfaceElements = pConfigElement.getElements("interface");
 		for (int vInterfaceElementsI = 0; vInterfaceElementsI < vInterfaceElements.length; vInterfaceElementsI++) {
 			XElement vInterfaceElement = vInterfaceElements[vInterfaceElementsI];
 			AInterface vInterface = new AInterface(this, vInterfaceElement);

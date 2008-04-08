@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractAProperty.java,v 1.5 2007-07-02 13:41:25 concentus Exp $
+ * $Id: AbstractAProperty.java,v 1.6 2008-04-08 11:19:37 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -29,7 +29,7 @@ import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * @since 13.12.2006
  */
 public abstract class AbstractAProperty {
@@ -59,12 +59,12 @@ public abstract class AbstractAProperty {
 		pProperty.setRequired(pConfigElement.getBooleanAttribute("required", false));
 		pProperty.setAbstract(pConfigElement.getBooleanAttribute("abstract", false));
 		String vInitialValue;
-		XElement[] vValueElements = pConfigElement.getChildElements("value");
+		XElement[] vValueElements = pConfigElement.getElements("value");
 		if (vValueElements.length > 0) {
 			StringBuffer vInitialValueBuffer = new StringBuffer();
 			for (int vValueElementsI = 0; vValueElementsI < vValueElements.length; vValueElementsI++) {
 				XElement vValueElement = vValueElements[vValueElementsI];
-				vInitialValueBuffer.append(vValueElement.getTextContent().trim());
+				vInitialValueBuffer.append(vValueElement.getText().trim());
 			}
 			vInitialValue = vInitialValueBuffer.toString();
 		} else {

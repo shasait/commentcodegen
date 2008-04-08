@@ -1,5 +1,5 @@
 /*
- * $Id: Dialog.java,v 1.7 2007-08-09 14:20:18 concentus Exp $
+ * $Id: Dialog.java,v 1.8 2008-04-08 11:19:42 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -63,7 +63,7 @@ import de.hasait.eclipse.common.xml.XElement;
  * </code>
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * @since 13.12.2006
  */
 public class Dialog extends AbstractCompilationUnit {
@@ -83,7 +83,7 @@ public class Dialog extends AbstractCompilationUnit {
 
 		_view = pView;
 
-		XElement[] vPresentationModelPropertyElements = pConfigElement.getChildElements("presentationmodel/property");
+		XElement[] vPresentationModelPropertyElements = pConfigElement.getElements("presentationmodel/property");
 		for (int vPresentationModelPropertyElementsI = 0; vPresentationModelPropertyElementsI < vPresentationModelPropertyElements.length; vPresentationModelPropertyElementsI++) {
 			XElement vPresentationModelPropertyElement = vPresentationModelPropertyElements[vPresentationModelPropertyElementsI];
 			MSingleProperty vPresentationModelProperty = new MSingleProperty();
@@ -97,7 +97,7 @@ public class Dialog extends AbstractCompilationUnit {
 			_presentationModelProperties.add(vPresentationModelProperty);
 		}
 
-		XElement[] vPresentationModelActionElements = pConfigElement.getChildElements("presentationmodel/action");
+		XElement[] vPresentationModelActionElements = pConfigElement.getElements("presentationmodel/action");
 		for (int vPresentationModelActionElementsI = 0; vPresentationModelActionElementsI < vPresentationModelActionElements.length; vPresentationModelActionElementsI++) {
 			XElement vPresentationModelActionElement = vPresentationModelActionElements[vPresentationModelActionElementsI];
 			String vActionName = vPresentationModelActionElement.getRequiredStringAttribute("name");

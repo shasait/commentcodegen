@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractCompilationUnit.java,v 1.6 2007-08-09 14:20:18 concentus Exp $
+ * $Id: AbstractCompilationUnit.java,v 1.7 2008-04-08 11:19:42 concentus Exp $
  * 
  * Copyright 2007 Sebastian Hasait
  * 
@@ -37,7 +37,7 @@ import de.hasait.eclipse.common.xml.XElement;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * @since 05.01.2007
  */
 public abstract class AbstractCompilationUnit {
@@ -67,7 +67,7 @@ public abstract class AbstractCompilationUnit {
 	      final String pNamePrefix, final String pNameSuffix) {
 		this(pCuContainer, pNamePrefix, pConfigElement.getRequiredStringAttribute("name"), pNameSuffix, pConfigElement
 		      .getStringAttribute("description"));
-		XElement[] vImportElements = pConfigElement.getChildElements("import");
+		XElement[] vImportElements = pConfigElement.getElements("import");
 		for (int vImportElementsI = 0; vImportElementsI < vImportElements.length; vImportElementsI++) {
 			XElement vImportElement = vImportElements[vImportElementsI];
 			String vImportType = vImportElement.getRequiredStringAttribute("type");
