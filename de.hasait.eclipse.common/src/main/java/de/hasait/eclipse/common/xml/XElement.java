@@ -1,5 +1,5 @@
 /*
- * $Id: XElement.java,v 1.1 2008-04-08 11:06:15 concentus Exp $
+ * $Id: XElement.java,v 1.2 2008-04-11 20:00:37 concentus Exp $
  * 
  * Copyright 2008 Sebastian Hasait
  * 
@@ -38,7 +38,7 @@ import de.hasait.eclipse.common.ObjectUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public final class XElement {
@@ -96,8 +96,16 @@ public final class XElement {
 		return _element.attributeValue(name, defaultValue);
 	}
 
+	public void setStringAttributes(final String... nameValuePairs) {
+		for (int i = 0; i < nameValuePairs.length;) {
+			String name = nameValuePairs[i++];
+			String value = nameValuePairs[i++];
+			_element.addAttribute(name, value);
+		}
+	}
+
 	public void setStringAttribute(final String name, final String value) {
-		_element.addAttribute(name, value);
+		setStringAttributes(name, value);
 	}
 
 	public String getRequiredStringAttribute(final String name) {
@@ -153,19 +161,34 @@ public final class XElement {
 		}
 	}
 
+	public boolean matchesAttributes(final String... nameValuePairs) {
+		for (int i = 0; i < nameValuePairs.length;) {
+			String name = nameValuePairs[i++];
+			String value = nameValuePairs[i++];
+			if (!ObjectUtil.equals(getStringAttribute(name), value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Removes all attributes except the one with the provided name.
 	 * 
-	 * @param name
-	 *           The name of the attribute not to remove.
+	 * @param names
+	 *           The names of the attributes not to remove.
 	 */
-	public void removeAllAttributesExclude(final String name) {
+	public void removeAllAttributesExclude(final String... names) {
 		Iterator<Attribute> attributeI = _element.attributes().iterator();
 		while (attributeI.hasNext()) {
 			Attribute attribute = attributeI.next();
-			if (!attribute.getName().equals(name)) {
-				attributeI.remove();
+			for (int i = 0; i < names.length; i++) {
+				String name = names[i];
+				if (attribute.getName().equals(name)) {
+					continue;
+				}
 			}
+			attributeI.remove();
 		}
 	}
 
@@ -201,6 +224,14 @@ public final class XElement {
 	}
 
 	/**
+	 * @param element
+	 *           The element to remove.
+	 */
+	public void removeElement(final XElement element) {
+		_element.remove(element.getRawElement());
+	}
+
+	/**
 	 * @param xml
 	 *           XML with one root element.
 	 * @return The root element, which was added to this element.
@@ -208,22 +239,20 @@ public final class XElement {
 	 */
 	public XElement addElementXml(final String xml) throws DocumentException {
 		XElement element = XDocument.parse(xml).getRequiredRootElement();
-		_element.add(element.getRawElement());
+		addElement(element);
 		return element;
 	}
 
 	public void removeAllElements() {
-		Iterator<Element> elementI = _element.elementIterator();
-		while (elementI.hasNext()) {
-			elementI.next();
-			elementI.remove();
+		for (XElement element : getElements()) {
+			removeElement(element);
 		}
 	}
 
-	public void removeElements(final String name, final String attributeName, final String attributeValue) {
+	public void removeElements(final String name, final String... attributeNameValuePairs) {
 		for (XElement element : getElements(name)) {
-			if (ObjectUtil.equals(element.getStringAttribute(attributeName), attributeValue)) {
-				_element.remove(element.getRawElement());
+			if (element.matchesAttributes(attributeNameValuePairs)) {
+				removeElement(element);
 			}
 		}
 	}
@@ -238,46 +267,49 @@ public final class XElement {
 		_element.appendContent(element.getRawElement());
 	}
 
-	public XElement getOrCreateElementWithAttributeValue(final String name, final String attributeName,
-	      final String attributeValue) {
+	public XElement getOrCreateElementWithAttributeValue(final String name, final String... attributeNameValuePairs) {
 		for (XElement element : getElements(name)) {
-			if (ObjectUtil.equals(element.getStringAttribute(attributeName), attributeValue)) {
+			if (element.matchesAttributes(attributeNameValuePairs)) {
 				return element;
 			}
 		}
 		XElement element = new XElement(name);
-		element.setStringAttribute(attributeName, attributeValue);
+		element.setStringAttributes(attributeNameValuePairs);
 		addElement(element);
 		return element;
 	}
 
-	public void replaceOrAddElement(final String name, final String attributeName, final String attributeValue,
-	      final String xml) throws DocumentException {
+	public void replaceOrAddElement(final String xml, final String name, final String... attributeNameValuePairs)
+	      throws DocumentException {
 		XElement baseElement = null;
 		for (XElement element : getElements(name)) {
-			if (ObjectUtil.equals(element.getStringAttribute(attributeName), attributeValue)) {
+			if (element.matchesAttributes(attributeNameValuePairs)) {
 				if (baseElement == null) {
 					baseElement = element;
 				} else {
-					_element.remove(element.getRawElement());
+					removeElement(element);
 				}
 			}
 		}
 		XElement newElement = XDocument.parse(xml).getRequiredRootElement();
 		newElement.checkName(name);
-		if (newElement.hasAttribute(attributeName)) {
-			if (!ObjectUtil.equals(newElement.getStringAttribute(attributeName), attributeValue)) {
-				throw new IllegalArgumentException("root element's attribute value differs " + attributeName + "="
-				      + attributeValue + ": " + xml);
+		for (int i = 0; i < attributeNameValuePairs.length;) {
+			String attributeName = attributeNameValuePairs[i++];
+			String attributeValue = attributeNameValuePairs[i++];
+			if (newElement.hasAttribute(attributeName)) {
+				if (!ObjectUtil.equals(newElement.getStringAttribute(attributeName), attributeValue)) {
+					throw new IllegalArgumentException("root element's attribute value differs " + attributeName + "="
+					      + attributeValue + ": " + xml);
+				}
+				newElement.setStringAttribute(attributeName, null);
 			}
-			newElement.setStringAttribute(attributeName, null);
 		}
 		if (baseElement == null) {
 			baseElement = new XElement(name);
 			addElement(baseElement);
 		}
 		baseElement.removeAll();
-		baseElement.setStringAttribute(attributeName, attributeValue);
+		baseElement.setStringAttributes(attributeNameValuePairs);
 		baseElement.copyElement(newElement);
 	}
 
