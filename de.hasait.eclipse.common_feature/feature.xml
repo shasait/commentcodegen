@@ -2,7 +2,7 @@
 <feature
       id="de.hasait.eclipse.common_feature"
       label="de.hasait.eclipse.common_feature"
-      version="2.4.1"
+      version="2.4.1.v200804112230"
       provider-name="Sebastian Hasait">
 
    <description>
@@ -25,6 +25,10 @@ or implied.
 See the License for the specific language governing permissions
 and limitations under the License.
    </license>
+
+   <url>
+      <update label="CommentCodeGen" url="http://commentcodegen.sourceforge.net/update_site/"/>
+   </url>
 
    <requires>
       <import plugin="org.eclipse.core.runtime"/>

@@ -2,7 +2,7 @@
 <feature
       id="bsh_feature"
       label="bsh_feature"
-      version="2.0.4"
+      version="2.0.4.v200804112230"
       provider-name="http://www.beanshell.org/">
 
    <description>
@@ -40,6 +40,10 @@ Patrick Niemeyer (pat@pat.net)
 Author of Learning Java, O&apos;Reilly &amp; Associates
 http://www.pat.net/~pat/
    </license>
+
+   <url>
+      <update label="CommentCodeGen" url="http://commentcodegen.sourceforge.net/update_site/"/>
+   </url>
 
    <plugin
          id="bsh"

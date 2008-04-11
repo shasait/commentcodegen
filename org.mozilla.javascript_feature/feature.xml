@@ -2,7 +2,7 @@
 <feature
       id="org.mozilla.javascript_feature"
       label="org.mozilla.javascript_feature"
-      version="1.6.5"
+      version="1.6.5.v200804112230"
       provider-name="Mozilla Foundation">
 
    <description>
@@ -16,6 +16,10 @@
    <license>
       Licensed under the MPL/GPL.
    </license>
+
+   <url>
+      <update label="CommentCodeGen" url="http://commentcodegen.sourceforge.net/update_site/"/>
+   </url>
 
    <plugin
          id="org.mozilla.javascript"

@@ -2,7 +2,7 @@
 <feature
       id="org.dom4j_feature"
       label="org.dom4j_feature"
-      version="1.6.1"
+      version="1.6.1.v200804112230"
       provider-name="MetaStuff, Ltd.">
 
    <description>
@@ -26,6 +26,10 @@ THIS SOFTWARE IS PROVIDED BY METASTUFF, LTD. AND CONTRIBUTORS ``AS IS&apos;&apos
 
 Copyright 2001-2005 (C) MetaStuff, Ltd. All Rights Reserved.
    </license>
+
+   <url>
+      <update label="CommentCodeGen" url="http://commentcodegen.sourceforge.net/update_site/"/>
+   </url>
 
    <plugin
          id="org.dom4j"

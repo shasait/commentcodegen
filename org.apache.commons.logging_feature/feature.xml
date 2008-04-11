@@ -2,7 +2,7 @@
 <feature
       id="org.apache.commons.logging_feature"
       label="org.apache.commons.logging_feature"
-      version="1.1.0"
+      version="1.1.0.v200804112230"
       provider-name="Apache Software Foundation">
 
    <description>
@@ -25,6 +25,10 @@ or implied.
 See the License for the specific language governing permissions
 and limitations under the License.
    </license>
+
+   <url>
+      <update label="CommentCodeGen" url="http://commentcodegen.sourceforge.net/update_site/"/>
+   </url>
 
    <plugin
          id="org.apache.commons.logging"
