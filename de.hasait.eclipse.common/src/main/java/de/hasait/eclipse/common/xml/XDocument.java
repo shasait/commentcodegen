@@ -1,5 +1,5 @@
 /*
- * $Id: XDocument.java,v 1.1 2008-04-08 11:06:15 concentus Exp $
+ * $Id: XDocument.java,v 1.2 2008-06-09 11:32:08 concentus Exp $
  * 
  * Copyright 2008 Sebastian Hasait
  * 
@@ -27,8 +27,6 @@ import javax.xml.parsers.FactoryConfigurationError;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
-import org.dom4j.Text;
-import org.dom4j.VisitorSupport;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -36,7 +34,7 @@ import org.dom4j.io.XMLWriter;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public final class XDocument {
@@ -122,11 +120,13 @@ public final class XDocument {
 		return _document.asXML();
 	}
 
-	public String asFormattedXml(final String indent, final boolean newlines, final boolean trimText) {
+	public String asFormattedXml(final String lineSeparator, final String indent, final boolean newlines,
+	      final boolean trimText) {
 		StringWriter sw = new StringWriter();
 		try {
 			OutputFormat outputFormat = new OutputFormat(indent, newlines);
 			outputFormat.setTrimText(trimText);
+			outputFormat.setLineSeparator(lineSeparator);
 			new XMLWriter(sw, outputFormat).write(_document);
 		} catch (IOException e) {
 			// Should not happen for StringWriter
@@ -135,8 +135,20 @@ public final class XDocument {
 		return sw.getBuffer().toString();
 	}
 
+	public String asFormattedXml(final String lineSeparator, final boolean trimText) {
+		return asFormattedXml(lineSeparator, "\t", true, trimText);
+	}
+
+	public String asFormattedXml(final String lineSeparator) {
+		return asFormattedXml(lineSeparator, true);
+	}
+
+	public String asFormattedXml(final String lineSeparator, final String indent) {
+		return asFormattedXml(lineSeparator, indent, true, true);
+	}
+
 	public String asFormattedXml(final boolean trimText) {
-		return asFormattedXml("\t", true, trimText);
+		return asFormattedXml("\n", trimText);
 	}
 
 	public String asFormattedXml() {

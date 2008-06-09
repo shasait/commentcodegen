@@ -1,5 +1,5 @@
 /*
- * $Id: XElement.java,v 1.2 2008-04-11 20:00:37 concentus Exp $
+ * $Id: XElement.java,v 1.3 2008-06-09 11:32:08 concentus Exp $
  * 
  * Copyright 2008 Sebastian Hasait
  * 
@@ -28,8 +28,6 @@ import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.dom4j.Element;
-import org.dom4j.Text;
-import org.dom4j.VisitorSupport;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
@@ -38,7 +36,7 @@ import de.hasait.eclipse.common.ObjectUtil;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * @since 01.12.2006
  */
 public final class XElement {
@@ -317,11 +315,13 @@ public final class XElement {
 		return _element.asXML();
 	}
 
-	public String asFormattedXml(final String indent, final boolean newlines, final boolean trimText) {
+	public String asFormattedXml(final String lineSeparator, final String indent, final boolean newlines,
+	      final boolean trimText) {
 		StringWriter sw = new StringWriter();
 		try {
 			OutputFormat outputFormat = new OutputFormat(indent, newlines);
 			outputFormat.setTrimText(trimText);
+			outputFormat.setLineSeparator(lineSeparator);
 			new XMLWriter(sw, outputFormat).write(_element);
 		} catch (IOException e) {
 			// Should not happen for StringWriter
@@ -330,8 +330,20 @@ public final class XElement {
 		return sw.getBuffer().toString();
 	}
 
+	public String asFormattedXml(final String lineSeparator, final boolean trimText) {
+		return asFormattedXml(lineSeparator, "\t", true, trimText);
+	}
+
+	public String asFormattedXml(final String lineSeparator) {
+		return asFormattedXml(lineSeparator, true);
+	}
+
+	public String asFormattedXml(final String lineSeparator, final String indent) {
+		return asFormattedXml(lineSeparator, indent, true, true);
+	}
+
 	public String asFormattedXml(final boolean trimText) {
-		return asFormattedXml("\t", true, trimText);
+		return asFormattedXml("\n", trimText);
 	}
 
 	public String asFormattedXml() {
