@@ -2,7 +2,7 @@
 <feature
       id="de.hasait.eclipse.common_feature"
       label="de.hasait.eclipse.common_feature"
-      version="2.4.1.v200804112230"
+      version="2.4.2.v200806091336"
       provider-name="Sebastian Hasait">
 
    <description>
