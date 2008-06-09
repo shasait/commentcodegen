@@ -1,5 +1,5 @@
 /*
- * $Id: ContentBufferDelegate.java,v 1.1 2008-04-08 11:06:07 concentus Exp $
+ * $Id: ContentBufferDelegate.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -20,7 +20,7 @@ package de.hasait.eclipse.common;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 16.11.2006
  */
 public class ContentBufferDelegate {
@@ -77,18 +77,18 @@ public class ContentBufferDelegate {
 	}
 
 	/**
-    * @see de.hasait.eclipse.common.IContentBuffer#getNewline()
-    */
-   public final String getNewline() {
-	   return _delegate.getNewline();
-   }
+	 * @see de.hasait.eclipse.common.IContentBuffer#getNewline()
+	 */
+	public final String getNewline() {
+		return _delegate.getNewline();
+	}
 
 	/**
-    * @see de.hasait.eclipse.common.IContentBuffer#setNewline(java.lang.String)
-    */
-   public final void setNewline(String newline) {
-	   _delegate.setNewline(newline);
-   }
+	 * @see de.hasait.eclipse.common.IContentBuffer#setNewline(java.lang.String)
+	 */
+	public final void setNewline(String newline) {
+		_delegate.setNewline(newline);
+	}
 
 	/**
 	 * @see de.hasait.eclipse.common.IContentBuffer#getIndent()

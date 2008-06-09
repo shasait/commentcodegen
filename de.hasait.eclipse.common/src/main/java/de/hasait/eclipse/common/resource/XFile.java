@@ -1,5 +1,5 @@
 /*
- * $Id: XFile.java,v 1.1 2008-04-08 11:06:16 concentus Exp $
+ * $Id: XFile.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2008 Sebastian Hasait
  * 
@@ -33,16 +33,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-import de.hasait.eclipse.common.ContentBuffer;
 import de.hasait.eclipse.common.IOUtil;
 import de.hasait.eclipse.common.ObjectUtil;
 import de.hasait.eclipse.common.xml.XDocument;
-import de.hasait.eclipse.common.xml.XElement;
 
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public class XFile extends XResource {

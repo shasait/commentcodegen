@@ -1,5 +1,5 @@
 /*
- * $Id: XResource.java,v 1.1 2008-04-08 11:06:16 concentus Exp $
+ * $Id: XResource.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2006 Sebastian Hasait
  * 
@@ -34,7 +34,7 @@ import org.eclipse.core.runtime.Path;
 /**
  * 
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @since 01.12.2006
  */
 public abstract class XResource {
@@ -191,7 +191,7 @@ public abstract class XResource {
 		return null;
 	}
 
-	protected final XFile getFile(final IContainer pRelativeBaseContainer,final  String pPathS) {
+	protected final XFile getFile(final IContainer pRelativeBaseContainer, final String pPathS) {
 		IPath path = new Path(pPathS);
 		return wrapFile(getPathBaseContainer(pRelativeBaseContainer, path).getFile(path));
 	}

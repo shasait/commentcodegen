@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractBuilderNature.java,v 1.1 2008-04-08 11:06:15 concentus Exp $
+ * $Id: AbstractBuilderNature.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -25,7 +25,7 @@ import org.eclipse.core.runtime.CoreException;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public abstract class AbstractBuilderNature implements IProjectNature {
 	private final String _builderId;
@@ -63,8 +63,7 @@ public abstract class AbstractBuilderNature implements IProjectNature {
 			if (commands[i].getBuilderName().equals(_builderId)) {
 				ICommand[] newCommands = new ICommand[commands.length - 1];
 				System.arraycopy(commands, 0, newCommands, 0, i);
-				System.arraycopy(commands, i + 1, newCommands, i,
-						commands.length - i - 1);
+				System.arraycopy(commands, i + 1, newCommands, i, commands.length - i - 1);
 				description.setBuildSpec(newCommands);
 				return;
 			}

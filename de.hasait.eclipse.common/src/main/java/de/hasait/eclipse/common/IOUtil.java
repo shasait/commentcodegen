@@ -1,5 +1,5 @@
 /*
- * $Id: IOUtil.java,v 1.1 2008-04-08 11:06:07 concentus Exp $
+ * $Id: IOUtil.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -25,35 +25,34 @@ import java.nio.ByteBuffer;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class IOUtil {
-    private IOUtil() {
-        super();
-    }
+	private IOUtil() {
+		super();
+	}
 
-    private static final int LONG_LEN = 8;
+	private static final int LONG_LEN = 8;
 
-    public static long readLong(InputStream input) throws IOException {
-        byte[] longBytes = new byte[LONG_LEN];
-        int r = input.read(longBytes, 0, LONG_LEN);
-        if (r != LONG_LEN) {
-            throw new IOException("Bytes missing: read " + r + ", expected "
-                    + LONG_LEN);
-        }
-        return ByteBuffer.wrap(longBytes).getLong();
-    }
+	public static long readLong(InputStream input) throws IOException {
+		byte[] longBytes = new byte[LONG_LEN];
+		int r = input.read(longBytes, 0, LONG_LEN);
+		if (r != LONG_LEN) {
+			throw new IOException("Bytes missing: read " + r + ", expected " + LONG_LEN);
+		}
+		return ByteBuffer.wrap(longBytes).getLong();
+	}
 
-    public static String readAll(Reader reader) throws IOException {
-        StringWriter stringWriter = new StringWriter();
-        char[] cbuf = new char[1024];
-        int cread;
-        do {
-            cread = reader.read(cbuf);
-            if (cread != -1) {
-                stringWriter.write(cbuf, 0, cread);
-            }
-        } while (cread != -1);
-        return stringWriter.getBuffer().toString();
-    }
+	public static String readAll(Reader reader) throws IOException {
+		StringWriter stringWriter = new StringWriter();
+		char[] cbuf = new char[1024];
+		int cread;
+		do {
+			cread = reader.read(cbuf);
+			if (cread != -1) {
+				stringWriter.write(cbuf, 0, cread);
+			}
+		} while (cread != -1);
+		return stringWriter.getBuffer().toString();
+	}
 }

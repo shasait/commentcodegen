@@ -1,5 +1,5 @@
 /*
- * $Id: ObjectUtil.java,v 1.1 2008-04-08 11:06:07 concentus Exp $
+ * $Id: ObjectUtil.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -19,27 +19,27 @@ package de.hasait.eclipse.common;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class ObjectUtil {
-    private ObjectUtil() {
-        super();
-    }
+	private ObjectUtil() {
+		super();
+	}
 
-    /**
-     * Compare objects with null-handling.
-     */
-    public static boolean equals(Object a, Object b) {
-        if (a == b) {
-            return true;
-        }
-        // a!=b
-        if (a != null) {
-            if (b != null) {
-                return a.equals(b);
-            }
-        }
-        // a==null || b==null => the other cannot be also null because of a!=b
-        return false;
-    }
+	/**
+	 * Compare objects with null-handling.
+	 */
+	public static boolean equals(Object a, Object b) {
+		if (a == b) {
+			return true;
+		}
+		// a!=b
+		if (a != null) {
+			if (b != null) {
+				return a.equals(b);
+			}
+		}
+		// a==null || b==null => the other cannot be also null because of a!=b
+		return false;
+	}
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AbstractRemoveNatureAction.java,v 1.1 2008-04-08 11:06:15 concentus Exp $
+ * $Id: AbstractRemoveNatureAction.java,v 1.2 2008-06-09 11:32:37 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -30,10 +30,9 @@ import de.hasait.eclipse.common.NatureUtil;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-public abstract class AbstractRemoveNatureAction implements
-		IObjectActionDelegate {
+public abstract class AbstractRemoveNatureAction implements IObjectActionDelegate {
 	private final String _natureId;
 
 	private ISelection _selection;
@@ -45,14 +44,12 @@ public abstract class AbstractRemoveNatureAction implements
 
 	public final void run(IAction action) {
 		if (_selection instanceof IStructuredSelection) {
-			Object element = ((IStructuredSelection) _selection)
-					.getFirstElement();
+			Object element = ((IStructuredSelection) _selection).getFirstElement();
 			IProject project = null;
 			if (element instanceof IProject) {
 				project = (IProject) element;
 			} else if (element instanceof IAdaptable) {
-				project = (IProject) ((IAdaptable) element)
-						.getAdapter(IProject.class);
+				project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
 			}
 			if (project != null) {
 				try {
