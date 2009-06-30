@@ -24,7 +24,7 @@
    <feature url="features/org.mozilla.javascript_feature_1.6.5.v200804112230.jar" id="org.mozilla.javascript_feature" version="1.6.5.v200804112230">
       <category name="common"/>
    </feature>
-   <feature url="features/de.hasait.eclipse.common_feature_2.4.2.v200806091336.jar" id="de.hasait.eclipse.common_feature" version="2.4.2.v200806091336">
+   <feature url="features/de.hasait.eclipse.common_feature_2.4.3.v200906301616.jar" id="de.hasait.eclipse.common_feature" version="2.4.3.v200906301616">
       <category name="common"/>
    </feature>
    <category-def name="common" label="Common"/>
