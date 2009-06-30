@@ -1,5 +1,5 @@
 /*
- * $Id: StringUtil.java,v 1.1 2008-04-08 11:06:12 concentus Exp $
+ * $Id: StringUtil.java,v 1.2 2009-06-30 14:14:38 concentus Exp $
  * 
  * Copyright 2005 Sebastian Hasait
  * 
@@ -27,7 +27,7 @@ import java.util.Map.Entry;
 
 /**
  * @author Sebastian Hasait (hasait at web.de)
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public final class StringUtil {
 	private StringUtil() {
@@ -76,6 +76,7 @@ public final class StringUtil {
 				if (lastWasNotUpperCase) {
 					result.append("_");
 				}
+				lastWasNotUpperCase = false;
 			} else {
 				lastWasNotUpperCase = true;
 			}
