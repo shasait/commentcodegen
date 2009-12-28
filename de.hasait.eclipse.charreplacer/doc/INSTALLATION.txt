@@ -1,6 +1,0 @@
-- Die JARs nach plugins und features kopieren
-- Die Datei charreplacer.config anpassen und ins Projekt-Hauptverzeichnis kopieren
-- Rechtsklick auf das Projekt und CharReplacer->Add Nature klicken
-
--------------------------------------------------------------------------------
-$Id: INSTALLATION.txt,v 1.1 2006-12-30 16:50:59 concentus Exp $
